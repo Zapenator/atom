@@ -1,58 +1,70 @@
 package org.shotrush.atom;
 
 import co.aikar.commands.PaperCommandManager;
-import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.shotrush.atom.core.blocks.CustomBlockManager;
+import org.shotrush.atom.commands.*;
 import org.shotrush.atom.core.age.AgeManager;
-import org.shotrush.atom.cog.CogListener;
-import org.shotrush.atom.commands.AgeCommand;
-import org.shotrush.atom.commands.CogCommand;
 import org.shotrush.atom.core.storage.DataStorage;
 
 public final class Atom extends JavaPlugin {
 
-    @Getter
     private static Atom instance;
-
-    @Getter
+    private CustomBlockManager blockManager;
     private DataStorage dataStorage;
-
-    @Getter
     private AgeManager ageManager;
-
-    @Getter
-    private CogListener cogListener;
-
     private PaperCommandManager commandManager;
 
     @Override
     public void onEnable() {
         instance = this;
-
+        
+        // Initialize core systems
         dataStorage = new DataStorage(this);
         ageManager = new AgeManager(this, dataStorage);
-        cogListener = new CogListener(this);
-
-        getServer().getPluginManager().registerEvents(cogListener, this);
-
+        
+        // Initialize block system
+        blockManager = new CustomBlockManager(this);
+        
+        // Setup commands
         setupCommands();
-
+        
         getLogger().info("Atom plugin has been enabled!");
     }
-
+    
     private void setupCommands() {
         commandManager = new PaperCommandManager(this);
-
-        commandManager.getCommandCompletions().registerCompletion("ages", context ->
-                ageManager.getAllAges().stream().map(age -> age.getId()).toList()
-        );
-
-        commandManager.registerCommand(new AgeCommand(this));
+        
+        // Register all commands
         commandManager.registerCommand(new CogCommand());
+        commandManager.registerCommand(new WrenchCommand());
+        commandManager.registerCommand(new RemoveCogsCommand());
+        commandManager.registerCommand(new AgeCommand(this));
     }
 
     @Override
     public void onDisable() {
+        if (blockManager != null) {
+            blockManager.stopGlobalUpdate();
+            blockManager.saveBlocks();
+        }
+        
         getLogger().info("Atom plugin has been disabled!");
+    }
+    
+    public static Atom getInstance() {
+        return instance;
+    }
+    
+    public CustomBlockManager getBlockManager() {
+        return blockManager;
+    }
+    
+    public DataStorage getDataStorage() {
+        return dataStorage;
+    }
+    
+    public AgeManager getAgeManager() {
+        return ageManager;
     }
 }

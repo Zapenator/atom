@@ -126,7 +126,7 @@ public class AgeManager {
         String ageId = config.getString("current_age");
         
         if (ageId != null) {
-            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            Bukkit.getGlobalRegionScheduler().runDelayed(plugin, task -> {
                 getAge(ageId).ifPresent(age -> {
                     this.currentAge = age;
                     plugin.getLogger().info("Loaded current age: " + age.getDisplayName());

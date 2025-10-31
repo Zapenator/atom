@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'com.gradleup.shadow' version '8.3.5'
     id("xyz.jpenilla.run-paper") version "2.3.1"
+    id 'org.jetbrains.kotlin.jvm'
 }
 
 group = 'org.shotrush.atom.atom'
@@ -22,6 +23,7 @@ repositories {
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.9-R0.1-SNAPSHOT")
     implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
+    implementation("org.reflections:reflections:0.10.2")
     implementation("com.zaxxer:HikariCP:5.1.0")
     implementation("org.xerial:sqlite-jdbc:3.46.1.0")
     implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
@@ -31,6 +33,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.34")
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.1")
     testImplementation("org.mockito:mockito-core:5.8.0")
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 }
 
 tasks {
@@ -44,8 +47,6 @@ tasks {
 def targetJavaVersion = 21
 java {
     def javaVersion = JavaVersion.toVersion(targetJavaVersion)
-    sourceCompatibility = javaVersion
-    targetCompatibility = javaVersion
     if (JavaVersion.current() < javaVersion) {
         toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
     }
@@ -71,6 +72,7 @@ processResources {
 shadowJar {
     relocate 'co.aikar.commands', 'org.shotrush.atom.acf'
     relocate 'co.aikar.locales', 'org.shotrush.atom.locales'
+    relocate 'org.reflections', 'org.shotrush.atom.reflections'
     relocate 'com.zaxxer.hikari', 'org.shotrush.atom.hikari'
     relocate 'com.github.benmanes.caffeine', 'org.shotrush.atom.caffeine'
     relocate 'com.google.gson', 'org.shotrush.atom.gson'
@@ -79,4 +81,7 @@ shadowJar {
 
 build {
     dependsOn shadowJar
+}
+kotlin {
+    jvmToolchain(21)
 }
