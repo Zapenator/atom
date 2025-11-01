@@ -42,8 +42,8 @@ object RockBlockPopulator : BlockPopulator() {
         Material.AZALEA_LEAVES,
         Material.FLOWERING_AZALEA_LEAVES,
     )
-    val rock by lazy { Atom.getInstance().blockManager.registry.getBlockType("pebble") }
-    val stick by lazy { Atom.getInstance().blockManager.registry.getBlockType("ground_stick") }
+    val rock by lazy { Atom.instance.blockManager.registry.getBlockType("pebble") }
+    val stick by lazy { Atom.instance.blockManager.registry.getBlockType("ground_stick") }
 
     private val CAN_REPLACE = setOf(
         Material.LEAF_LITTER,
@@ -93,8 +93,8 @@ object RockBlockPopulator : BlockPopulator() {
 
 //                limitedRegion.setBlockData(x, y, z, mat.createBlockData())
                 val block = mat.createBlock(spawn, location, BlockFace.NORTH)
-                block.spawn(Atom.getInstance(), limitedRegion)
-                Atom.getInstance().blockManager.blocks.add(block)
+                block.spawn(Atom.instance, limitedRegion)
+                Atom.instance.blockManager.blocks.add(block)
             }
         }
     }
