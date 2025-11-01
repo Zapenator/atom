@@ -3,6 +3,7 @@ plugins {
     id("com.gradleup.shadow") version "8.3.5"
     id("xyz.jpenilla.run-paper") version "2.3.1"
     id("org.jetbrains.kotlin.jvm") version "2.2.20"
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.19"
 }
 
 group = "org.shotrush.atom"
@@ -21,7 +22,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21.9-R0.1-SNAPSHOT")
+    paperweight.foliaDevBundle("1.21.8-R0.1-SNAPSHOT")
     implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
     implementation("org.reflections:reflections:0.10.2")
     implementation("com.zaxxer:HikariCP:5.1.0")
@@ -41,6 +42,14 @@ dependencies {
     compileOnly("net.dmulloy2:ProtocolLib:5.4.0")
 }
 
+tasks.withType(xyz.jpenilla.runtask.task.AbstractRun::class) {
+    javaLauncher = javaToolchains.launcherFor {
+        vendor = JvmVendorSpec.JETBRAINS
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+    jvmArgs("-XX:+AllowEnhancedClassRedefinition")
+}
+
 tasks {
     withType<JavaCompile>().configureEach {
         options.encoding = "UTF-8"
@@ -49,13 +58,14 @@ tasks {
     }
 
     // Configure run-paper
-    runServer {
+    runPaper.folia.registerTask {
         minecraftVersion("1.21.8")
 
         downloadPlugins {
             url("https://github.com/dmulloy2/ProtocolLib/releases/download/5.4.0/ProtocolLib.jar")
         }
     }
+
 
     processResources {
         val props = mapOf("version" to version)
@@ -69,12 +79,12 @@ tasks {
     shadowJar {
         archiveClassifier.set("")
 
-        relocate("co.aikar.commands", "org.shotrush.atom.acf")
-        relocate("co.aikar.locales", "org.shotrush.atom.locales")
-        relocate("org.reflections", "org.shotrush.atom.reflections")
-        relocate("com.zaxxer.hikari", "org.shotrush.atom.hikari")
-        relocate("com.github.benmanes.caffeine", "org.shotrush.atom.caffeine")
-        relocate("com.google.gson", "org.shotrush.atom.gson")
+//        relocate("co.aikar.commands", "org.shotrush.atom.acf")
+//        relocate("co.aikar.locales", "org.shotrush.atom.locales")
+//        relocate("org.reflections", "org.shotrush.atom.reflections")
+//        relocate("com.zaxxer.hikari", "org.shotrush.atom.hikari")
+//        relocate("com.github.benmanes.caffeine", "org.shotrush.atom.caffeine")
+//        relocate("com.google.gson", "org.shotrush.atom.gson")
     }
 
     build {

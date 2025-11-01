@@ -33,8 +33,7 @@ public final class Atom extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        
-        
+
         dataStorage = new DataStorage(this);
         ageManager = new AgeManager(this, dataStorage);
         itemRegistry = new CustomItemRegistry(this);
