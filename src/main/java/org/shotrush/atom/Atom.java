@@ -10,7 +10,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 import org.shotrush.atom.core.AutoRegisterManager;
 import org.shotrush.atom.core.blocks.CustomBlockManager;
-import org.shotrush.atom.commands.*;
+import org.shotrush.atom.content.mobs.AnimalBehavior;
+import org.shotrush.atom.content.mobs.AnimalDomestication;
+import org.shotrush.atom.content.mobs.MobScale;
 import org.shotrush.atom.core.age.AgeManager;
 import org.shotrush.atom.core.items.CustomItemRegistry;
 import org.shotrush.atom.core.storage.DataStorage;
@@ -44,6 +46,9 @@ public final class Atom extends JavaPlugin {
         AutoRegisterManager.registerBlocks(this, blockManager.getRegistry());
         
         getServer().getPluginManager().registerEvents(new SkinListener(), this);
+        getServer().getPluginManager().registerEvents(new MobScale(this), this);
+        getServer().getPluginManager().registerEvents(new AnimalBehavior(this), this);
+        getServer().getPluginManager().registerEvents(new AnimalDomestication(this), this);
         
         setupCommands();
         getLogger().info("Atom plugin has been enabled!");
