@@ -57,13 +57,19 @@ tasks {
         options.release.set(21)
     }
 
+    var spec = runPaper.downloadPluginsSpec {
+        url("https://github.com/dmulloy2/ProtocolLib/releases/download/5.4.0/ProtocolLib.jar")
+    }
+
     // Configure run-paper
     runPaper.folia.registerTask {
         minecraftVersion("1.21.8")
+        downloadPlugins.from(spec)
+    }
 
-        downloadPlugins {
-            url("https://github.com/dmulloy2/ProtocolLib/releases/download/5.4.0/ProtocolLib.jar")
-        }
+    runServer {
+        minecraftVersion("1.21.8")
+        downloadPlugins.from(spec)
     }
 
 
