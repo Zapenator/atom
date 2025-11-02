@@ -84,9 +84,12 @@ public class HerdLeaderWanderGoal implements Goal<Mob> {
     
     @Override
     public void tick() {
-        if (wanderTarget != null) {
-            mob.getPathfinder().moveTo(wanderTarget, 0.8);
-        }
+        Location current = mob.getLocation();
+        if (current == null || current.getWorld() == null) return;
+        
+        if (wanderTarget == null || wanderTarget.getWorld() == null) return;
+        
+        mob.getPathfinder().moveTo(wanderTarget, 0.8);
     }
     
     private void computeWanderTarget() {

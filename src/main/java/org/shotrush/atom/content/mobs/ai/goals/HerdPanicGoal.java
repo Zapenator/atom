@@ -106,7 +106,17 @@ public class HerdPanicGoal implements Goal<Mob> {
     }
     
     private void computeFleeTarget() {
+        if (!mob.isValid() || mob.isDead()) {
+            fleeTarget = null;
+            return;
+        }
+        
         Location current = mob.getLocation();
+        if (current == null || current.getWorld() == null) {
+            fleeTarget = null;
+            return;
+        }
+        
         Location threatLocation = null;
         
         Optional<Herd> herdOpt = herdManager.getHerd(mob.getUniqueId());
@@ -129,6 +139,10 @@ public class HerdPanicGoal implements Goal<Mob> {
         
         fleeTarget = current.clone().add(awayFromThreat.multiply(distance));
         fleeTarget.setY(current.getWorld().getHighestBlockYAt(fleeTarget));
+        
+        if (fleeTarget.getWorld() == null) {
+            fleeTarget = null;
+        }
     }
     
     private void drainStamina() {

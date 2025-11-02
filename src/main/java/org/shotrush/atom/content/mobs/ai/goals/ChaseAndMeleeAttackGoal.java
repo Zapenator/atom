@@ -3,6 +3,7 @@ package org.shotrush.atom.content.mobs.ai.goals;
 import com.destroystokyo.paper.entity.ai.Goal;
 import com.destroystokyo.paper.entity.ai.GoalKey;
 import com.destroystokyo.paper.entity.ai.GoalType;
+import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.LivingEntity;
@@ -58,14 +59,20 @@ public class ChaseAndMeleeAttackGoal implements Goal<Mob> {
     @Override
     public void tick() {
         LivingEntity target = mob.getTarget();
-        if (target == null) return;
+        if (target == null || !target.isValid()) return;
         
-        double distance = mob.getLocation().distance(target.getLocation());
+        Location current = mob.getLocation();
+        if (current == null || current.getWorld() == null) return;
+        
+        Location targetLoc = target.getLocation();
+        if (targetLoc == null) return;
+        
+        double distance = current.distance(targetLoc);
         
         if (distance > ATTACK_RANGE) {
             double domesticationFactor = AnimalDomestication.getDomesticationFactor((Animals) mob);
             double speed = behavior.getChaseSpeed(domesticationFactor);
-            mob.getPathfinder().moveTo(target.getLocation(), speed);
+            mob.getPathfinder().moveTo(targetLoc, speed);
         } else {
             mob.getPathfinder().stopPathfinding();
             

@@ -81,13 +81,18 @@ public class AvoidPlayerWhenInjuredGoal implements Goal<Mob> {
             nearestPlayer = findNearestPlayer();
         }
         
-        if (nearestPlayer == null) return;
+        if (nearestPlayer == null || !nearestPlayer.isValid()) return;
         
         Location current = mob.getLocation();
+        if (current == null || current.getWorld() == null) return;
+        
         Location playerLoc = nearestPlayer.getLocation();
+        if (playerLoc == null) return;
         
         org.bukkit.util.Vector awayFromPlayer = current.toVector().subtract(playerLoc.toVector()).normalize();
         Location fleeTarget = current.clone().add(awayFromPlayer.multiply(15.0));
+        
+        if (fleeTarget == null || fleeTarget.getWorld() == null) return;
         
         double domesticationFactor = AnimalDomestication.getDomesticationFactor((Animals) mob);
         double speed = behavior.getFleeSpeed(domesticationFactor) * 0.8;

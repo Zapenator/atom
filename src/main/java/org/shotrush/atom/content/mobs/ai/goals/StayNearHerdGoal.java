@@ -104,11 +104,14 @@ public class StayNearHerdGoal implements Goal<Mob> {
         if (leader == null || !leader.isValid()) return;
         
         Location targetLocation = leader.getLocation();
+        if (targetLocation == null || targetLocation.getWorld() == null) return;
         
         Location centroid = herdManager.getHerdCentroid(herd);
         if (centroid != null && Math.random() < 0.3) {
             targetLocation = centroid;
         }
+        
+        if (targetLocation == null || targetLocation.getWorld() == null) return;
         
         double domesticationFactor = AnimalDomestication.getDomesticationFactor((Animals) mob);
         double speed = 1.0 + ((1.2 - 1.0) * (1.0 - domesticationFactor));
