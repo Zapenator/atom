@@ -11,6 +11,9 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.world.EntitiesLoadEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.shotrush.atom.Atom;
+import org.shotrush.atom.content.mobs.ai.combat.FatigueSystem;
+import org.shotrush.atom.content.mobs.ai.combat.InjurySystem;
+import org.shotrush.atom.content.mobs.ai.combat.MoraleSystem;
 import org.shotrush.atom.content.mobs.ai.config.SpeciesBehavior;
 import org.shotrush.atom.content.mobs.ai.goals.*;
 import org.bukkit.entity.EntityType;
@@ -24,6 +27,9 @@ public class AnimalBehaviorNew implements Listener {
     
     private final Atom plugin;
     private final HerdManager herdManager;
+    private final InjurySystem injurySystem;
+    private final FatigueSystem fatigueSystem;
+    private final MoraleSystem moraleSystem;
     private static final Set<EntityType> COMMON_ANIMALS = new HashSet<>();
     private final Set<UUID> trackedAnimals = new HashSet<>();
     
@@ -56,6 +62,9 @@ public class AnimalBehaviorNew implements Listener {
     public AnimalBehaviorNew(Atom plugin) {
         this.plugin = plugin;
         this.herdManager = new HerdManager(plugin);
+        this.injurySystem = new InjurySystem(plugin);
+        this.fatigueSystem = new FatigueSystem(plugin);
+        this.moraleSystem = new MoraleSystem(plugin, herdManager);
     }
     
     @EventHandler(priority = org.bukkit.event.EventPriority.HIGHEST)
@@ -101,13 +110,13 @@ public class AnimalBehaviorNew implements Listener {
         com.destroystokyo.paper.entity.ai.MobGoals goalSelector = Bukkit.getMobGoals();
         com.destroystokyo.paper.entity.ai.MobGoals targetSelector = Bukkit.getMobGoals();
         
-        goalSelector.addGoal(mob, 0, new HerdPanicGoal(mob, plugin, herdManager, behavior));
+        goalSelector.addGoal(mob, 0, new HerdPanicGoal(mob, plugin, herdManager, behavior, moraleSystem));
         
         goalSelector.addGoal(mob, 1, new AvoidPlayerWhenInjuredGoal(mob, plugin, behavior));
         
         if (isAggressive) {
             targetSelector.addGoal(mob, 2, new AcquireNearestPlayerTargetGoal(mob, plugin, behavior));
-            goalSelector.addGoal(mob, 3, new ChaseAndMeleeAttackGoal(mob, plugin, behavior));
+            goalSelector.addGoal(mob, 3, new ChaseAndMeleeAttackGoal(mob, plugin, behavior, fatigueSystem, injurySystem, moraleSystem));
         }
         
         if (role == HerdRole.FOLLOWER) {
