@@ -95,7 +95,7 @@ public class HerdPanicGoal implements Goal<Mob> {
             computeFleeTarget();
         }
         
-        if (fleeTarget != null) {
+        if (fleeTarget != null && fleeTarget.getWorld() != null) {
             double domesticationFactor = AnimalDomestication.getDomesticationFactor((Animals) mob);
             double speed = behavior.getFleeSpeed(domesticationFactor);
             
