@@ -14,7 +14,7 @@ import org.shotrush.atom.content.systems.PlayerTemperatureSystem;
 import org.shotrush.atom.content.systems.ThirstSystem;
 import org.shotrush.atom.core.AutoRegisterManager;
 import org.shotrush.atom.core.blocks.CustomBlockManager;
-import org.shotrush.atom.content.mobs.AnimalBehavior;
+import org.shotrush.atom.content.mobs.AnimalBehaviorNew;
 import org.shotrush.atom.content.mobs.AnimalDomestication;
 import org.shotrush.atom.content.mobs.MobScale;
 import org.shotrush.atom.content.foragingage.throwing.SpearProjectileListener;
@@ -60,8 +60,12 @@ public final class Atom extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new RightClickDetector(), this);
         getServer().getPluginManager().registerEvents(new SkinListener(), this);
         getServer().getPluginManager().registerEvents(new MobScale(this), this);
-        getServer().getPluginManager().registerEvents(new AnimalBehavior(this), this);
-        getServer().getPluginManager().registerEvents(new AnimalDomestication(this), this);
+        
+        AnimalBehaviorNew animalBehavior = new AnimalBehaviorNew(this);
+        AnimalDomestication animalDomestication = new AnimalDomestication(this, animalBehavior.getHerdManager());
+        getServer().getPluginManager().registerEvents(animalBehavior, this);
+        getServer().getPluginManager().registerEvents(animalDomestication, this);
+        
         getServer().getPluginManager().registerEvents(new SpearProjectileListener(this), this);
         
         setupCommands();

@@ -1,5 +1,6 @@
 package org.shotrush.atom.content.mobs;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
@@ -7,14 +8,20 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityBreedEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.shotrush.atom.Atom;
+import org.shotrush.atom.content.mobs.herd.Herd;
+import org.shotrush.atom.content.mobs.herd.HerdManager;
+
+import java.util.Optional;
 
 public class AnimalDomestication implements Listener {
     
     private final Atom plugin;
+    private final HerdManager herdManager;
     private static final int MAX_DOMESTICATION_LEVEL = 5;
     
-    public AnimalDomestication(Atom plugin) {
+    public AnimalDomestication(Atom plugin, HerdManager herdManager) {
         this.plugin = plugin;
+        this.herdManager = herdManager;
     }
     
     @EventHandler
@@ -36,6 +43,19 @@ public class AnimalDomestication implements Listener {
             baby.setMetadata("fullyDomesticated", new FixedMetadataValue(plugin, true));
             plugin.getLogger().info("Baby is fully domesticated!");
         }
+        
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            if (baby.isValid() && !baby.isDead()) {
+                Optional<Herd> motherHerd = herdManager.getHerd(mother.getUniqueId());
+                Optional<Herd> fatherHerd = herdManager.getHerd(father.getUniqueId());
+                
+                Herd targetHerd = motherHerd.orElse(fatherHerd.orElse(null));
+                if (targetHerd != null) {
+                    targetHerd.addMember(baby.getUniqueId());
+                    plugin.getLogger().info("Baby " + baby.getType() + " joined parent's herd: " + targetHerd.id());
+                }
+            }
+        }, 20L);
     }
     
     private int getDomesticationLevel(Animals animal) {
