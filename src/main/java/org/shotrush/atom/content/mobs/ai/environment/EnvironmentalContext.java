@@ -98,7 +98,7 @@ public class EnvironmentalContext {
     }
     
     private static BiomeType categorizeBiome(Biome biome) {
-        String name = biome.name().toLowerCase();
+        String name = biome.getKey().getKey().toLowerCase();
         
         if (name.contains("plains")) return BiomeType.PLAINS;
         if (name.contains("forest") || name.contains("jungle")) return BiomeType.FOREST;

@@ -111,7 +111,9 @@ public class HerdPanicGoal implements Goal<Mob> {
         
         drainStamina();
         
-        mob.getPathfinder().moveTo(fleeTarget, speed);
+        if (fleeTarget != null && fleeTarget.getWorld() != null) {
+            mob.getPathfinder().moveTo(fleeTarget, speed);
+        }
     }
     
     private void computeFleeTarget() {
