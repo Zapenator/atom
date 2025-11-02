@@ -16,18 +16,38 @@ public final class HerdManager {
     private final Atom plugin;
     private final Map<World, Map<EntityType, List<Herd>>> herdsByWorld;
     private final Map<UUID, Herd> animalToHerd;
+    private final Map<UUID, Herd> herdsByUUID;
+    private final HerdPersistence persistence;
     private static final double HERD_JOIN_RADIUS = 16.0;
     
     public HerdManager(Atom plugin) {
         this.plugin = plugin;
         this.herdsByWorld = new ConcurrentHashMap<>();
         this.animalToHerd = new ConcurrentHashMap<>();
+        this.herdsByUUID = new ConcurrentHashMap<>();
+        this.persistence = new HerdPersistence(plugin);
     }
     
     public Herd getOrCreateHerd(Animals animal) {
         Herd existingHerd = animalToHerd.get(animal.getUniqueId());
         if (existingHerd != null) {
             return existingHerd;
+        }
+        
+        UUID persistedHerdId = persistence.getHerdId(animal);
+        if (persistedHerdId != null) {
+            Herd persistedHerd = herdsByUUID.get(persistedHerdId);
+            if (persistedHerd != null) {
+                joinHerd(animal, persistedHerd);
+                plugin.getLogger().info("Restored animal to persisted herd: " + persistedHerdId);
+                return persistedHerd;
+            } else {
+                persistedHerd = new Herd(persistedHerdId, animal.getType(), animal.getWorld(), animal.getUniqueId());
+                registerHerd(persistedHerd);
+                animalToHerd.put(animal.getUniqueId(), persistedHerd);
+                plugin.getLogger().info("Re-created persisted herd: " + persistedHerdId + " with original leader");
+                return persistedHerd;
+            }
         }
         
         World world = animal.getWorld();
@@ -65,16 +85,21 @@ public final class HerdManager {
         UUID herdId = UUID.randomUUID();
         Herd herd = new Herd(herdId, animal.getType(), animal.getWorld(), animal.getUniqueId());
         
-        herdsByWorld
-            .computeIfAbsent(animal.getWorld(), k -> new ConcurrentHashMap<>())
-            .computeIfAbsent(animal.getType(), k -> new ArrayList<>())
-            .add(herd);
-        
+        registerHerd(herd);
         animalToHerd.put(animal.getUniqueId(), herd);
         
         plugin.getLogger().info("Created new herd " + herdId + " for " + animal.getType() + " with leader " + animal.getUniqueId());
         
         return herd;
+    }
+    
+    private void registerHerd(Herd herd) {
+        herdsByWorld
+            .computeIfAbsent(herd.world(), k -> new ConcurrentHashMap<>())
+            .computeIfAbsent(herd.species(), k -> new ArrayList<>())
+            .add(herd);
+        
+        herdsByUUID.put(herd.id(), herd);
     }
     
     private void joinHerd(Animals animal, Herd herd) {
@@ -138,7 +163,13 @@ public final class HerdManager {
             }
         }
         
+        herdsByUUID.remove(herd.id());
+        
         plugin.getLogger().info("Removed empty herd " + herd.id());
+    }
+    
+    public HerdPersistence getPersistence() {
+        return persistence;
     }
     
     public Optional<Herd> getHerd(UUID animalId) {

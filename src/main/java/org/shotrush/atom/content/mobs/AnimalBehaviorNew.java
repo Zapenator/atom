@@ -86,10 +86,14 @@ public class AnimalBehaviorNew implements Listener {
         
         plugin.getLogger().info(">>> Aggressive: " + isAggressive + " (chance: " + String.format("%.1f%%", aggressionChance * 100) + ", role: " + role + ")");
         
-        double maxStamina = 100 + (Math.random() * 100);
+        double maxStamina = herdManager.getPersistence().getMaxStamina(animal, 100 + (Math.random() * 100));
+        double stamina = herdManager.getPersistence().getStamina(animal, maxStamina);
+        
         animal.setMetadata("maxStamina", new FixedMetadataValue(plugin, maxStamina));
-        animal.setMetadata("stamina", new FixedMetadataValue(plugin, maxStamina));
+        animal.setMetadata("stamina", new FixedMetadataValue(plugin, stamina));
         animal.setMetadata("fleeing", new FixedMetadataValue(plugin, false));
+        
+        herdManager.getPersistence().saveHerdData(animal, herd.id(), role == HerdRole.LEADER, isAggressive, maxStamina, stamina);
         
         trackedAnimals.add(animal.getUniqueId());
         
