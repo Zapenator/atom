@@ -100,7 +100,11 @@ public class CraftingBasket extends InteractiveSurface {
             items.add(placedItem.getItem());
         }
         
-        return recipeManager.findMatch(items);
+        ItemStack result = recipeManager.findMatch(items);
+        if (result != null) {
+            applyQualityInheritance(result);
+        }
+        return result;
     }
     
     @Override

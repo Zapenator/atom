@@ -128,6 +128,14 @@ public class KnappingHandler {
             
             ItemStack sharpenedFlint = Atom.getInstance().getItemRegistry().createItem("sharpened_flint");
             if (sharpenedFlint != null) {
+                double temperature = org.shotrush.atom.content.systems.PlayerTemperatureSystem
+                    .getInstance().getPlayerTemperature(player);
+                
+                org.shotrush.atom.core.items.ItemQuality quality = 
+                    org.shotrush.atom.core.items.ItemQuality.fromTemperature(temperature);
+                
+                org.shotrush.atom.core.api.ItemQualityAPI.setQuality(sharpenedFlint, quality);
+                
                 player.getWorld().dropItemNaturally(dropLocation, sharpenedFlint);
             }
         }

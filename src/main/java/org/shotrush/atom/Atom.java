@@ -8,6 +8,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
+import org.shotrush.atom.content.systems.ItemHeatSystem;
+import org.shotrush.atom.content.systems.PlayerAttributeModifier;
+import org.shotrush.atom.content.systems.PlayerTemperatureSystem;
+import org.shotrush.atom.content.systems.ThirstSystem;
 import org.shotrush.atom.core.AutoRegisterManager;
 import org.shotrush.atom.core.blocks.CustomBlockManager;
 import org.shotrush.atom.content.mobs.AnimalBehavior;
@@ -51,6 +55,7 @@ public final class Atom extends JavaPlugin {
         AutoRegisterManager.registerItems(this, itemRegistry);
         AutoRegisterManager.registerBlocks(this, blockManager.getRegistry());
         AutoRegisterManager.registerRecipes(this, recipeManager);
+        AutoRegisterManager.registerSystems(this);
         
         getServer().getPluginManager().registerEvents(new RightClickDetector(), this);
         getServer().getPluginManager().registerEvents(new SkinListener(), this);

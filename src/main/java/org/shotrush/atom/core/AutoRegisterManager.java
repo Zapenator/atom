@@ -175,4 +175,39 @@ public class AutoRegisterManager {
             }
         }
     }
+    
+    public static void registerSystems(Plugin plugin) {
+        Reflections reflections = new Reflections("org.shotrush.atom");
+        Set<Class<?>> annotatedClasses = reflections.getTypesAnnotatedWith(
+            org.shotrush.atom.core.systems.annotation.AutoRegisterSystem.class
+        );
+        
+        List<Class<?>> sortedClasses = new ArrayList<>(annotatedClasses);
+        sortedClasses.sort(Comparator.comparingInt(cls -> 
+            cls.getAnnotation(org.shotrush.atom.core.systems.annotation.AutoRegisterSystem.class).priority()
+        ));
+        
+        for (Class<?> clazz : sortedClasses) {
+            if (org.bukkit.event.Listener.class.isAssignableFrom(clazz)) {
+                try {
+                    Constructor<?> constructor;
+                    org.bukkit.event.Listener listener;
+                    
+                    try {
+                        constructor = clazz.getConstructor(Plugin.class);
+                        listener = (org.bukkit.event.Listener) constructor.newInstance(plugin);
+                    } catch (NoSuchMethodException e) {
+                        constructor = clazz.getConstructor();
+                        listener = (org.bukkit.event.Listener) constructor.newInstance();
+                    }
+                    
+                    plugin.getServer().getPluginManager().registerEvents(listener, plugin);
+                    plugin.getLogger().info("Auto-registered system: " + clazz.getSimpleName());
+                } catch (Exception e) {
+                    plugin.getLogger().warning("Failed to auto-register system: " + clazz.getName());
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }

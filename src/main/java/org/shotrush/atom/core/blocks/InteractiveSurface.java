@@ -52,6 +52,16 @@ public abstract class InteractiveSurface extends CustomBlock {
     protected ItemStack checkRecipe() {
         return null;
     }
+    
+    protected void applyQualityInheritance(ItemStack result) {
+        if (result == null || placedItems.isEmpty()) return;
+        
+        ItemStack[] ingredients = placedItems.stream()
+            .map(PlacedItem::getItem)
+            .toArray(ItemStack[]::new);
+        
+        org.shotrush.atom.core.api.QualityInheritanceAPI.applyInheritedQuality(result, ingredients);
+    }
 
     protected void releaseAllItems(Player player) {
         if (placedItems.isEmpty()) {
