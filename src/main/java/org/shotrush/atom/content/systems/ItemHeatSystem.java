@@ -5,39 +5,63 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.plugin.Plugin;
+import org.shotrush.atom.Atom;
 import org.shotrush.atom.core.systems.annotation.AutoRegisterSystem;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 @AutoRegisterSystem(priority = 3)
 public class ItemHeatSystem implements Listener {
     
-    private final Plugin plugin;
+    private final Atom plugin;
     private static final NamespacedKey HEAT_KEY = new NamespacedKey("atom", "item_heat");
     private static final NamespacedKey HEAT_MODIFIER_KEY = new NamespacedKey("atom", "heat_modifier");
+    private final Map<UUID, BossBar> heatBossBars = new HashMap<>();
     
-    public ItemHeatSystem(Plugin plugin) {
+    public ItemHeatSystem(Atom plugin) {
         this.plugin = plugin;
     }
     
     @EventHandler
     public void onPlayerJoin(org.bukkit.event.player.PlayerJoinEvent event) {
-        startHeatTickForPlayer(event.getPlayer());
+        Player player = event.getPlayer();
+        startHeatTickForPlayer(player);
+        createHeatBossBar(player);
+    }
+    
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        BossBar bossBar = heatBossBars.remove(player.getUniqueId());
+        if (bossBar != null) {
+            bossBar.removeAll();
+        }
     }
     
     @EventHandler
     public void onItemHeld(PlayerItemHeldEvent event) {
         Player player = event.getPlayer();
         ItemStack item = player.getInventory().getItem(event.getNewSlot());
+        
+        updateHeatBossBar(player, item);
         
         if (item != null && item.getType() != Material.AIR) {
             applyHeatEffect(player, item);
@@ -58,6 +82,9 @@ public class ItemHeatSystem implements Listener {
                 updateItemHeatFromEnvironment(player, heldItem);
                 player.getInventory().setItemInMainHand(heldItem);
                 applyHeatEffect(player, heldItem);
+                updateHeatBossBar(player, heldItem);
+            } else {
+                updateHeatBossBar(player, null);
             }
         }, null, 1L, 20L);
     }
@@ -184,15 +211,68 @@ public class ItemHeatSystem implements Listener {
         PersistentDataContainer container = meta.getPersistentDataContainer();
         container.set(HEAT_KEY, PersistentDataType.DOUBLE, heat);
         
-        
-        java.util.List<String> lore = meta.hasLore() ? meta.getLore() : new java.util.ArrayList<>();
-        lore.removeIf(line -> line.contains("Heat:"));
-        
-        if (heat > 0) {
-            lore.add("§7Heat: §c" + (int)heat + "°C");
+        java.util.List<net.kyori.adventure.text.Component> lore = meta.lore();
+        if (lore == null) {
+            lore = new java.util.ArrayList<>();
         }
         
-        meta.setLore(lore);
+        lore.removeIf(line -> net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText()
+            .serialize(line).contains("Heat:"));
+        
+        if (heat > 0) {
+            lore.add(net.kyori.adventure.text.Component.text("§7Heat: §c" + (int)heat + "°C"));
+        }
+        
+        meta.lore(lore);
         item.setItemMeta(meta);
+    }
+    
+    private void createHeatBossBar(Player player) {
+        BossBar bossBar = Bukkit.createBossBar(
+            "Item Temperature",
+            BarColor.BLUE,
+            BarStyle.SOLID
+        );
+        bossBar.setVisible(false);
+        bossBar.addPlayer(player);
+        heatBossBars.put(player.getUniqueId(), bossBar);
+    }
+    
+    private void updateHeatBossBar(Player player, ItemStack item) {
+        BossBar bossBar = heatBossBars.get(player.getUniqueId());
+        if (bossBar == null) {
+            createHeatBossBar(player);
+            bossBar = heatBossBars.get(player.getUniqueId());
+        }
+        
+        if (item == null || item.getType() == Material.AIR) {
+            bossBar.setVisible(false);
+            return;
+        }
+        
+        double heat = getItemHeat(item);
+        if (heat <= 0) {
+            bossBar.setVisible(false);
+            return;
+        }
+        
+        bossBar.setVisible(true);
+        
+        BarColor color;
+        if (heat >= 200) {
+            color = BarColor.RED;
+        } else if (heat >= 100) {
+            color = BarColor.YELLOW;
+        } else if (heat >= 50) {
+            color = BarColor.GREEN;
+        } else {
+            color = BarColor.WHITE;
+        }
+        
+        bossBar.setTitle("Item Heat: " + (int)heat + "°C");
+        bossBar.setColor(color);
+        
+        double progress = Math.min(1.0, Math.max(0.0, heat / 300.0));
+        bossBar.setProgress(progress);
     }
 }

@@ -27,7 +27,7 @@ public class PlayerAttributeModifier implements Listener {
         modifyAttribute(player, Attribute.MOVEMENT_SPEED, -0.2, AttributeModifier.Operation.MULTIPLY_SCALAR_1);
         modifyAttribute(player, Attribute.ATTACK_SPEED, -0.3, AttributeModifier.Operation.MULTIPLY_SCALAR_1);
         modifyAttribute(player, Attribute.ATTACK_DAMAGE, -0.25, AttributeModifier.Operation.MULTIPLY_SCALAR_1);
-        modifyAttribute(player, Attribute.CAMERA_DISTANCE, -100.0, AttributeModifier.Operation.ADD_NUMBER);
+        // modifyAttribute(player, Attribute.CAMERA_DISTANCE, -100.0, AttributeModifier.Operation.ADD_NUMBER); Re-enable for testing later.
     }
     
     private static void modifyAttribute(Player player, Attribute attribute, double value, AttributeModifier.Operation operation) {
