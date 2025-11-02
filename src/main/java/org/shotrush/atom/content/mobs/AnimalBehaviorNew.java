@@ -362,7 +362,10 @@ public class AnimalBehaviorNew implements Listener {
             animal.getType().name(), animal.getEntityId(), domesticationFactor * 100),
             DebugCategory.GOALS, DebugLevel.MINIMAL);
         
-        enhanceAnimalStats(animal, domesticationFactor, behavior);
+        if (!animal.hasMetadata("stats_enhanced")) {
+            enhanceAnimalStats(animal, domesticationFactor, behavior);
+            animal.setMetadata("stats_enhanced", new FixedMetadataValue(plugin, true));
+        }
         
         Herd herd = herdManager.getOrCreateHerd(animal);
         HerdRole role = herdManager.getRole(animal.getUniqueId());
