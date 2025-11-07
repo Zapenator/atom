@@ -108,7 +108,7 @@ public class LeatherBedHandler extends WorkstationHandler<LeatherBedHandler.Brus
         
         instance.startProcessing(player, bedLocation, progress, () -> {
             finishBrushing(player, bed, tool);
-        });
+        }, "§7Scraping leather... Use the tool carefully");
     }
     
     public static boolean isBrushing(Player player) {

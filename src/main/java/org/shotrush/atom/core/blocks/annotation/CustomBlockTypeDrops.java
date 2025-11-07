@@ -10,18 +10,12 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface CustomBlockDrops {
-    
-    Material[] blocks() default {};
-    
-    
-    String blockPattern() default "";
-    
+public @interface CustomBlockTypeDrops {
     
     Drop[] drops();
     
     
-    boolean replaceVanillaDrops() default true;
+    boolean replaceMainDrop() default false;
     
     
     String[] ages() default {};

@@ -4,9 +4,11 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
@@ -39,17 +41,18 @@ public class WaterskinHandler implements Listener {
             return;
         }
         
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            Block block = event.getClickedBlock();
-            if (block != null && isWaterSource(block.getType())) {
-                
-                fillWaterskin(player, item, block);
-                event.setCancelled(true);
-            }
-        } else if (event.getAction() == Action.RIGHT_CLICK_AIR || 
-                   event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+        if (event.getAction() == Action.RIGHT_CLICK_AIR || 
+            event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             
-            if (Waterskin.getWaterAmount(item) > 0) {
+            // Use raytrace to check if looking at water
+            org.bukkit.util.RayTraceResult result = player.rayTraceBlocks(5, org.bukkit.FluidCollisionMode.SOURCE_ONLY);
+            
+            if (result != null && result.getHitBlock() != null && isWaterSource(result.getHitBlock().getType())) {
+                // Fill waterskin
+                fillWaterskin(player, item, result.getHitBlock());
+                event.setCancelled(true);
+            } else if (Waterskin.getWaterAmount(item) > 0) {
+                // Drink waterskin
                 drinkWaterskin(player, item);
                 event.setCancelled(true);
             }
@@ -134,6 +137,15 @@ public class WaterskinHandler implements Listener {
             player.sendMessage("§7Water remaining: " + remaining + "/5");
         } else {
             player.sendMessage("§7Your waterskin is now empty");
+        }
+    }
+    
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onWaterskinConsume(PlayerItemConsumeEvent event) {
+        ItemStack item = event.getItem();
+        
+        if (isWaterskin(item)) {
+            event.setCancelled(true);
         }
     }
 }

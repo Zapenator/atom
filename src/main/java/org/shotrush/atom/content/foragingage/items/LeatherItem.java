@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @AutoRegister(priority = 4)
-public class LeatherItem extends CustomItem {
+public class    LeatherItem extends CustomItem {
     
     public LeatherItem(Plugin plugin) {
         super(plugin);

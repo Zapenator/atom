@@ -99,6 +99,10 @@ public abstract class WorkstationHandler<T extends WorkstationHandler.WorkProgre
     
     
     public void startProcessing(Player player, Location location, T progress, Runnable onComplete) {
+        startProcessing(player, location, progress, onComplete, getStatusMessage());
+    }
+    
+    public void startProcessing(Player player, Location location, T progress, Runnable onComplete, String statusMessage) {
         UUID playerId = player.getUniqueId();
         
         if (activeProcessing.containsKey(playerId)) {
@@ -110,6 +114,7 @@ public abstract class WorkstationHandler<T extends WorkstationHandler.WorkProgre
             public void run() {
                 if (!player.isOnline() || !activeProcessing.containsKey(playerId)) {
                     activeProcessing.remove(playerId);
+                    onProcessingCancelled(player);
                     return;
                 }
                 
@@ -120,6 +125,7 @@ public abstract class WorkstationHandler<T extends WorkstationHandler.WorkProgre
                     player.setExp(0);
                     activeProcessing.remove(playerId);
                     ActionBarManager.send(player, "§cYou moved too far away!");
+                    onProcessingCancelled(player);
                     return;
                 }
                 
@@ -143,13 +149,21 @@ public abstract class WorkstationHandler<T extends WorkstationHandler.WorkProgre
         
         player.setLevel(0);
         player.setExp(0);
-        ActionBarManager.sendStatus(player, getStatusMessage());
+        ActionBarManager.sendStatus(player, statusMessage);
         
         org.shotrush.atom.core.api.scheduler.SchedulerAPI.runTask(player, () -> new ProcessingTask().run());
     }
     
+    protected void onProcessingCancelled(Player player) {
+        // Override in subclass if needed
+    }
+    
     public boolean isProcessing(Player player) {
         return activeProcessing.containsKey(player.getUniqueId());
+    }
+    
+    public T getProgress(Player player) {
+        return activeProcessing.get(player.getUniqueId());
     }
     
     public void cancelProcessing(Player player) {
@@ -158,6 +172,7 @@ public abstract class WorkstationHandler<T extends WorkstationHandler.WorkProgre
             player.setLevel(0);
             player.setExp(0);
             activeProcessing.remove(playerId);
+            onProcessingCancelled(player);
         }
     }
     

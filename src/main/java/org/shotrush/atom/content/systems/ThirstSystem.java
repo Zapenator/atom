@@ -259,11 +259,13 @@ public class ThirstSystem implements Listener {
         
         player.setMaximumAir(300);
         
+        int airValue = (thirst * 300) / MAX_THIRST;
+        
         if (player.isInWater() || player.getEyeLocation().getBlock().getType() == Material.WATER) {
-            player.setRemainingAir(Math.min(300, (thirst * 300) / MAX_THIRST));
+            player.setRemainingAir(Math.min(300, airValue));
         } else {
-            int airValue = (thirst * 300) / MAX_THIRST;
-            player.setRemainingAir(Math.min(299, airValue));
+            // Allow air to reach 0 when thirst is 0
+            player.setRemainingAir(airValue);
         }
         
     }

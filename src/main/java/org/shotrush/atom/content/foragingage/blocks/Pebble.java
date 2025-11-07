@@ -12,8 +12,21 @@ import org.joml.Vector3f;
 import org.shotrush.atom.Atom;
 import org.shotrush.atom.core.blocks.CustomBlock;
 import org.shotrush.atom.core.blocks.annotation.AutoRegister;
+import org.shotrush.atom.core.blocks.annotation.CustomBlockTypeDrops;
+import org.shotrush.atom.core.blocks.annotation.CustomBlockTypeDrops.Drop;
+
+import java.util.Random;
 
 @AutoRegister(priority = 31)
+@CustomBlockTypeDrops(
+    drops = {
+        @Drop(material = Material.RAW_COPPER, chance = 0.01, min = 1, max = 1),
+        @Drop(material = Material.RAW_IRON, chance = 0.01, min = 1, max = 1),
+        @Drop(material = Material.IRON_NUGGET, chance = 0.05, min = 1, max = 2),
+        @Drop(material = Material.COPPER_INGOT, chance = 0.04, min = 1, max = 1)
+    },
+    ages = {"foraging_age"}
+)
 public class Pebble extends CustomBlock {
 
     public Pebble(Location spawnLocation, Location blockLocation, BlockFace blockFace) {

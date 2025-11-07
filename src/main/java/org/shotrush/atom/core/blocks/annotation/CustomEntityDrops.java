@@ -1,6 +1,6 @@
 package org.shotrush.atom.core.blocks.annotation;
 
-import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,12 +10,12 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface CustomBlockDrops {
+public @interface CustomEntityDrops {
     
-    Material[] blocks() default {};
+    EntityType[] entities() default {};
     
     
-    String blockPattern() default "";
+    EntityCategory[] categories() default {};
     
     
     Drop[] drops();
@@ -27,22 +27,27 @@ public @interface CustomBlockDrops {
     String[] ages() default {};
     
     
+    enum EntityCategory {
+        ANIMALS,
+        MONSTERS,
+        WATER_MOBS,
+        AMBIENT
+    }
+    
+    
     @Retention(RetentionPolicy.RUNTIME)
     @Target({})
     @interface Drop {
         
-        Material material() default Material.AIR;
+        String customItemId();
         
         
-        double chance() default 1.0;
+        int minAmount() default 1;
         
         
-        int min() default 1;
+        int maxAmount() default 1;
         
         
-        int max() default 1;
-        
-        
-        String customItemId() default "";
+        boolean randomAmount() default true;
     }
 }

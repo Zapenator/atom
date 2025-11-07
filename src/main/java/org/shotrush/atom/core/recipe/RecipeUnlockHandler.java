@@ -9,7 +9,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.RecipeChoice;
@@ -34,15 +36,8 @@ public class RecipeUnlockHandler implements Listener {
     private static final Map<NamespacedKey, List<RecipeChoice>> recipeIngredients = new HashMap<>();
     
     public RecipeUnlockHandler(Plugin plugin) {
-        
-        org.shotrush.atom.core.api.scheduler.SchedulerAPI.runGlobalTaskLater(this::extractRecipeIngredients, 40L); 
-        
-        
-        org.shotrush.atom.core.api.scheduler.SchedulerAPI.runGlobalTaskTimer(() -> {
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                checkAndUnlockRecipes(player);
-            }
-        }, 100L, 100L); 
+        // Extract recipe ingredients after server startup
+        org.shotrush.atom.core.api.scheduler.SchedulerAPI.runGlobalTaskLater(this::extractRecipeIngredients, 40L);
     }
     
     
@@ -88,16 +83,34 @@ public class RecipeUnlockHandler implements Listener {
         if (event.getEntity() instanceof Player player) {
             org.shotrush.atom.core.api.scheduler.SchedulerAPI.runTaskLater(player, () -> {
                 checkAndUnlockRecipes(player);
-            }, 2L);
+            }, 1L);
         }
     }
     
     @EventHandler
-    public void onItemHeld(PlayerItemHeldEvent event) {
+    public void onInventoryClick(InventoryClickEvent event) {
+        if (event.getWhoClicked() instanceof Player player) {
+            org.shotrush.atom.core.api.scheduler.SchedulerAPI.runTaskLater(player, () -> {
+                checkAndUnlockRecipes(player);
+            }, 1L);
+        }
+    }
+    
+    @EventHandler
+    public void onInventoryClose(InventoryCloseEvent event) {
+        if (event.getPlayer() instanceof Player player) {
+            org.shotrush.atom.core.api.scheduler.SchedulerAPI.runTask(player, () -> {
+                checkAndUnlockRecipes(player);
+            });
+        }
+    }
+    
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         org.shotrush.atom.core.api.scheduler.SchedulerAPI.runTaskLater(player, () -> {
             checkAndUnlockRecipes(player);
-        }, 2L);
+        }, 20L);
     }
     
     private void checkAndUnlockRecipes(Player player) {
