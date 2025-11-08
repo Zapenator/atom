@@ -460,16 +460,19 @@ public class CustomBlockManager implements Listener {
     @EventHandler(priority = org.bukkit.event.EventPriority.HIGHEST)
     public void onBlockBreak(org.bukkit.event.block.BlockBreakEvent event) {
         if (event.isCancelled()) return;
-        if (event.getBlock().getType() != Material.BLACK_STAINED_GLASS) return;
+        
+        Material blockType = event.getBlock().getType();
+        
+        if (blockType != Material.BLACK_STAINED_GLASS && blockType != Material.CAMPFIRE) return;
         
         Location blockLoc = event.getBlock().getLocation();
         for (int i = 0; i < blocks.size(); i++) {
             CustomBlock block = blocks.get(i);
             if (block.getBlockLocation().equals(blockLoc)) {
                 
-                BlockType blockType = registry.getBlockType(block.getBlockType());
-                if (blockType != null) {
-                    ItemStack dropItem = blockType.getDropItem();
+                BlockType blockTypeData = registry.getBlockType(block.getBlockType());
+                if (blockTypeData != null) {
+                    ItemStack dropItem = blockTypeData.getDropItem();
                     if (dropItem != null) {
                         blockLoc.getWorld().dropItemNaturally(blockLoc, dropItem);
                     }
@@ -492,7 +495,10 @@ public class CustomBlockManager implements Listener {
         if (event.getAction() != org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK) return;
         if (event.getHand() != org.bukkit.inventory.EquipmentSlot.HAND) return;
         if (event.getClickedBlock() == null) return;
-        if (event.getClickedBlock().getType() != Material.BLACK_STAINED_GLASS) return;
+        
+        Material blockType = event.getClickedBlock().getType();
+        
+        if (blockType != Material.BLACK_STAINED_GLASS && blockType != Material.CAMPFIRE) return;
         
         Location clickedLoc = event.getClickedBlock().getLocation();
         for (int i = 0; i < blocks.size(); i++) {
@@ -537,6 +543,7 @@ public class CustomBlockManager implements Listener {
             }
         }
         
+        
         if (hasWrench) {
             event.setCancelled(true);
             if (player.isSneaking()) {
@@ -552,6 +559,10 @@ public class CustomBlockManager implements Listener {
                 block.onWrenchInteract(player, false);
                 return;
             }
+        } else {
+            
+            
+            block.onInteract(player, player.isSneaking());
         }
     }
 

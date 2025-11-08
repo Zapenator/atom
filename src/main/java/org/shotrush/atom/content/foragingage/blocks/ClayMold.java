@@ -14,78 +14,78 @@ import org.shotrush.atom.core.blocks.annotation.AutoRegister;
 
 @AutoRegister(priority = 30)
 public class ClayMold extends CustomBlock {
-    
+
     private boolean filled;
-    private String oreType; 
-    
+    private String oreType;
+
     public ClayMold(Location spawnLocation, Location blockLocation, BlockFace blockFace) {
         this(spawnLocation, blockLocation, blockFace, false, null);
     }
-    
+
     public ClayMold(Location spawnLocation, Location blockLocation, BlockFace blockFace, boolean filled, String oreType) {
         super(spawnLocation, blockLocation, blockFace);
         this.filled = filled;
         this.oreType = oreType;
     }
-    
+
     public ClayMold(Location spawnLocation, BlockFace blockFace) {
         this(spawnLocation, blockFace, false, null);
     }
-    
+
     public ClayMold(Location spawnLocation, BlockFace blockFace, boolean filled, String oreType) {
         super(spawnLocation, blockFace);
         this.filled = filled;
         this.oreType = oreType;
     }
-    
+
     public boolean isFilled() {
         return filled;
     }
-    
+
     public String getOreType() {
         return oreType;
     }
-    
+
     public void setFilled(boolean filled, String oreType) {
         this.filled = filled;
         this.oreType = oreType;
-        
+
         if (spawnLocation.getWorld() != null) {
             spawn(Atom.getInstance());
         }
     }
-    
+
     @Override
     public void spawn(Atom plugin, RegionAccessor accessor) {
         cleanupExistingEntities();
         ItemDisplay display = (ItemDisplay) accessor.spawnEntity(spawnLocation, EntityType.ITEM_DISPLAY);
-        
+
         String modelName = filled ? "cast_full" : "cast";
         ItemStack moldItem = createItemWithCustomModel(Material.STONE_BUTTON, modelName);
-        
-        spawnDisplay(display, plugin, moldItem, new Vector3f(0, 0.5f, 0), new AxisAngle4f(), 
-                    new Vector3f(1f, 1f, 1f), false, 1f, 0.5f);
+
+        spawnDisplay(display, plugin, moldItem, new Vector3f(0, 0.5f, 0), new AxisAngle4f(),
+                new Vector3f(1f, 1f, 1f), false, 1f, 0.5f);
     }
-    
+
     @Override
     public void update(float globalAngle) {
     }
-    
+
     @Override
     public String getIdentifier() {
         return "clay_mold";
     }
-    
+
     @Override
     public String getDisplayName() {
         return filled ? "§6Clay Mold (Filled)" : "§6Clay Mold";
     }
-    
+
     @Override
     public Material getItemMaterial() {
         return Material.STONE_BUTTON;
     }
-    
+
     @Override
     public String[] getLore() {
         if (filled && oreType != null) {
@@ -107,26 +107,26 @@ public class ClayMold extends CustomBlock {
             };
         }
     }
-    
+
     @Override
     public ItemStack getDropItem() {
         Atom plugin = Atom.getInstance();
         CustomBlockManager manager = plugin.getBlockManager();
-        
+
         ItemStack item = manager.createBlockItem("clay_mold");
-        
+
         if (item == null) {
             plugin.getLogger().warning("Failed to create drop item for clay_mold");
         }
-        
+
         return item;
     }
-    
+
     @Override
     protected String serializeAdditionalData() {
         return filled + ";" + (oreType != null ? oreType : "");
     }
-    
+
     @Override
     protected String deserializeAdditionalData(String[] parts, int startIndex) {
         if (parts.length > startIndex) {
@@ -137,16 +137,16 @@ public class ClayMold extends CustomBlock {
         }
         return null;
     }
-    
+
     @Override
     public CustomBlock deserialize(String data) {
         Object[] parsed = parseDeserializeData(data);
         if (parsed == null) return null;
-        
+
         ClayMold mold = new ClayMold((Location) parsed[1], (BlockFace) parsed[2]);
         String[] parts = data.split(";");
         mold.deserializeAdditionalData(parts, 5);
-        
+
         return mold;
     }
 }

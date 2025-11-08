@@ -1,14 +1,13 @@
 package org.shotrush.atom.content.foragingage.blocks;
 
+import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.RegionAccessor;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.Lightable;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.shotrush.atom.Atom;
 import org.shotrush.atom.core.blocks.CustomBlock;
@@ -16,71 +15,147 @@ import org.shotrush.atom.core.blocks.annotation.AutoRegister;
 import org.shotrush.atom.core.items.CustomItem;
 import org.shotrush.atom.core.util.ActionBarManager;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+
 @AutoRegister(priority = 30)
-public class Campfire extends CustomBlock implements Listener {
+public class Campfire extends CustomBlock {
     
-    private boolean lit;
-    private long lastFuelTime;
-    private static final long BURN_DURATION = 120000; 
+    
+    private static final Duration FUEL_BURN_DURATION = Duration.ofMinutes(2);
     private static final String LIGHTING_ITEM = "pebble";
+    private static final String FUEL_ITEM = "straw";
+    private static final double LIGHTING_FAILURE_CHANCE = 0.15;
+    private static final int MAX_FUEL_SLOTS = 4; 
     
     
-    static {
-        Atom plugin = Atom.getInstance();
-        if (plugin != null) {
-            plugin.getServer().getPluginManager().registerEvents(new CampfireInteractionListener(), plugin);
+    private final List<FuelItem> fuelInventory = new ArrayList<>();
+    
+    @Getter
+    private boolean isLit;
+
+    
+        private record FuelItem(Instant addedTime) {
+
+        boolean isBurnedOut() {
+                return Duration.between(addedTime, Instant.now()).compareTo(FUEL_BURN_DURATION) > 0;
+            }
         }
-    }
     
     public Campfire(Location spawnLocation, Location blockLocation, BlockFace blockFace) {
         super(spawnLocation, blockLocation, blockFace);
-        this.lit = false;
-        this.lastFuelTime = System.currentTimeMillis(); 
+        this.isLit = false;
     }
     
     public Campfire(Location spawnLocation, BlockFace blockFace) {
         super(spawnLocation, blockFace);
-        this.lit = false;
-        this.lastFuelTime = System.currentTimeMillis(); 
+        this.isLit = false;
     }
-    
-    public boolean isLit() {
-        return lit && !hasBurnedOut();
-    }
+
     
     public void light() {
-        this.lit = true;
-        this.lastFuelTime = System.currentTimeMillis(); 
-        updateVisual();
+        if (hasFuel()) return;
+        this.isLit = true;
+        updateBlockState(true);
+        updateVisualFuel(); 
     }
+    
+    
+    private void extinguish() {
+        this.isLit = false;
+        updateBlockState(false);
+    }
+    
+    
+    public boolean addFuel() {
+        if (fuelInventory.size() >= MAX_FUEL_SLOTS) {
+            return false; 
+        }
+        fuelInventory.add(new FuelItem(Instant.now()));
+        updateVisualFuel();
+        return true;
+    }
+    
     
     public boolean hasFuel() {
-        return lastFuelTime > 0 && !hasBurnedOut();
+        cleanupBurnedFuel();
+        return fuelInventory.isEmpty();
     }
     
-    private boolean hasBurnedOut() {
-        if (lastFuelTime == 0) return true;
-        return System.currentTimeMillis() - lastFuelTime > BURN_DURATION;
+    
+    private void cleanupBurnedFuel() {
+        boolean removed = false;
+        Iterator<FuelItem> iterator = fuelInventory.iterator();
+        while (iterator.hasNext()) {
+            if (iterator.next().isBurnedOut()) {
+                iterator.remove();
+                removed = true;
+            }
+        }
+        if (removed) {
+            updateVisualFuel();
+        }
     }
     
-    private void addFuel() {
-        lastFuelTime = System.currentTimeMillis();
+    
+    public int getFuelCount() {
+        cleanupBurnedFuel();
+        return fuelInventory.size();
     }
     
-    private void updateVisual() {
-        if (blockLocation != null && blockLocation.getBlock().getType() == Material.CAMPFIRE) {
-            org.bukkit.block.data.type.Campfire campfireData = 
-                (org.bukkit.block.data.type.Campfire) blockLocation.getBlock().getBlockData();
-            campfireData.setLit(isLit());
-            blockLocation.getBlock().setBlockData(campfireData, false);
+    
+    private void updateBlockState(boolean lit) {
+        if (blockLocation == null) return;
+        
+        Block block = blockLocation.getBlock();
+        if (block.getType() != Material.CAMPFIRE) return;
+        
+        if (block.getBlockData() instanceof org.bukkit.block.data.type.Campfire campfireData) {
+            campfireData.setLit(lit);
+            
+            
+            Block blockBelow = blockLocation.clone().subtract(0, 1, 0).getBlock();
+            boolean hasHayBale = blockBelow.getType() == Material.HAY_BLOCK;
+            campfireData.setSignalFire(hasHayBale);
+            
+            block.setBlockData(campfireData, false);
+        }
+    }
+    
+    
+    private void updateVisualFuel() {
+        if (blockLocation == null) return;
+        
+        Block block = blockLocation.getBlock();
+        if (block.getType() != Material.CAMPFIRE) return;
+        
+        if (block.getState() instanceof org.bukkit.block.Campfire campfireState) {
+            
+            CustomItem strawItem = Atom.getInstance().getItemRegistry().getItem(FUEL_ITEM);
+            ItemStack strawStack = strawItem != null ? strawItem.create() : new ItemStack(Material.WHEAT);
+            
+            
+            for (int i = 0; i < MAX_FUEL_SLOTS; i++) {
+                if (i < fuelInventory.size()) {
+                    
+                    campfireState.setItem(i, strawStack);
+                    campfireState.stopCooking(i); 
+                } else {
+                    
+                    campfireState.setItem(i, null);
+                }
+            }
+            
+            campfireState.update(true, false);
         }
     }
     
     @Override
     public boolean onWrenchInteract(Player player, boolean sneaking) {
-        if (sneaking) {
-            return false; 
-        }
         return false; 
     }
     
@@ -89,19 +164,37 @@ public class Campfire extends CustomBlock implements Listener {
         ItemStack heldItem = player.getInventory().getItemInMainHand();
         if (heldItem.getType() == Material.AIR) return false;
         
-        if (lit && hasBurnedOut()) {
-            lit = false;
-            updateVisual();
-            ActionBarManager.send(player, "§7The campfire has burned out");
+        CustomItem customItem = Atom.getInstance().getItemRegistry().getCustomItem(heldItem);
+        if (customItem == null) return false;
+        
+        
+        if (customItem.getIdentifier().equals(FUEL_ITEM)) {
+            if (addFuel()) {
+                player.swingMainHand();
+                heldItem.setAmount(heldItem.getAmount() - 1);
+                ActionBarManager.send(player, "§aAdded straw to campfire (" + getFuelCount() + "/" + MAX_FUEL_SLOTS + " fuel)");
+            } else {
+                ActionBarManager.send(player, "§cCampfire is full!");
+            }
+            return false; 
         }
         
         
-        CustomItem lightingItem = Atom.getInstance().getItemRegistry().getItem(LIGHTING_ITEM);
-        if (lightingItem != null && lightingItem.isCustomItem(heldItem)) {
+        if (customItem.getIdentifier().equals(LIGHTING_ITEM)) {
+            if (isLit()) {
+                ActionBarManager.send(player, "§cCampfire is already lit!");
+                return false; 
+            }
+            
+            if (hasFuel()) {
+                ActionBarManager.send(player, "§cAdd straw first!");
+                return false; 
+            }
+            
             if (!CampfireHandler.isLighting(player)) {
                 CampfireHandler.startLighting(player, this);
             }
-            return true;
+            return false; 
         }
 
         return false;
@@ -110,30 +203,43 @@ public class Campfire extends CustomBlock implements Listener {
     @Override
     public void spawn(Atom plugin, RegionAccessor accessor) {
         cleanupExistingEntities();
-        if (blockLocation != null) {
-            blockLocation.getBlock().setType(Material.CAMPFIRE, false);
-            org.bukkit.block.data.type.Campfire campfireData = 
-                (org.bukkit.block.data.type.Campfire) blockLocation.getBlock().getBlockData();
+        if (blockLocation == null) return;
+        
+        Block block = blockLocation.getBlock();
+        block.setType(Material.CAMPFIRE, false);
+        
+        if (block.getBlockData() instanceof org.bukkit.block.data.type.Campfire campfireData) {
             campfireData.setLit(isLit());
-            campfireData.setSignalFire(false);
+            
+            
+            Block blockBelow = blockLocation.clone().subtract(0, 1, 0).getBlock();
+            boolean hasHayBale = blockBelow.getType() == Material.HAY_BLOCK;
+            campfireData.setSignalFire(hasHayBale);
+            
             campfireData.setWaterlogged(false);
-            blockLocation.getBlock().setBlockData(campfireData, false);
+            block.setBlockData(campfireData, false);
         }
+        
+        
+        updateVisualFuel();
     }
     
     @Override
     protected void cleanupExistingEntities() {
         super.cleanupExistingEntities();
-        if (blockLocation != null && blockLocation.getBlock().getType() == Material.CAMPFIRE) {
-            blockLocation.getBlock().setType(Material.AIR, false);
+        if (blockLocation != null) {
+            Block block = blockLocation.getBlock();
+            if (block.getType() == Material.CAMPFIRE) {
+                block.setType(Material.AIR, false);
+            }
         }
     }
     
     @Override
     public void update(float globalAngle) {
-        if (lit && hasBurnedOut()) {
-            lit = false;
-            updateVisual();
+        
+        if (isLit && hasFuel()) {
+            extinguish();
         }
     }
     
@@ -154,26 +260,47 @@ public class Campfire extends CustomBlock implements Listener {
     
     @Override
     public String[] getLore() {
+        long minutes = FUEL_BURN_DURATION.toMinutes();
         return new String[]{
             "§7A campfire for warmth and cooking",
-            "§7Burns for 2 minutes",
-            "§7Light with a pebble"
+            "§7Each straw burns for " + minutes + " minute" + (minutes != 1 ? "s" : ""),
+            "§7Add straw, then light with " + LIGHTING_ITEM
         };
     }
     
     @Override
     public String serialize() {
-        return lit + "," + lastFuelTime;
+        StringBuilder sb = new StringBuilder();
+        sb.append(isLit);
+        
+        
+        for (FuelItem fuel : fuelInventory) {
+            sb.append(",").append(fuel.addedTime.toEpochMilli());
+        }
+        
+        return sb.toString();
     }
     
     @Override
     public CustomBlock deserialize(String data) {
         if (data == null || data.isEmpty()) return this;
+        
         String[] parts = data.split(",");
-        if (parts.length >= 2) {
-            this.lit = Boolean.parseBoolean(parts[0]);
-            this.lastFuelTime = Long.parseLong(parts[1]);
+        if (parts.length >= 1) {
+            this.isLit = Boolean.parseBoolean(parts[0]);
         }
+        
+        
+        fuelInventory.clear();
+        for (int i = 1; i < parts.length; i++) {
+            try {
+                long timestamp = Long.parseLong(parts[i]);
+                fuelInventory.add(new FuelItem(Instant.ofEpochMilli(timestamp)));
+            } catch (NumberFormatException e) {
+                
+            }
+        }
+        
         if (spawnLocation.getWorld() != null) {
             spawn(Atom.getInstance());
         }
@@ -181,30 +308,9 @@ public class Campfire extends CustomBlock implements Listener {
     }
     
     
-    private static class CampfireInteractionListener implements Listener {
-        @EventHandler
-        public void onCampfireInteract(PlayerInteractEvent event) {
-            if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
-            if (event.getClickedBlock() == null) return;
-            if (event.getClickedBlock().getType() != Material.CAMPFIRE) return;
-            
-            
-            Location clickedLoc = event.getClickedBlock().getLocation();
-            Campfire campfire = Atom.getInstance().getBlockManager().getBlocks().stream()
-                .filter(b -> b instanceof Campfire)
-                .map(b -> (Campfire) b)
-                .filter(c -> c.getBlockLocation() != null && c.getBlockLocation().equals(clickedLoc))
-                .findFirst()
-                .orElse(null);
-            
-            if (campfire == null) return;
-            
-            Atom.getInstance().getLogger().info("Found custom campfire at " + clickedLoc);
-            
-            
-            Player player = event.getPlayer();
-            campfire.onInteract(player, player.isSneaking());
-        }
+    public static double getLightingFailureChance() {
+        return LIGHTING_FAILURE_CHANCE;
     }
+    
 }
 

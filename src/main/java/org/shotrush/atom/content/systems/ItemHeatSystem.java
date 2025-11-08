@@ -285,11 +285,14 @@ public class ItemHeatSystem implements Listener {
         Item droppedItem = event.getItemDrop();
         ItemStack item = droppedItem.getItemStack();
         
-        
         saveCachedHeatToItem(player, item);
         droppedItem.setItemStack(item);
         
         double heat = getItemHeat(item);
+
+        if (heat > 200.0) {
+            startDroppedItemFireTracking(droppedItem);
+        }
         
         if (heat >= 50) {
             ItemStack chestplate = player.getInventory().getChestplate();
@@ -472,5 +475,94 @@ public class ItemHeatSystem implements Listener {
                 itemDisplay.setItemStack(itemStack);
             }
         }, 20L, 20L);
+    }
+    
+    
+    public static void startDroppedItemFireTracking(org.bukkit.entity.Item item) {
+        org.shotrush.atom.core.api.scheduler.SchedulerAPI.runTaskTimer(item, task -> {
+            if (item.isDead() || !item.isValid()) {
+                task.cancel();
+                return;
+            }
+            
+            ItemStack itemStack = item.getItemStack();
+            if (itemStack == null || itemStack.getType() == Material.AIR) {
+                task.cancel();
+                return;
+            }
+            
+            double currentHeat = getItemHeat(itemStack);
+            
+            
+            if (currentHeat > 200.0) {
+                igniteNearbyBlocks(item.getLocation(), currentHeat);
+            }
+            
+            
+            double ambientTemp = 20.0;
+            double heatDifference = ambientTemp - currentHeat;
+            double heatChange = heatDifference * 0.02; 
+            double newHeat = currentHeat + heatChange;
+            
+            newHeat = Math.max(-100, Math.min(500, newHeat));
+            
+            if (Math.abs(newHeat - currentHeat) > 0.5) {
+                setItemHeat(itemStack, newHeat);
+                item.setItemStack(itemStack);
+            }
+        }, 10L, 10L); 
+    }
+    
+    
+    private static void igniteNearbyBlocks(org.bukkit.Location location, double temperature) {
+        if (location.getWorld() == null) return;
+        
+        
+        int radius = (int) Math.min(3, (temperature - 200) / 100);
+        
+        for (int x = -radius; x <= radius; x++) {
+            for (int y = -1; y <= 1; y++) {
+                for (int z = -radius; z <= radius; z++) {
+                    org.bukkit.Location checkLoc = location.clone().add(x, y, z);
+                    org.bukkit.block.Block block = checkLoc.getBlock();
+                    
+                    
+                    if (isFlammable(block) && block.getRelative(org.bukkit.block.BlockFace.UP).getType() == Material.AIR) {
+                        
+                        double igniteChance = Math.min(0.3, (temperature - 200) / 1000);
+                        if (Math.random() < igniteChance) {
+                            block.getRelative(org.bukkit.block.BlockFace.UP).setType(Material.FIRE);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    
+    private static boolean isFlammable(org.bukkit.block.Block block) {
+        Material type = block.getType();
+        return type == Material.OAK_PLANKS || type == Material.SPRUCE_PLANKS ||
+               type == Material.BIRCH_PLANKS || type == Material.JUNGLE_PLANKS ||
+               type == Material.ACACIA_PLANKS || type == Material.DARK_OAK_PLANKS ||
+               type == Material.MANGROVE_PLANKS || type == Material.CHERRY_PLANKS ||
+               type == Material.BAMBOO_PLANKS || type == Material.CRIMSON_PLANKS ||
+               type == Material.WARPED_PLANKS ||
+               type == Material.OAK_LOG || type == Material.SPRUCE_LOG ||
+               type == Material.BIRCH_LOG || type == Material.JUNGLE_LOG ||
+               type == Material.ACACIA_LOG || type == Material.DARK_OAK_LOG ||
+               type == Material.MANGROVE_LOG || type == Material.CHERRY_LOG ||
+               type == Material.OAK_LEAVES || type == Material.SPRUCE_LEAVES ||
+               type == Material.BIRCH_LEAVES || type == Material.JUNGLE_LEAVES ||
+               type == Material.ACACIA_LEAVES || type == Material.DARK_OAK_LEAVES ||
+               type == Material.MANGROVE_LEAVES || type == Material.CHERRY_LEAVES ||
+               type == Material.AZALEA_LEAVES || type == Material.FLOWERING_AZALEA_LEAVES ||
+               type == Material.GRASS_BLOCK || type == Material.TALL_GRASS ||
+               type == Material.FERN || type == Material.LARGE_FERN ||
+               type == Material.DEAD_BUSH || type == Material.DANDELION ||
+               type == Material.POPPY || type == Material.BLUE_ORCHID ||
+               type.name().endsWith("_WOOL") || type.name().endsWith("_CARPET") ||
+               type == Material.HAY_BLOCK || type == Material.DRIED_KELP_BLOCK ||
+               type == Material.TNT || type == Material.BOOKSHELF;
     }
 }
