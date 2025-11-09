@@ -8,11 +8,14 @@ categories:
     list:
       - '#atom:animal_product'
       - '#atom:foraging'
+      - '#atom:copper'
+      - '#atom:bronze'
   atom:foraging:
     name: <!i><white><lang:category.foraging.name></white>
     hidden: true
     lore:
       - <!i><gray><lang:category.foraging.lore>
+      - <!i><white><image:atom:badge_age_foraging>
     icon: atom:pebble
     list:
       - '#atom:animal_product'
@@ -22,4 +25,21 @@ categories:
       - 'atom:straw'
       - 'atom:pressure_flaker'
       - 'atom:flint_spear'
+  atom:copper:
+    name: <!i><white><lang:category.copper.name></white>
+    hidden: true
+    lore:
+      - <!i><gray><lang:category.copper.lore>
+      - <!i><white><image:atom:badge_age_copper>
+    icon: minecraft:copper_ingot
+    list:
+  atom:bronze:
+    name: <!i><white><lang:category.bronze.name></white>
+    hidden: true
+    lore:
+      - <!i><gray><lang:category.bronze.lore>
+      - <!i><white><image:atom:badge_age_bronze>
+    icon: atom:raw_tin
+    list:
+      - "atom:raw_tin"
 

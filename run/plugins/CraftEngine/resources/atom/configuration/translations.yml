@@ -11,3 +11,7 @@ lang:
     category.atom.lore: Contains all Atom assets
     category.foraging.name: Foraging Age
     category.foraging.lore: Contains all Foraging Age assets
+    category.copper.name: Copper Age
+    category.copper.lore: Contains all Copper Age assets
+    category.bronze.name: Bronze Age
+    category.bronze.lore: Contains all Bronze Age assets

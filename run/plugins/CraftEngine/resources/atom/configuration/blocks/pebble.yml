@@ -56,6 +56,39 @@ items:
                             properties:
                               pebble: 2
                       - type: explosion_decay
+              - rolls: 1
+                entries:
+                  - type: item
+                    item: minecraft:raw_copper
+                    functions:
+                      - type: set_count
+                        count: 1
+                        add: false
+                    conditions:
+                      - type: random
+                        value: 0.01
+              - rolls: 1
+                entries:
+                  - type: item
+                    item: minecraft:raw_iron
+                    functions:
+                      - type: set_count
+                        count: 1
+                        add: false
+                    conditions:
+                      - type: random
+                        value: 0.01
+              - rolls: 1
+                entries:
+                  - type: item
+                    item: minecraft:raw_tin
+                    functions:
+                      - type: set_count
+                        count: 1
+                        add: false
+                    conditions:
+                      - type: random
+                        value: 0.01
           states:
             id: 0
             properties:

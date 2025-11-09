@@ -57,3 +57,15 @@ images:
     font: minecraft:badges
     file: minecraft:font/badges/ages/foraging.png
     char: '\ub100'
+  atom:badge_age_copper:
+    height: 9
+    ascent: 8
+    font: minecraft:badges
+    file: minecraft:font/badges/ages/copper.png
+    char: '\ub101'
+  atom:badge_age_bronze:
+    height: 9
+    ascent: 8
+    font: minecraft:badges
+    file: minecraft:font/badges/ages/bronze.png
+    char: '\ub102'
