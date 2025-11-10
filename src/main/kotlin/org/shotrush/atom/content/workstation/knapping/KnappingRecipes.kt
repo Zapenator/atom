@@ -153,7 +153,7 @@ object KnappingRecipes {
         recipes[id] = KnappingRecipe(id = id, patterns = pats, resultId = id)
     }
 
-    fun getResult(gridColumnMajor: List<Boolean>): ItemStack? {
+    fun getResult(gridColumnMajor: List<Boolean>, variant: String): ItemStack? {
         for (recipe in recipes.values) {
             for (pattern in recipe.patterns) {
                 // If patterns are 5x5 expanded, you can use strict match; otherwise use matchesPatternAnywhere
@@ -164,7 +164,7 @@ object KnappingRecipes {
                     matchesPatternAnywhere(gridColumnMajor, pattern, setOf('#'))
                 }
                 if (ok) {
-                    return Items.getMold(recipe.resultId, "clay").buildItemStack()
+                    return Items.getMold(recipe.resultId, variant).buildItemStack()
                 }
             }
         }

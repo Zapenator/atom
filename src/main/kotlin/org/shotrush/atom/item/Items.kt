@@ -10,8 +10,10 @@ import kotlin.reflect.KProperty
 
 object Items {
     val SharpenedFlint by item("atom:sharpened_flint")
-    val UI_Molding by item("atom:ui_molding")
-    val UI_MoldingPressed by item("atom:ui_molding_pressed")
+    val UI_MoldingClay by item("atom:ui_molding_clay")
+    val UI_MoldingClayPressed by item("atom:ui_molding_clay_pressed")
+    val UI_MoldingWax by item("atom:ui_molding_wax")
+    val UI_MoldingWaxPressed by item("atom:ui_molding_wax_pressed")
 
     fun getAnimalProduct(type: AnimalType, product: AnimalProduct): CustomItem<ItemStack> {
         return CraftEngineItems.byId(Key.of("atom", "animal_${product.id}_${type.id}"))!!

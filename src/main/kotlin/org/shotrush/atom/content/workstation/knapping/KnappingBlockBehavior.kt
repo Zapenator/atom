@@ -19,8 +19,10 @@ import net.momirealms.craftengine.core.entity.player.InteractionResult
 import net.momirealms.craftengine.core.item.context.UseOnContext
 import net.momirealms.craftengine.core.world.BlockPos
 import net.momirealms.craftengine.libraries.nbt.CompoundTag
+import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.shotrush.atom.Atom
 import org.shotrush.atom.content.workstation.Workstations
 import org.shotrush.atom.item.Items
@@ -41,13 +43,11 @@ class KnappingBlockBehavior(block: CustomBlock) : AbstractBlockBehavior(block), 
         state: ImmutableBlockState,
     ): BlockEntity = KnappingBlockEntity(pos, state)
 
-    override fun useWithoutItem(
-        context: UseOnContext,
-        state: ImmutableBlockState,
-    ): InteractionResult {
-        println("useWithoutItem")
-
+    fun openUI(clay: Boolean, player: Player, onCraftComplete: (() -> Unit)? = null) {
         val default = ((1..25).map { false })
+        val itemA = if (clay) Items.UI_MoldingClay.buildItemStack() else Items.UI_MoldingWax.buildItemStack()
+        val itemB =
+            if (clay) Items.UI_MoldingClayPressed.buildItemStack() else Items.UI_MoldingWaxPressed.buildItemStack()
 
         val gui = buildGui {
             val clicksState = mutableListStateOf(*default.toTypedArray())
@@ -61,7 +61,7 @@ class KnappingBlockBehavior(block: CustomBlock) : AbstractBlockBehavior(block), 
                         for (c in 2..6) {
                             val slot = (r - 1) + (c - 2) * 5
                             val clicked = clicks.getOrNull(slot) ?: false
-                            val material = if (!clicked) Items.UI_Molding.buildItemStack() else Items.UI_MoldingPressed.buildItemStack()
+                            val material = if (!clicked) itemA else itemB
                             container[r, c] = ItemBuilder.from(material)
                                 .name(Component.text("Click to mold"))
                                 .asGuiItem { _, _ ->
@@ -75,24 +75,46 @@ class KnappingBlockBehavior(block: CustomBlock) : AbstractBlockBehavior(block), 
             component {
                 remember(clicksState)
                 render { container ->
-                    val result = KnappingRecipes.getResult(clicks)
-                    if(result != null) {
+                    val result = KnappingRecipes.getResult(clicks, if (clay) "clay" else "wax")
+                    if (result != null) {
                         container[3, 8] = ItemBuilder.from(result)
                             .asGuiItem { player, ctx ->
                                 player.inventory.addItem(result)
                                 clicks.fill(false)
                                 ctx.guiView.close()
+                                onCraftComplete?.invoke()
                             }
                     }
                 }
             }
         }
 
-        if (context.player != null) {
-            gui.open(context.player!!.platformPlayer()!! as Player)
-        }
+        gui.open(player)
+    }
 
-        return InteractionResult.SUCCESS
+
+    override fun useOnBlock(
+        context: UseOnContext,
+        state: ImmutableBlockState,
+    ): InteractionResult {
+        if (context.item.isCustomItem) return InteractionResult.PASS
+        val player = context.player?.platformPlayer() as Player? ?: return InteractionResult.PASS
+        val item = context.item.item
+        if (item !is ItemStack) return InteractionResult.PASS
+        if (item.type == Material.CLAY_BALL) {
+            openUI(true, player) {
+                if (player.gameMode != GameMode.CREATIVE)
+                    context.item.count(context.item.count() - 1)
+            }
+            return InteractionResult.SUCCESS
+        } else if (item.type == Material.HONEYCOMB) {
+            openUI(false, player) {
+                if (player.gameMode != GameMode.CREATIVE)
+                    context.item.count(context.item.count() - 1)
+            }
+            return InteractionResult.SUCCESS
+        }
+        return super.useOnBlock(context, state)
     }
 }
 
