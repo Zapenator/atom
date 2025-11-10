@@ -1,93 +1,215 @@
 package org.shotrush.atom.content.workstation.knapping
 
-import net.momirealms.craftengine.bukkit.api.CraftEngineItems
 import org.bukkit.inventory.ItemStack
 import org.shotrush.atom.item.Items
 
-data class KnappingRecipe(val patterns: List<List<String>>, val result: String) {
-    constructor(pattern: String, result: String) : this(listOf(pattern.split('\n')), result)
-}
+private const val N = 5
 
-object KnappingRecipes {
-    val axePattern: List<String> = listOf(
-        "   # ",
-        " ####",
-        "#####",
-        " ####",
-        "   # "
-    )
-    val recipes = mutableListOf<KnappingRecipe>()
+// Column-major index helper: idx = r + c*N
+private fun idxColMajor(r: Int, c: Int): Int = r + c * N
+
+// Variable-sized pattern
+data class Pattern(val rows: List<String>) {
+    val height: Int = rows.size
+    val width: Int = rows.maxOfOrNull { it.length } ?: 0
 
     init {
-        recipes.add(KnappingRecipe(listOf(
-            axePattern,
-            invertX(axePattern),
-        ), "axe_head"))
+        require(height in 1..N) { "Pattern height must be 1..$N" }
+        require(rows.isNotEmpty()) { "Pattern must have at least 1 row" }
+        val w = rows.first().length
+        require(w in 1..N) { "Pattern width must be 1..$N" }
+        require(rows.all { it.length == w }) { "All rows must have equal length" }
     }
 
-    fun matchesPattern(
-        grid: List<Boolean>,
-        pattern: List<String>,
-        filledChars: Set<Char> = setOf('#') // customize if needed
-    ): Boolean {
-        require(grid.size == N * N) { "grid must have size 25" }
-        require(pattern.size == N && pattern.all { it.length == N }) {
-            "pattern must be 5 rows of length 5"
-        }
+    operator fun get(r: Int): String = rows[r]
+}
 
-        for (r in 0 until N) {
-            for (c in 0 until N) {
-                val expected = pattern[r][c] in filledChars
-                val actual = grid[r + c * N]
-                if (actual != expected) return false
+// Transforms updated for variable size
+typealias Transform = (Pattern) -> Pattern
+
+val invertX: Transform = { p -> Pattern(p.rows.map(String::reversed)) }
+val invertY: Transform = { p -> Pattern(p.rows.asReversed()) }
+
+val rotate90: Transform = { p ->
+    val h = p.height
+    val w = p.width
+    val out = Array(w) { CharArray(h) }
+    for (r in 0 until h) for (c in 0 until w) out[c][h - 1 - r] = p[r][c]
+    Pattern(out.map { String(it) })
+}
+
+val rotateNeg90: Transform = { p ->
+    val h = p.height
+    val w = p.width
+    val out = Array(w) { CharArray(h) }
+    for (r in 0 until h) for (c in 0 until w) out[w - 1 - c][r] = p[r][c]
+    Pattern(out.map { String(it) })
+}
+
+// Builder DSL: allows registering < 5x5 shapes
+class PatternSetBuilder(
+    private val filledChars: Set<Char> = setOf('#'),
+) {
+    private val patterns = mutableListOf<Pattern>()
+    private var last: Pattern? = null
+
+    // rows can be any k x m, where 1 <= k,m <= 5
+    fun rows(vararg r: String) {
+        require(r.isNotEmpty()) { "Provide at least one row" }
+        val w = r.first().length
+        require(r.size in 1..N) { "Height must be 1..$N" }
+        require(w in 1..N) { "Width must be 1..$N" }
+        require(r.all { it.length == w }) { "All rows must have equal length" }
+        pattern(Pattern(r.toList()))
+    }
+
+    fun pattern(p: Pattern) {
+        require(p.height in 1..N && p.width in 1..N) { "Pattern must be within $N x $N" }
+        patterns += p
+        last = p
+    }
+
+    fun transform(transform: Transform) {
+        val prev = last ?: error("No previous pattern to transform")
+        pattern(transform(prev))
+    }
+
+    fun build(): List<Pattern> = patterns.toList()
+}
+
+fun patternSet(block: PatternSetBuilder.() -> Unit): List<Pattern> =
+    PatternSetBuilder().apply(block).build()
+
+fun matchesPatternAnywhere(
+    gridColumnMajor: List<Boolean>,
+    pattern: Pattern,
+    filledChars: Set<Char> = setOf('#')
+): Boolean {
+    require(gridColumnMajor.size == N * N) { "grid must have size 25" }
+    val ph = pattern.height
+    val pw = pattern.width
+    if (ph > N || pw > N) return false
+
+    val maxR = N - ph
+    val maxC = N - pw
+    for (gr in 0..maxR) {
+        for (gc in 0..maxC) {
+            if (matchesAt(gridColumnMajor, pattern, gr, gc, filledChars) &&
+                outsideRegionEmpty(gridColumnMajor, gr, gc, ph, pw)
+            ) {
+                return true
             }
         }
-        return true
+    }
+    return false
+}
+
+private fun matchesAt(
+    grid: List<Boolean>,
+    pattern: Pattern,
+    top: Int,
+    left: Int,
+    filledChars: Set<Char>
+): Boolean {
+    for (r in 0 until pattern.height) {
+        val prow = pattern[r]
+        for (c in 0 until pattern.width) {
+            val expected = prow[c] in filledChars
+            val actual = grid[idxColMajor(top + r, left + c)]
+            if (actual != expected) return false
+        }
+    }
+    return true
+}
+
+private fun outsideRegionEmpty(
+    grid: List<Boolean>,
+    top: Int,
+    left: Int,
+    ph: Int,
+    pw: Int
+): Boolean {
+    for (r in 0 until N) {
+        for (c in 0 until N) {
+            val inside = r in top until (top + ph) && c in left until (left + pw)
+            if (!inside && grid[idxColMajor(r, c)]) return false
+        }
+    }
+    return true
+}
+
+data class KnappingRecipe(
+    val id: String,
+    val patterns: List<Pattern>,
+    val resultId: String
+)
+
+object KnappingRecipes {
+    private val recipes = mutableMapOf<String, KnappingRecipe>()
+
+    fun register(id: String, block: PatternSetBuilder.() -> Unit) {
+        val pats = patternSet(block)
+        recipes[id] = KnappingRecipe(id = id, patterns = pats, resultId = id)
     }
 
-    fun getResult(grid: List<Boolean>): ItemStack? {
-        for (recipe in recipes) {
-            for(pattern in recipe.patterns) {
-                if (matchesPattern(grid, pattern)) {
-                    return Items.getMold(recipe.result, "clay").buildItemStack()
+    fun getResult(gridColumnMajor: List<Boolean>): ItemStack? {
+        for (recipe in recipes.values) {
+            for (pattern in recipe.patterns) {
+                // If patterns are 5x5 expanded, you can use strict match; otherwise use matchesPatternAnywhere
+                val ok = if (pattern.height == N && pattern.width == N) {
+                    matchesAt(gridColumnMajor, pattern, 0, 0, setOf('#')) &&
+                            outsideRegionEmpty(gridColumnMajor, 0, 0, N, N) // trivial
+                } else {
+                    matchesPatternAnywhere(gridColumnMajor, pattern, setOf('#'))
+                }
+                if (ok) {
+                    return Items.getMold(recipe.resultId, "clay").buildItemStack()
                 }
             }
         }
         return null
     }
 
-    private const val N = 5
-
-    fun invertX(pattern: List<String>): List<String> {
-        require(pattern.size == N && pattern.all { it.length == N })
-        return pattern.map { it.reversed() }
-    }
-
-    fun invertY(pattern: List<String>): List<String> {
-        require(pattern.size == N && pattern.all { it.length == N })
-        return pattern.asReversed()
-    }
-
-    fun rotate90(pattern: List<String>): List<String> {
-        require(pattern.size == N && pattern.all { it.length == N })
-        val out = Array(N) { CharArray(N) }
-        for (r in 0 until N) {
-            for (c in 0 until N) {
-                out[c][N - 1 - r] = pattern[r][c]
-            }
+    init {
+        register("axe_head") {
+            rows(
+                "   # ",
+                " ####",
+                "#####",
+                " ####",
+                "   # ",
+            )
+            transform(invertX)
         }
-        return out.map { String(it) }
-    }
-
-    fun rotateNeg90(pattern: List<String>): List<String> {
-        require(pattern.size == N && pattern.all { it.length == N })
-        val out = Array(N) { CharArray(N) }
-        for (r in 0 until N) {
-            for (c in 0 until N) {
-                out[N - 1 - c][r] = pattern[r][c]
-            }
+        register("pickaxe_head") {
+            rows(
+                " ### ",
+                "#   #"
+            )
         }
-        return out.map { String(it) }
+        register("shovel_head") {
+            rows(
+                " # ",
+                "###",
+                "###",
+                "###"
+            )
+        }
+        register("sword_blade") {
+            rows(
+                "   ##",
+                "  ###",
+                " ### ",
+                " ##  ",
+                "#    "
+            )
+            transform(invertX)
+        }
+        register("ingot") {
+            rows(
+                "#   #",
+                "#####",
+            )
+        }
     }
 }
-
