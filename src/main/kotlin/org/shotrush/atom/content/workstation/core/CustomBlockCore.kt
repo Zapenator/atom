@@ -117,7 +117,7 @@ abstract class CustomBlockCore(
             }
             interactionUUID = interaction.uniqueId
         }
-    }
+    }//e
     
     
     open fun isValid(): Boolean {
