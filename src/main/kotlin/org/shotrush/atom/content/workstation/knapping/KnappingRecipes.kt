@@ -2,6 +2,9 @@ package org.shotrush.atom.content.workstation.knapping
 
 import org.bukkit.inventory.ItemStack
 import org.shotrush.atom.item.Items
+import org.shotrush.atom.item.MoldShape
+import org.shotrush.atom.item.MoldType
+import org.shotrush.atom.item.Molds
 
 private const val N = 5
 
@@ -142,18 +145,18 @@ private fun outsideRegionEmpty(
 data class KnappingRecipe(
     val id: String,
     val patterns: List<Pattern>,
-    val resultId: String,
+    val result: MoldShape,
 )
 
 object KnappingRecipes {
     private val recipes = mutableMapOf<String, KnappingRecipe>()
 
-    fun register(id: String, block: PatternSetBuilder.() -> Unit) {
+    fun register(shape: MoldShape, block: PatternSetBuilder.() -> Unit) {
         val pats = patternSet(block)
-        recipes[id] = KnappingRecipe(id = id, patterns = pats, resultId = id)
+        recipes[shape.id] = KnappingRecipe(id = shape.id, patterns = pats, result = shape)
     }
 
-    fun getResult(gridColumnMajor: List<Boolean>, variant: String): ItemStack? {
+    fun getResult(gridColumnMajor: List<Boolean>, variant: MoldType): ItemStack? {
         for (recipe in recipes.values) {
             for (pattern in recipe.patterns) {
                 // If patterns are 5x5 expanded, you can use strict match; otherwise use matchesPatternAnywhere
@@ -164,7 +167,7 @@ object KnappingRecipes {
                     matchesPatternAnywhere(gridColumnMajor, pattern, setOf('#'))
                 }
                 if (ok) {
-                    return Items.getMold(recipe.resultId, variant).buildItemStack()
+                    return Molds.getMold(recipe.result, variant).buildItemStack()
                 }
             }
         }
@@ -172,7 +175,7 @@ object KnappingRecipes {
     }
 
     init {
-        register("axe_head") {
+        register(MoldShape.Axe) {
             rows(
                 "   # ",
                 " ####",
@@ -182,13 +185,13 @@ object KnappingRecipes {
             )
             transform(invertX)
         }
-        register("pickaxe_head") {
+        register(MoldShape.Pickaxe) {
             rows(
                 " ### ",
                 "#   #"
             )
         }
-        register("shovel_head") {
+        register(MoldShape.Shovel) {
             rows(
                 " # ",
                 "###",
@@ -197,7 +200,7 @@ object KnappingRecipes {
             )
             transform(invertY)
         }
-        register("sword_blade") {
+        register(MoldShape.Sword) {
             rows(
                 "   ##",
                 "  ###",
@@ -207,20 +210,20 @@ object KnappingRecipes {
             )
             transform(invertX)
         }
-        register("ingot") {
+        register(MoldShape.Ingot) {
             rows(
                 "#   #",
                 "#####",
             )
         }
-        register("hammer_head") {
+        register(MoldShape.Hammer) {
             rows(
                 "#####",
                 "#####",
                 "#####",
             )
         }
-        register("knife_blade") {
+        register(MoldShape.Knife) {
             rows(
                 " #",
                 "##",
@@ -229,7 +232,7 @@ object KnappingRecipes {
             )
             transform(invertX)
         }
-        register("saw_blade") {
+        register(MoldShape.Saw) {
             rows(
                 "##  ",
                 " ###",

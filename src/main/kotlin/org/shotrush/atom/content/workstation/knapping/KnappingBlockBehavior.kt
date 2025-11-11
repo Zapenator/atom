@@ -26,6 +26,7 @@ import org.bukkit.inventory.ItemStack
 import org.shotrush.atom.Atom
 import org.shotrush.atom.content.workstation.Workstations
 import org.shotrush.atom.item.Items
+import org.shotrush.atom.item.MoldType
 
 class KnappingBlockBehavior(block: CustomBlock) : AbstractBlockBehavior(block), EntityBlockBehavior {
     object Factory : BlockBehaviorFactory {
@@ -43,11 +44,11 @@ class KnappingBlockBehavior(block: CustomBlock) : AbstractBlockBehavior(block), 
         state: ImmutableBlockState,
     ): BlockEntity = KnappingBlockEntity(pos, state)
 
-    fun openUI(clay: Boolean, player: Player, onCraftComplete: (() -> Unit)? = null) {
+    fun openUI(moldType: MoldType, player: Player, onCraftComplete: (() -> Unit)? = null) {
         val default = ((1..25).map { false })
-        val itemA = if (clay) Items.UI_MoldingClay.buildItemStack() else Items.UI_MoldingWax.buildItemStack()
+        val itemA = if (moldType == MoldType.Clay) Items.UI_MoldingClay.buildItemStack() else Items.UI_MoldingWax.buildItemStack()
         val itemB =
-            if (clay) Items.UI_MoldingClayPressed.buildItemStack() else Items.UI_MoldingWaxPressed.buildItemStack()
+            if (moldType == MoldType.Clay) Items.UI_MoldingClayPressed.buildItemStack() else Items.UI_MoldingWaxPressed.buildItemStack()
 
         val gui = buildGui {
             val clicksState = mutableListStateOf(*default.toTypedArray())
@@ -75,7 +76,7 @@ class KnappingBlockBehavior(block: CustomBlock) : AbstractBlockBehavior(block), 
             component {
                 remember(clicksState)
                 render { container ->
-                    val result = KnappingRecipes.getResult(clicks, if (clay) "clay" else "wax")
+                    val result = KnappingRecipes.getResult(clicks, if (moldType == MoldType.Clay) MoldType.Clay else MoldType.Wax)
                     if (result != null) {
                         container[3, 8] = ItemBuilder.from(result)
                             .asGuiItem { player, ctx ->
@@ -102,13 +103,13 @@ class KnappingBlockBehavior(block: CustomBlock) : AbstractBlockBehavior(block), 
         val item = context.item.item
         if (item !is ItemStack) return InteractionResult.PASS
         if (item.type == Material.CLAY_BALL) {
-            openUI(true, player) {
+            openUI(MoldType.Clay, player) {
                 if (player.gameMode != GameMode.CREATIVE)
                     context.item.count(context.item.count() - 1)
             }
             return InteractionResult.SUCCESS
         } else if (item.type == Material.HONEYCOMB) {
-            openUI(false, player) {
+            openUI(MoldType.Wax, player) {
                 if (player.gameMode != GameMode.CREATIVE)
                     context.item.count(context.item.count() - 1)
             }

@@ -1,9 +1,18 @@
 package org.shotrush.atom.item
 
+import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.DyedItemColor
+import io.papermc.paper.datacomponent.item.TooltipDisplay
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextColor
+import net.kyori.adventure.text.format.TextDecoration
 import net.momirealms.craftengine.bukkit.api.CraftEngineItems
 import net.momirealms.craftengine.core.item.CustomItem
 import net.momirealms.craftengine.core.util.Key
+import org.bukkit.NamespacedKey
 import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType
 import org.shotrush.atom.content.AnimalProduct
 import org.shotrush.atom.content.AnimalType
 import kotlin.reflect.KProperty
@@ -17,10 +26,6 @@ object Items {
 
     fun getAnimalProduct(type: AnimalType, product: AnimalProduct): CustomItem<ItemStack> {
         return CraftEngineItems.byId(Key.of("atom", "animal_${product.id}_${type.id}"))!!
-    }
-
-    fun getMold(tool: String, variant: String): CustomItem<ItemStack> {
-        return CraftEngineItems.byId(Key.of("atom", "${variant}_mold_${tool}"))!!
     }
 }
 
