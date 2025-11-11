@@ -25,8 +25,11 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.shotrush.atom.Atom
 import org.shotrush.atom.content.workstation.Workstations
+import org.shotrush.atom.getNamespacedKey
 import org.shotrush.atom.item.Items
+import org.shotrush.atom.item.MoldShape
 import org.shotrush.atom.item.MoldType
+import org.shotrush.atom.item.Molds
 
 class KnappingBlockBehavior(block: CustomBlock) : AbstractBlockBehavior(block), EntityBlockBehavior {
     object Factory : BlockBehaviorFactory {
@@ -44,11 +47,15 @@ class KnappingBlockBehavior(block: CustomBlock) : AbstractBlockBehavior(block), 
         state: ImmutableBlockState,
     ): BlockEntity = KnappingBlockEntity(pos, state)
 
-    fun openUI(moldType: MoldType, player: Player, onCraftComplete: (() -> Unit)? = null) {
+    fun openUI(
+        ui: KnappingUIItem,
+        player: Player,
+        transformer: (shape: MoldShape) -> ItemStack,
+        onCraftComplete: (() -> Unit)? = null,
+    ) {
         val default = ((1..25).map { false })
-        val itemA = if (moldType == MoldType.Clay) Items.UI_MoldingClay.buildItemStack() else Items.UI_MoldingWax.buildItemStack()
-        val itemB =
-            if (moldType == MoldType.Clay) Items.UI_MoldingClayPressed.buildItemStack() else Items.UI_MoldingWaxPressed.buildItemStack()
+        val itemA = ui.getItem(false)
+        val itemB = ui.getItem(true)
 
         val gui = buildGui {
             val clicksState = mutableListStateOf(*default.toTypedArray())
@@ -76,11 +83,12 @@ class KnappingBlockBehavior(block: CustomBlock) : AbstractBlockBehavior(block), 
             component {
                 remember(clicksState)
                 render { container ->
-                    val result = KnappingRecipes.getResult(clicks, if (moldType == MoldType.Clay) MoldType.Clay else MoldType.Wax)
+                    val result = KnappingRecipes.getResult(clicks)
                     if (result != null) {
-                        container[3, 8] = ItemBuilder.from(result)
+                        val stack = transformer(result)
+                        container[3, 8] = ItemBuilder.from(stack)
                             .asGuiItem { player, ctx ->
-                                player.inventory.addItem(result)
+                                player.inventory.addItem(stack)
                                 clicks.fill(false)
                                 ctx.guiView.close()
                                 onCraftComplete?.invoke()
@@ -98,18 +106,18 @@ class KnappingBlockBehavior(block: CustomBlock) : AbstractBlockBehavior(block), 
         context: UseOnContext,
         state: ImmutableBlockState,
     ): InteractionResult {
-        if (context.item.isCustomItem) return InteractionResult.PASS
         val player = context.player?.platformPlayer() as Player? ?: return InteractionResult.PASS
         val item = context.item.item
         if (item !is ItemStack) return InteractionResult.PASS
+        val key = item.getNamespacedKey()
         if (item.type == Material.CLAY_BALL) {
-            openUI(MoldType.Clay, player) {
+            openUI(KnappingUIItem.Clay, player, { Molds.getMold(it, MoldType.Clay).buildItemStack() }) {
                 if (player.gameMode != GameMode.CREATIVE)
                     context.item.count(context.item.count() - 1)
             }
             return InteractionResult.SUCCESS
         } else if (item.type == Material.HONEYCOMB) {
-            openUI(MoldType.Wax, player) {
+            openUI(KnappingUIItem.Wax, player, { Molds.getMold(it, MoldType.Clay).buildItemStack() }) {
                 if (player.gameMode != GameMode.CREATIVE)
                     context.item.count(context.item.count() - 1)
             }
@@ -135,4 +143,9 @@ class KnappingBlockEntity(
     override fun saveCustomData(tag: CompoundTag) {
         super.saveCustomData(tag)
     }
+}
+
+enum class KnappingUIItem(val getItem: (pressed: Boolean) -> ItemStack) {
+    Clay({ if (it) Items.UI_MoldingClayPressed.buildItemStack() else Items.UI_MoldingClay.buildItemStack() }),
+    Wax({ if (it) Items.UI_MoldingWaxPressed.buildItemStack() else Items.UI_MoldingWax.buildItemStack() })
 }

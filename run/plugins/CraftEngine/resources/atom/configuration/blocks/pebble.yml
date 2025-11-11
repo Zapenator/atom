@@ -2,7 +2,7 @@ items:
   atom:pebble:
     material: nether_brick
     data:
-      item-name: <!i><lang:item.pebble>
+      item-name: <!i><lang:item.pebble.name>
       lore:
         - <!i><gray><lang:item.pebble.lore_1>
         - <!i><gray><lang:item.pebble.lore_2>

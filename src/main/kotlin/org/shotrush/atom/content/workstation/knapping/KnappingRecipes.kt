@@ -156,7 +156,7 @@ object KnappingRecipes {
         recipes[shape.id] = KnappingRecipe(id = shape.id, patterns = pats, result = shape)
     }
 
-    fun getResult(gridColumnMajor: List<Boolean>, variant: MoldType): ItemStack? {
+    fun getResult(gridColumnMajor: List<Boolean>): MoldShape? {
         for (recipe in recipes.values) {
             for (pattern in recipe.patterns) {
                 
@@ -167,7 +167,7 @@ object KnappingRecipes {
                     matchesPatternAnywhere(gridColumnMajor, pattern, setOf('#'))
                 }
                 if (ok) {
-                    return Molds.getMold(recipe.result, variant).buildItemStack()
+                    return recipe.result
                 }
             }
         }
