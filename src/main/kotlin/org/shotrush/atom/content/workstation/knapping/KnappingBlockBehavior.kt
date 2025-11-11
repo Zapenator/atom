@@ -6,7 +6,10 @@ import dev.triumphteam.gui.paper.kotlin.builder.chestContainer
 import dev.triumphteam.nova.getValue
 import dev.triumphteam.nova.mutableListStateOf
 import dev.triumphteam.nova.setValue
+import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.minimessage.MiniMessage
 import net.momirealms.craftengine.core.block.BlockBehavior
 import net.momirealms.craftengine.core.block.CustomBlock
 import net.momirealms.craftengine.core.block.ImmutableBlockState
@@ -26,6 +29,7 @@ import org.bukkit.inventory.ItemStack
 import org.shotrush.atom.Atom
 import org.shotrush.atom.content.workstation.Workstations
 import org.shotrush.atom.getNamespacedKey
+import org.shotrush.atom.isCustomItem
 import org.shotrush.atom.item.Items
 import org.shotrush.atom.item.MoldShape
 import org.shotrush.atom.item.MoldType
@@ -61,13 +65,13 @@ class KnappingBlockBehavior(block: CustomBlock) : AbstractBlockBehavior(block), 
             val clicksState = mutableListStateOf(*default.toTypedArray())
             val clicks by clicksState
             containerType = chestContainer { rows = 5 }
-            title(Component.text("Knapping Station"))
+            title(MiniMessage.miniMessage().deserialize("<shift:-8><white><font:minecraft:ui>\ub200</font><shift:-170><dark_gray>Knapping Station"))
             component {
                 remember(clicksState)
                 render { container ->
                     for (r in 1..5) {
-                        for (c in 2..6) {
-                            val slot = (r - 1) + (c - 2) * 5
+                        for (c in 1..5) {
+                            val slot = (r - 1) + (c - 1) * 5
                             val clicked = clicks.getOrNull(slot) ?: false
                             val material = if (!clicked) itemA else itemB
                             container[r, c] = ItemBuilder.from(material)
@@ -110,18 +114,31 @@ class KnappingBlockBehavior(block: CustomBlock) : AbstractBlockBehavior(block), 
         val item = context.item.item
         if (item !is ItemStack) return InteractionResult.PASS
         val key = item.getNamespacedKey()
-        if (item.type == Material.CLAY_BALL) {
-            openUI(KnappingUIItem.Clay, player, { Molds.getMold(it, MoldType.Clay).buildItemStack() }) {
-                if (player.gameMode != GameMode.CREATIVE)
-                    context.item.count(context.item.count() - 1)
+        if (!item.isCustomItem()) {
+            if (item.type == Material.CLAY_BALL) {
+                openUI(KnappingUIItem.Clay, player, { Molds.getMold(it, MoldType.Clay).buildItemStack() }) {
+                    if (player.gameMode != GameMode.CREATIVE)
+                        context.item.count(context.item.count() - 1)
+                }
+                return InteractionResult.SUCCESS
+            } else if (item.type == Material.HONEYCOMB) {
+                openUI(KnappingUIItem.Wax, player, { Molds.getMold(it, MoldType.Clay).buildItemStack() }) {
+                    if (player.gameMode != GameMode.CREATIVE)
+                        context.item.count(context.item.count() - 1)
+                }
+                return InteractionResult.SUCCESS
             }
-            return InteractionResult.SUCCESS
-        } else if (item.type == Material.HONEYCOMB) {
-            openUI(KnappingUIItem.Wax, player, { Molds.getMold(it, MoldType.Clay).buildItemStack() }) {
-                if (player.gameMode != GameMode.CREATIVE)
-                    context.item.count(context.item.count() - 1)
+        } else {
+            if (key == "atom:pebble") {
+                openUI(
+                    KnappingUIItem.Stone,
+                    player,
+                    { Molds.getToolHead(it, org.shotrush.atom.item.Material.Stone).buildItemStack() }) {
+                    if (player.gameMode != GameMode.CREATIVE)
+                        context.item.count(context.item.count() - 1)
+                }
+                return InteractionResult.SUCCESS
             }
-            return InteractionResult.SUCCESS
         }
         return super.useOnBlock(context, state)
     }
@@ -147,5 +164,6 @@ class KnappingBlockEntity(
 
 enum class KnappingUIItem(val getItem: (pressed: Boolean) -> ItemStack) {
     Clay({ if (it) Items.UI_MoldingClayPressed.buildItemStack() else Items.UI_MoldingClay.buildItemStack() }),
-    Wax({ if (it) Items.UI_MoldingWaxPressed.buildItemStack() else Items.UI_MoldingWax.buildItemStack() })
+    Wax({ if (it) Items.UI_MoldingWaxPressed.buildItemStack() else Items.UI_MoldingWax.buildItemStack() }),
+    Stone({ if (it) Items.UI_MoldingStonePressed.buildItemStack() else Items.UI_MoldingStone.buildItemStack() })
 }

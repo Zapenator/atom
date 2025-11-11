@@ -79,6 +79,13 @@ templates#models#2d:
       parent: minecraft:item/generated
       textures:
         layer0: ${path}
+  atom:model/full_ui:
+    type: minecraft:model
+    path: ${path}
+    generation:
+      parent: minecraft:item/full_ui
+      textures:
+        layer0: ${path}
   # template: default:model/2_layer_generated
   # arguments:
   #   model: model_path

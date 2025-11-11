@@ -161,7 +161,7 @@ class KnappingStationBehavior(
         Atom.instance?.logger?.info("KnappingStation interaction: player=${player.name}, item=${item.type}, pos=$pos, placedItems=${placedItems.size}")
         
         
-        if (item.type == Material.CLAY_BALL || item.type == Material.HONEYCOMB) {
+        if (item.type == Material.CLAY_BALL || item.type == Material.HONEYCOMB || item.matches("atom:pebble")) {
             
             val knappingBehavior = KnappingBlockBehavior(block())
             return knappingBehavior.useOnBlock(context, state)

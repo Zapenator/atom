@@ -75,3 +75,9 @@ images:
     font: minecraft:badges
     file: minecraft:font/badges/ages/iron.png
     char: '\ub103'
+  atom:ui_knapping_table:
+    height: 111
+    ascent: 13
+    font: minecraft:ui
+    file: minecraft:ui/knapping_table.png
+    char: '\ub200'
