@@ -6,11 +6,12 @@ import org.bukkit.inventory.ItemStack
 import org.shotrush.atom.core.util.ActionBarManager
 import org.shotrush.atom.item.Items
 import org.shotrush.atom.item.isItem
+import org.shotrush.atom.matches
 
 object SharpenedFlint {
-    @JvmStatic fun isSharpenedFlint(stack: ItemStack): Boolean = Items.SharpenedFlint.isItem(stack)
+    fun isSharpenedFlint(stack: ItemStack): Boolean = stack.matches(Items.SharpenedFlint)
 
-    @JvmStatic @JvmOverloads fun damageItem(item: ItemStack?, player: Player, breakChance: Double = 0.4) {
+    fun damageItem(item: ItemStack?, player: Player, breakChance: Double = 0.4) {
         if (item == null || item.amount <= 0) return
 
         val currentAmount = item.amount

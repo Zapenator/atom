@@ -9,6 +9,7 @@ import lombok.Getter
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.plugin.java.JavaPlugin
+import org.shotrush.atom.commands.LivingCommands
 import org.shotrush.atom.commands.MoldCommand
 import org.shotrush.atom.content.mobs.ai.debug.MobAIDebugCommand
 import org.shotrush.atom.content.mobs.ai.debug.VisualDebugger
@@ -25,6 +26,7 @@ import org.shotrush.atom.core.blocks.CustomBlockManager
 import org.shotrush.atom.core.items.CustomItemRegistry
 import org.shotrush.atom.core.storage.DataStorage
 import org.shotrush.atom.core.workstations.WorkstationManager
+import org.shotrush.atom.listener.PlayerDataTrackingListener
 import org.shotrush.atom.listener.TestListener
 
 class Atom : SuspendingJavaPlugin() {
@@ -68,6 +70,7 @@ class Atom : SuspendingJavaPlugin() {
         Workstations.init()
 
         TestListener.register(this)
+        PlayerDataTrackingListener.register(this)
         setupCommands()
         logger.info("Atom plugin has been enabled!")
 
@@ -91,6 +94,7 @@ class Atom : SuspendingJavaPlugin() {
         }
 
         MoldCommand.register()
+        LivingCommands.register()
     }
 
     override fun onDisable() {
