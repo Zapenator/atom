@@ -6,15 +6,16 @@ import net.momirealms.craftengine.bukkit.nms.FastNMS
 import net.momirealms.craftengine.bukkit.plugin.reflection.minecraft.CoreReflections
 import net.momirealms.craftengine.bukkit.plugin.reflection.minecraft.MEntityTypes
 import net.momirealms.craftengine.core.block.entity.render.DynamicBlockEntityRenderer
+import net.momirealms.craftengine.core.block.properties.Property
 import net.momirealms.craftengine.core.entity.Billboard
 import net.momirealms.craftengine.core.entity.ItemDisplayContext
 import net.momirealms.craftengine.core.entity.player.Player
 import net.momirealms.craftengine.core.plugin.CraftEngine
+import net.momirealms.craftengine.core.util.HorizontalDirection
+import net.momirealms.craftengine.core.util.QuaternionUtils
 import org.bukkit.inventory.ItemStack
-import org.joml.AxisAngle4f
-import org.joml.Quaternionf
 import org.joml.Vector3f
-import java.util.UUID
+import java.util.*
 
 class LeatherBedBlockDynamicRenderer(val entity: LeatherBedBlockEntity) : DynamicBlockEntityRenderer {
     private var cachedSpawnPacket: Any? = null
@@ -28,10 +29,10 @@ class LeatherBedBlockDynamicRenderer(val entity: LeatherBedBlockEntity) : Dynami
             entityId,
             UUID.randomUUID(),
             (pos.x().toDouble() + 0.5),
-            (pos.y().toDouble() + 0.5),
+            (pos.y().toDouble() + 1),
             (pos.z().toDouble() + 0.5),
             0f,
-            45f,
+            0f,
             MEntityTypes.ITEM_DISPLAY,
             0,
             CoreReflections.`instance$Vec3$Zero`,
@@ -42,6 +43,14 @@ class LeatherBedBlockDynamicRenderer(val entity: LeatherBedBlockEntity) : Dynami
     }
 
     fun getDataValues(): List<Any> {
+        val rotation = entity.blockState().get(entity.blockState().properties.first() as Property<HorizontalDirection>)
+        val idx = when (rotation) {
+            HorizontalDirection.NORTH -> 0
+            HorizontalDirection.EAST -> 1
+            HorizontalDirection.SOUTH -> 2
+            HorizontalDirection.WEST -> 3
+        }
+
         val dataValues = mutableListOf<Any>()
         ItemDisplayEntityData.DisplayedItem.addEntityDataIfNotDefaultValue(
             CraftEngine.instance().itemManager<ItemStack>().wrap(entity.storedItem).literalObject,
@@ -49,27 +58,16 @@ class LeatherBedBlockDynamicRenderer(val entity: LeatherBedBlockEntity) : Dynami
         )
         ItemDisplayEntityData.Scale.addEntityDataIfNotDefaultValue(Vector3f(1f, 1f, 1f), dataValues)
         ItemDisplayEntityData.RotationLeft.addEntityDataIfNotDefaultValue(
-            Quaternionf(
-                AxisAngle4f(
-                    (Math.PI / 2).toFloat(),
-                    0f,
-                    0f,
-                    0f
-                )
-            ), dataValues
-        )
-        ItemDisplayEntityData.RotationRight.addEntityDataIfNotDefaultValue(
-            Quaternionf(
-                AxisAngle4f(
-                    0f,
-                    0f,
-                    0f,
-                    1f
-                )
-            ), dataValues
+            QuaternionUtils.toQuaternionf(0.0, Math.toRadians(idx * 90.0), 0.0), dataValues
         )
         ItemDisplayEntityData.BillboardConstraints.addEntityDataIfNotDefaultValue(Billboard.FIXED.id(), dataValues)
-        ItemDisplayEntityData.Translation.addEntityDataIfNotDefaultValue(Vector3f(0f, 0f, 0f), dataValues)
+        ItemDisplayEntityData.Translation.addEntityDataIfNotDefaultValue(
+            Vector3f(
+                rotation.stepX() * 0.5f,
+                0f,
+                rotation.stepZ() * 0.5f
+            ), dataValues
+        )
         ItemDisplayEntityData.DisplayType.addEntityDataIfNotDefaultValue(ItemDisplayContext.NONE.id(), dataValues)
         ItemDisplayEntityData.ShadowRadius.addEntityDataIfNotDefaultValue(0.0f, dataValues)
         ItemDisplayEntityData.ShadowStrength.addEntityDataIfNotDefaultValue(1.0f, dataValues)
@@ -78,6 +76,7 @@ class LeatherBedBlockDynamicRenderer(val entity: LeatherBedBlockEntity) : Dynami
     }
 
     override fun show(player: Player) {
+        if (cachedSpawnPacket == null) displayNewItem()
         val packet = cachedSpawnPacket ?: return
         player.sendPackets(
             listOf(
@@ -91,7 +90,7 @@ class LeatherBedBlockDynamicRenderer(val entity: LeatherBedBlockEntity) : Dynami
     }
 
     override fun hide(player: Player) {
-        if(this.cachedDespawnPacket == null) return
+        if (this.cachedDespawnPacket == null) return
         player.sendPacket(this.cachedDespawnPacket, false)
     }
 
