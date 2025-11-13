@@ -1,0 +1,14 @@
+<root>
+    <item name='net.momirealms.craftengine.core.plugin.network.NetWorkUser void sendPacket(java.lang.Object, boolean) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='net.momirealms.craftengine.core.plugin.network.NetWorkUser void sendPacket(java.lang.Object, boolean, java.lang.Runnable) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='net.momirealms.craftengine.core.plugin.network.NetWorkUser void sendPackets(java.util.List&lt;java.lang.Object&gt;, boolean) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='net.momirealms.craftengine.core.plugin.network.NetWorkUser void sendPackets(java.util.List&lt;java.lang.Object&gt;, boolean, java.lang.Runnable) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+</root>
