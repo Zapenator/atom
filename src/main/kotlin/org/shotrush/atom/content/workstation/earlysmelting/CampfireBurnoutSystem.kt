@@ -112,7 +112,7 @@ class CampfireBurnoutSystem(private val plugin: Plugin) : Listener {
 
                     playBurnoutEffects(location)
 
-                    Atom.instance?.logger?.info("Campfire at ${location.blockX}, ${location.blockY}, ${location.blockZ} burned out")
+                    Atom.instance.logger.info("Campfire at ${location.blockX}, ${location.blockY}, ${location.blockZ} burned out")
                 }
             }
 
@@ -162,7 +162,7 @@ class CampfireBurnoutSystem(private val plugin: Plugin) : Listener {
     }
 
     private fun resumeAllCampfireTimers() {
-        Atom.instance?.logger?.info("=== Resuming campfire burnout timers ===")
+        Atom.instance.logger.info("=== Resuming campfire burnout timers ===")
         var resumedTimers = 0
         var expiredTimers = 0
 
@@ -206,7 +206,7 @@ class CampfireBurnoutSystem(private val plugin: Plugin) : Listener {
                     activeCampfires[location] = BurnoutJob(job, startTime)
                     resumedTimers++
                     val remainingSec = remaining / 1000
-                    Atom.instance?.logger?.info("  ✓ Resumed campfire at (${location.blockX}, ${location.blockY}, ${location.blockZ}) - ${remainingSec}s remaining")
+                    Atom.instance.logger.info("  ✓ Resumed campfire at (${location.blockX}, ${location.blockY}, ${location.blockZ}) - ${remainingSec}s remaining")
                 } else {
                     
                     val atom = Atom.instance
@@ -223,15 +223,15 @@ class CampfireBurnoutSystem(private val plugin: Plugin) : Listener {
                     }
 
                     expiredTimers++
-                    Atom.instance?.logger?.info("  ✗ Burning out expired campfire at (${location.blockX}, ${location.blockY}, ${location.blockZ})")
+                    Atom.instance.logger.info("  ✗ Burning out expired campfire at (${location.blockX}, ${location.blockY}, ${location.blockZ})")
                 }
             }
         }
 
-        Atom.instance?.logger?.info("=== Campfire Resume Summary ===")
-        Atom.instance?.logger?.info("  Resumed: $resumedTimers timers")
-        Atom.instance?.logger?.info("  Expired: $expiredTimers campfires")
-        Atom.instance?.logger?.info("===============================")
+        Atom.instance.logger.info("=== Campfire Resume Summary ===")
+        Atom.instance.logger.info("  Resumed: $resumedTimers timers")
+        Atom.instance.logger.info("  Expired: $expiredTimers campfires")
+        Atom.instance.logger.info("===============================")
     }
 
     fun shutdown() {

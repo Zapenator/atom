@@ -157,11 +157,11 @@ class LeatherBedBlockBehavior(block: CustomBlock) : InteractiveSurface(block) {
 
 
         if (currentItem == null || currentItem.item.type != Material.LEATHER) {
-            Atom.instance?.logger?.info("StartStabilization: No vanilla leather found at $pos")
+            Atom.instance.logger.info("StartStabilization: No vanilla leather found at $pos")
             return
         }
 
-        Atom.instance?.logger?.info("Starting leather stabilization at $pos")
+        Atom.instance.logger.info("Starting leather stabilization at $pos")
 
 
         val startTime = System.currentTimeMillis()
@@ -178,7 +178,7 @@ class LeatherBedBlockBehavior(block: CustomBlock) : InteractiveSurface(block) {
             val oldLeatherItem = updatedData.placedItems.lastOrNull()
 
             if (oldLeatherItem != null && oldLeatherItem.item.type == Material.LEATHER) {
-                Atom.instance?.logger?.info("Completing leather stabilization at $pos")
+                Atom.instance.logger.info("Completing leather stabilization at $pos")
 
 
                 val animals = listOf(
@@ -242,10 +242,10 @@ class LeatherBedBlockBehavior(block: CustomBlock) : InteractiveSurface(block) {
                     WorkstationDataManager.updatePlacedItems(pos, updatedData.placedItems)
                     WorkstationDataManager.saveData()
 
-                    Atom.instance?.logger?.info("Leather cured successfully at $pos to $curedLeatherId")
-                } ?: Atom.instance?.logger?.warning("Failed to find cured leather item: $curedLeatherId")
+                    Atom.instance.logger.info("Leather cured successfully at $pos to $curedLeatherId")
+                } ?: Atom.instance.logger.warning("Failed to find cured leather item: $curedLeatherId")
             } else {
-                Atom.instance?.logger?.info("Leather no longer present at $pos, cancelling stabilization")
+                Atom.instance.logger.info("Leather no longer present at $pos, cancelling stabilization")
             }
 
             stabilizingLeather.remove(pos)
@@ -265,7 +265,7 @@ class LeatherBedBlockBehavior(block: CustomBlock) : InteractiveSurface(block) {
 fun LeatherBedBlockBehavior.Companion.accelerateCuring(pos: BlockPos): Boolean {
     val job = stabilizingLeather[pos]
     if (job == null) {
-        Atom.instance?.logger?.info("No stabilization job found for $pos")
+        Atom.instance.logger.info("No stabilization job found for $pos")
         return false
     }
 
@@ -278,7 +278,7 @@ fun LeatherBedBlockBehavior.Companion.accelerateCuring(pos: BlockPos): Boolean {
     val workstationData = WorkstationDataManager.getWorkstationData(pos, "leather_bed")
     val oldLeatherItem = workstationData.placedItems.lastOrNull()
 
-    Atom.instance?.logger?.info("Accelerating cure at $pos, item type: ${oldLeatherItem?.item?.type}")
+    Atom.instance.logger.info("Accelerating cure at $pos, item type: ${oldLeatherItem?.item?.type}")
 
     if (oldLeatherItem != null && oldLeatherItem.item.type == Material.LEATHER) {
 
@@ -358,7 +358,7 @@ fun LeatherBedBlockBehavior.Companion.setCuringTime(timeMs: Long) {
 
 
 fun LeatherBedBlockBehavior.Companion.resumeCuringProcesses() {
-    Atom.instance?.logger?.info("Resuming leather curing processes...")
+    Atom.instance.logger.info("Resuming leather curing processes...")
 
 
     WorkstationDataManager.getAllWorkstations().forEach { (_, data) ->
@@ -369,7 +369,7 @@ fun LeatherBedBlockBehavior.Companion.resumeCuringProcesses() {
 
             if (remainingTime > 0) {
 
-                Atom.instance?.logger?.info("Resuming curing at $pos with ${remainingTime / 1000}s remaining")
+                Atom.instance.logger.info("Resuming curing at $pos with ${remainingTime / 1000}s remaining")
                 curingStartTimes[pos] = data.curingStartTime!!
 
                 val job = GlobalScope.launch {
@@ -392,7 +392,7 @@ fun LeatherBedBlockBehavior.Companion.resumeCuringProcesses() {
                 stabilizingLeather[pos] = job
             } else {
 
-                Atom.instance?.logger?.info("Completing overdue curing at $pos")
+                Atom.instance.logger.info("Completing overdue curing at $pos")
                 val oldLeatherItem = data.placedItems.lastOrNull()
                 if (oldLeatherItem != null && oldLeatherItem.item.type == Material.LEATHER) {
                     completeCuring(pos, data, oldLeatherItem)
@@ -469,7 +469,7 @@ private fun LeatherBedBlockBehavior.Companion.completeCuring(
         WorkstationDataManager.updatePlacedItems(pos, workstationData.placedItems)
         WorkstationDataManager.saveData()
 
-        Atom.instance?.logger?.info("Leather cured successfully at $pos to $curedLeatherId")
+        Atom.instance.logger.info("Leather cured successfully at $pos to $curedLeatherId")
     }
 }
 

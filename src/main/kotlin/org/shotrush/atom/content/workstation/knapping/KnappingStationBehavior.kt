@@ -112,7 +112,7 @@ class KnappingStationBehavior(
         
         val targetBlock = player.getTargetBlockExact(5)
         if (targetBlock == null) {
-            Atom.instance?.logger?.warning("No target block found")
+            Atom.instance.logger.warning("No target block found")
             return InteractionResult.PASS
         }
         
@@ -158,7 +158,7 @@ class KnappingStationBehavior(
             }
         }
         
-        Atom.instance?.logger?.info("KnappingStation interaction: player=${player.name}, item=${item.type}, pos=$pos, placedItems=${placedItems.size}")
+        Atom.instance.logger.info("KnappingStation interaction: player=${player.name}, item=${item.type}, pos=$pos, placedItems=${placedItems.size}")
         
         
         if (item.type == Material.CLAY_BALL || item.type == Material.HONEYCOMB || item.matches("atom:pebble")) {
@@ -190,7 +190,7 @@ class KnappingStationBehavior(
         }
         
         
-        Atom.instance?.logger?.info("Attempting to place item: canPlace=${canPlaceItem(item)}, currentItems=${placedItems.size}")
+        Atom.instance.logger.info("Attempting to place item: canPlace=${canPlaceItem(item)}, currentItems=${placedItems.size}")
         
         
         val result = super.useOnBlock(context, state)
@@ -486,7 +486,7 @@ class KnappingStationEntity(
     val placedItems = mutableListOf<PlacedItem>()
     
     init {
-        Atom.instance?.logger?.info("KnappingStationEntity initialized at $pos")
+        Atom.instance.logger.info("KnappingStationEntity initialized at $pos")
     }
     
     override fun loadCustomData(tag: CompoundTag) {

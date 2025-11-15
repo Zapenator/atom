@@ -66,7 +66,7 @@ object WorkstationDataManager {
             }
         }
         
-        Atom.instance?.logger?.info("Removed workstation data for $key")
+        Atom.instance.logger.info("Removed workstation data for $key")
     }
     
     
@@ -164,7 +164,7 @@ object WorkstationDataManager {
             workstationData[key] = WorkstationData(pos, type, placedItems, curingStartTime)
         }
         
-        Atom.instance?.logger?.info("Loaded ${workstationData.size} workstation data entries")
+        Atom.instance.logger.info("Loaded ${workstationData.size} workstation data entries")
     }
     
     
@@ -220,7 +220,7 @@ object WorkstationDataManager {
         try {
             config.save(dataFile)
         } catch (e: Exception) {
-            Atom.instance?.logger?.severe("Failed to save workstation data: ${e.message}")
+            Atom.instance.logger.severe("Failed to save workstation data: ${e.message}")
         }
     }
     
@@ -241,7 +241,7 @@ object WorkstationDataManager {
             val state = net.momirealms.craftengine.bukkit.api.CraftEngineBlocks.getCustomBlockState(block)
             if (state == null || !state.owner().matchesKey(net.momirealms.craftengine.core.util.Key.of("atom:${data.type}"))) {
                 toRemove.add(data.position)
-                Atom.instance?.logger?.info("Found orphaned workstation data at ${data.position}, cleaning up")
+                Atom.instance.logger.info("Found orphaned workstation data at ${data.position}, cleaning up")
             }
         }
         
@@ -251,7 +251,7 @@ object WorkstationDataManager {
         
         if (toRemove.isNotEmpty()) {
             saveData()
-            Atom.instance?.logger?.info("Cleaned up ${toRemove.size} orphaned workstation entries")
+            Atom.instance.logger.info("Cleaned up ${toRemove.size} orphaned workstation entries")
         }
     }
     

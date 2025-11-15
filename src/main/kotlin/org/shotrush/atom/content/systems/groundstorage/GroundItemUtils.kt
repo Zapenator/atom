@@ -1,5 +1,7 @@
 package org.shotrush.atom.content.systems.groundstorage
 
+import net.momirealms.craftengine.bukkit.api.CraftEngineBlocks
+import net.momirealms.craftengine.core.util.Key
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.Block
@@ -21,7 +23,7 @@ object GroundItemUtils {
      * @param radius The search radius in blocks
      * @return List of ItemFrames that are ground items
      */
-    fun findGroundItemsInRadius(center: Location, radius: Double): List<ItemFrame> {
+    fun findGroundItemsInRadius(center: Location, radius: Double = 0.6): List<ItemFrame> {
         return center.world.getNearbyEntities(center, radius, radius, radius)
             .filterIsInstance<ItemFrame>()
             .filter { frame ->
@@ -37,6 +39,25 @@ object GroundItemUtils {
     fun findGroundItemAbove(block: Block): ItemFrame? {
         val searchLocation = block.location.add(0.5, 1.0, 0.5)
         return findGroundItemsInRadius(searchLocation, 0.6).firstOrNull()
+    }
+
+    fun isObstructed(frame: ItemFrame, vanilla: Material? = null, customKey: Key? = null): ItemStack? {
+        val block = frame.location.block
+
+        if (vanilla != null && block.type == vanilla) {
+            return getGroundItem(frame)
+        }
+        if (customKey != null) {
+            val customState = CraftEngineBlocks.getCustomBlockState(block)
+            if (customState != null) {
+                val owner = customState.owner()
+                if (owner.matchesKey(customKey)) {
+                    return getGroundItem(frame)
+                }
+            }
+        }
+
+        return null
     }
     
     /**
@@ -126,7 +147,7 @@ object GroundItemUtils {
      * @param radius The search radius in blocks
      * @return The closest ItemFrame or null if none found
      */
-    fun findClosestGroundItem(center: Location, radius: Double): ItemFrame? {
+    fun findClosestGroundItem(center: Location, radius: Double = 0.6): ItemFrame? {
         return findGroundItemsInRadius(center, radius)
             .minByOrNull { frame -> frame.location.distance(center) }
     }

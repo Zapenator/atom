@@ -87,7 +87,7 @@ class CraftingBasketBlockEntity(
 ) : BlockEntity(Workstations.CRAFTING_BASKET_ENTITY_TYPE, pos, blockState) {
     
     init {
-        Atom.instance?.logger?.info("CraftingBasketBlockEntity initialized at $pos")
+        Atom.instance.logger.info("CraftingBasketBlockEntity initialized at $pos")
     }
     
     override fun loadCustomData(tag: CompoundTag) {

@@ -70,6 +70,7 @@ object Molds {
 
     val FilledRegex = Regex("atom:filled_(.+)_mold_(.+)")
     val EmptyRegex = Regex("atom:(fired|wax)_mold_(.+)")
+    val UnfiredRegex = Regex("atom:clay_mold_(.+)")
     val FullRegex = Regex("atom:(\\w+)_mold_(.+)")
 
     fun isFilledMold(stack: ItemStack): Boolean {
@@ -82,6 +83,10 @@ object Molds {
 
     fun isEmptyMold(stack: ItemStack): Boolean {
         return stack.getNamespacedKey().matches(EmptyRegex)
+    }
+
+    fun isMold(stack: ItemStack): Boolean {
+        return stack.getNamespacedKey().matches(FullRegex)
     }
 
     fun getMoldType(stack: ItemStack): MoldType {

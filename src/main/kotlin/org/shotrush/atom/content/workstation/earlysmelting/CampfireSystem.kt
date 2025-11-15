@@ -139,7 +139,7 @@ class CampfireSystem(private val plugin: Plugin) : Listener {
         val currentBurnoutJob = CampfireBurnoutSystem.activeCampfires[location]
 
         if (currentBurnoutJob == null) {
-            Atom.instance?.logger?.warning("No active burn timer found for campfire at $location")
+            Atom.instance.logger.warning("No active burn timer found for campfire at $location")
             return false
         }
 
@@ -148,14 +148,14 @@ class CampfireSystem(private val plugin: Plugin) : Listener {
         val remainingTime = CampfireBurnoutSystem.BURNOUT_TIME_MS - elapsed
 
         if (remainingTime <= 0) {
-            Atom.instance?.logger?.warning("Campfire at $location has already expired")
+            Atom.instance.logger.warning("Campfire at $location has already expired")
             return false
         }
 
         
         val campfireState = location.block.state as? org.bukkit.block.Campfire
         if (campfireState == null) {
-            Atom.instance?.logger?.warning("Block at $location is not a valid Campfire state")
+            Atom.instance.logger.warning("Block at $location is not a valid Campfire state")
             return false
         }
 
@@ -275,7 +275,7 @@ class CampfireSystem(private val plugin: Plugin) : Listener {
 
                     burnoutSystem.playBurnoutEffects(location)
 
-                    Atom.instance?.logger?.info("Campfire at ${location.blockX}, ${location.blockY}, ${location.blockZ} burned out")
+                    Atom.instance.logger.info("Campfire at ${location.blockX}, ${location.blockY}, ${location.blockZ} burned out")
                 }
             }
 
@@ -287,7 +287,7 @@ class CampfireSystem(private val plugin: Plugin) : Listener {
 
         CampfireBurnoutSystem.activeCampfires[location] = CampfireBurnoutSystem.Companion.BurnoutJob(job, newStartTime)
 
-        Atom.instance?.logger?.info("Extended campfire burn time at $location by ${STRAW_EXTENSION_MS / 1000}s (new total: ${newDuration / 1000}s)")
+        Atom.instance.logger.info("Extended campfire burn time at $location by ${STRAW_EXTENSION_MS / 1000}s (new total: ${newDuration / 1000}s)")
         return true
     }
 

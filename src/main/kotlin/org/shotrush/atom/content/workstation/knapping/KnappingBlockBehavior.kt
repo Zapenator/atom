@@ -172,7 +172,7 @@ class KnappingBlockBehavior(block: CustomBlock) : AbstractBlockBehavior(block), 
     ) : BlockEntity(Workstations.KNAPPING_STATION_ENTITY_TYPE, pos, blockState) {
 
         init {
-            Atom.instance?.logger?.info("KnappingBlockEntity init at $pos")
+            Atom.instance.logger.info("KnappingBlockEntity init at $pos")
         }
 
         override fun loadCustomData(tag: CompoundTag) {
