@@ -12,7 +12,8 @@ import org.shotrush.atom.content.base.AtomBlockEntityRenderer
 class ClayCauldronDynamicRenderer(val entity: ClayCauldronBlockEntity) : AtomBlockEntityRenderer({
     origin(entity.pos())
     item("storedItem") {
-        rotation(QuaternionUtils.toQuaternionf(0.0, 0.0, 0.0))
+        translation { Vector3f(0f, ((entity.fluidStored.toFloat() / entity.MAX_FLUID.toFloat()) / 2f) - 0.5f, 0f) }
+        rotation(QuaternionUtils.toQuaternionf(0.0, 0.0, Math.toRadians(90.0)).conjugate())
         shadow(0f, 1f)
         viewRange(64f)
         displayContext(ItemDisplayContext.NONE)
