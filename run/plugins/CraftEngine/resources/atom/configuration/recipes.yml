@@ -1,0 +1,10 @@
+recipes:
+  atom:vines:
+    type: shapeless
+    ingredients:
+      - atom:straw
+      - atom:straw
+      - atom:straw
+    result:
+      id: minecraft:vine
+      count: 1

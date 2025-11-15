@@ -43,7 +43,18 @@ items:
             max-z: 1.0
           model:
             path: minecraft:block/crafting_basket
+recipes:
+ atom:crafting_basket:
+   type: shapeless
+   ingredients:
+     - minecraft:leaf_litter
+     - minecraft:leaf_litter
+     - minecraft:leaf_litter
+     - minecraft:vine
+   result:
+     id: atom:crafting_basket
+     count: 1
 lang:
-  en:
-    item.crafting_basket.name: Crafting Basket
-    item.crafting_basket.lore_1: "Right-click to open crafting GUI"
+ en:
+   item.crafting_basket.name: Crafting Basket
+   item.crafting_basket.lore_1: "Right-click to open crafting GUI"
