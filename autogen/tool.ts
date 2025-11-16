@@ -381,7 +381,7 @@ function generateTools() {
         for (const t of ALL_TOOLS) {
             Object.assign(items, buildToolHead(mat, t));
             headKeys.push(headKey(mat, t));
-            recipes[toolKey(mat, t)] = buildToolRecipe(t, mat);
+            recipes[toolKey(mat, t).replace("atom:", "minecraft:")] = buildToolRecipe(t, mat);
 
             if (shouldGenerateFullTool(mat, t)) {
                 Object.assign(items, buildFullTool(mat, t));
