@@ -68,7 +68,7 @@ class CampfireSystem(private val plugin: Plugin) : Listener {
         registry.trackOnPlace(b.location, lit = false)
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH)
     fun onInteract(event: PlayerInteractEvent) {
         if (event.hand != EquipmentSlot.HAND) return
         val block = event.clickedBlock ?: return
