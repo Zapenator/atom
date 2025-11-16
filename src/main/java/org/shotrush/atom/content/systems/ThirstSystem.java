@@ -20,28 +20,28 @@ import org.shotrush.atom.core.api.annotation.RegisterSystem;
 import org.shotrush.atom.core.util.ActionBarManager;
 
 @RegisterSystem(
-    id = "thirst_system",
-    priority = 2,
-    dependencies = {"action_bar_manager"},
-    toggleable = true,
-    description = "Manages player thirst mechanics"
+        id = "thirst_system",
+        priority = 2,
+        dependencies = {"action_bar_manager"},
+        toggleable = true,
+        description = "Manages player thirst mechanics"
 )
 public class ThirstSystem implements Listener {
-    
+
     @Getter
     public static ThirstSystem instance;
-    
+
     private final Plugin plugin;
     private final Map<UUID, Integer> thirstLevels = new HashMap<>();
     private final Map<UUID, Long> thirstAccelerationEnd = new HashMap<>();
     private final Map<UUID, Integer> thirstDamageTicks = new HashMap<>();
     private final Map<UUID, Integer> thirstTickCounter = new HashMap<>();
-    
+
     private static final int MAX_THIRST = 20;
     private static final int THIRST_DECREASE_INTERVAL = 1;
     private static final int THIRST_DRAIN_RATE = 600;
     private static final int THIRST_DAMAGE_INTERVAL = 80;
-    
+
     public ThirstSystem(Plugin plugin) {
         this.plugin = plugin;
         instance = this;
@@ -51,117 +51,88 @@ public class ThirstSystem implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         UUID playerId = player.getUniqueId();
-        
+
         int savedThirst = org.shotrush.atom.core.api.player.PlayerDataAPI.getInt(player, "thirst.level", MAX_THIRST);
-        
+
         thirstLevels.put(playerId, savedThirst);
         updateThirstDisplay(player);
         startThirstTickForPlayer(player);
     }
-    
+
     @EventHandler
     public void onPlayerQuit(org.bukkit.event.player.PlayerQuitEvent event) {
         Player player = event.getPlayer();
         UUID playerId = player.getUniqueId();
-        
+
         int thirst = thirstLevels.getOrDefault(playerId, MAX_THIRST);
         org.shotrush.atom.core.api.player.PlayerDataAPI.setInt(player, "thirst.level", thirst);
-        
+
         thirstLevels.remove(playerId);
         thirstAccelerationEnd.remove(playerId);
+        thirstDamageTicks.remove(playerId);
+        thirstTickCounter.remove(playerId);
+        ActionBarManager.getInstance().removeMessage(player, "thirst");
     }
-    
+
     private void startThirstTickForPlayer(Player player) {
         org.shotrush.atom.core.api.scheduler.SchedulerAPI.runTaskTimer(player, task -> {
             if (!player.isOnline()) {
                 task.cancel();
                 return;
             }
-            
+
             UUID playerId = player.getUniqueId();
             int currentThirst = thirstLevels.getOrDefault(playerId, MAX_THIRST);
-            
+
             int tickCounter = thirstTickCounter.getOrDefault(playerId, 0) + 1;
             thirstTickCounter.put(playerId, tickCounter);
-            
+
             if (tickCounter >= THIRST_DRAIN_RATE) {
                 thirstTickCounter.put(playerId, 0);
-                
+
                 int decreaseAmount = 1;
-                
+
                 Long accelerationEnd = thirstAccelerationEnd.get(playerId);
                 if (accelerationEnd != null && System.currentTimeMillis() < accelerationEnd) {
                     decreaseAmount = 2;
                 } else {
                     thirstAccelerationEnd.remove(playerId);
                 }
-                
+
                 currentThirst -= decreaseAmount;
                 thirstLevels.put(playerId, Math.max(0, currentThirst));
             }
-            
+
             if (currentThirst <= 0) {
-                player.setRemainingAir(0);
-                
                 int damageTicks = thirstDamageTicks.getOrDefault(playerId, 0);
                 damageTicks++;
                 thirstDamageTicks.put(playerId, damageTicks);
-                
+
                 if (damageTicks >= THIRST_DAMAGE_INTERVAL) {
                     player.damage(1.0);
                     thirstDamageTicks.put(playerId, 0);
                 }
             } else {
                 thirstDamageTicks.remove(playerId);
-                
+
                 if (currentThirst <= 5) {
                     player.addPotionEffect(new org.bukkit.potion.PotionEffect(
-                        org.bukkit.potion.PotionEffectType.SLOWNESS, 40, 0, false, false
+                            org.bukkit.potion.PotionEffectType.SLOWNESS, 40, 0, false, false
                     ));
                 }
             }
-            
-            int targetAir = (currentThirst * 300) / MAX_THIRST;
-            if (!player.isInWater() && player.getEyeLocation().getBlock().getType() != Material.WATER) {
-                if (player.getRemainingAir() > targetAir) {
-                    player.setRemainingAir(targetAir);
-                }
-            }
-            
+
             checkWaterPurification(player);
-            
+
             updateThirstDisplay(player);
         }, THIRST_DECREASE_INTERVAL, THIRST_DECREASE_INTERVAL);
     }
-    
-    @EventHandler(ignoreCancelled = true)
-    public void onEntityAirChange(org.bukkit.event.entity.EntityAirChangeEvent event) {
-        if (!(event.getEntity() instanceof Player player)) return;
-        
-        int thirst = thirstLevels.getOrDefault(player.getUniqueId(), MAX_THIRST);
-        int targetAir = (thirst * 300) / MAX_THIRST;
-        
-        if (thirst <= 0) {
-            event.setCancelled(true);
-            return;
-        }
-        
-        if (player.isInWater() || player.getEyeLocation().getBlock().getType() == Material.WATER) {
-            if (event.getAmount() > targetAir) {
-                event.setAmount(targetAir);
-            }
-        } else {
-            if (event.getAmount() > targetAir) {
-                event.setAmount(targetAir);
-            }
-        }
-    }
-    
+
     @EventHandler
     public void onPlayerItemConsume(org.bukkit.event.player.PlayerItemConsumeEvent event) {
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
-        
+
         if (item.getType() == Material.POTION) {
             org.bukkit.inventory.meta.PotionMeta meta = (org.bukkit.inventory.meta.PotionMeta) item.getItemMeta();
             if (meta != null) {
@@ -173,17 +144,17 @@ public class ThirstSystem implements Listener {
             }
         }
     }
-    
+
     @EventHandler(priority = org.bukkit.event.EventPriority.HIGH)
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.getAction() != org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK && 
-            event.getAction() != org.bukkit.event.block.Action.RIGHT_CLICK_AIR) return;
-        
+        if (event.getAction() != org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK &&
+                event.getAction() != org.bukkit.event.block.Action.RIGHT_CLICK_AIR) return;
+
         if (event.getHand() != org.bukkit.inventory.EquipmentSlot.HAND) return;
-        
+
         Player player = event.getPlayer();
         ItemStack item = player.getInventory().getItemInMainHand();
-        
+
         if (item.getType() == Material.AIR || item.getType() == Material.BUCKET) {
             org.bukkit.util.RayTraceResult result = player.rayTraceBlocks(5, org.bukkit.FluidCollisionMode.ALWAYS);
             if (result != null && result.getHitBlock() != null && isWaterBlock(result.getHitBlock())) {
@@ -191,7 +162,7 @@ public class ThirstSystem implements Listener {
                 event.setCancelled(true);
                 return;
             }
-            
+
             if (event.getClickedBlock() != null && isWaterBlock(event.getClickedBlock())) {
                 drinkRawWater(player);
                 event.setCancelled(true);
@@ -199,53 +170,53 @@ public class ThirstSystem implements Listener {
             }
         }
     }
-    
+
     private boolean isWaterBlock(org.bukkit.block.Block block) {
-        return block.getType() == Material.WATER || 
-               block.getBlockData() instanceof org.bukkit.block.data.Waterlogged waterlogged && waterlogged.isWaterlogged();
+        return block.getType() == Material.WATER ||
+                block.getBlockData() instanceof org.bukkit.block.data.Waterlogged waterlogged && waterlogged.isWaterlogged();
     }
-    
+
     private void drinkRawWater(Player player) {
         UUID playerId = player.getUniqueId();
-        
+
         int currentThirst = thirstLevels.getOrDefault(playerId, MAX_THIRST);
         addThirst(player, 5);
         int newThirst = thirstLevels.getOrDefault(playerId, MAX_THIRST);
         int gained = newThirst - currentThirst;
-        
+
         if (gained > 0) {
             ActionBarManager.send(player, "§b+§f" + gained + " §bThirst");
         }
-        
+
         player.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 200, 0, false, false));
-        
+
         thirstAccelerationEnd.put(playerId, System.currentTimeMillis() + 30000);
     }
-    
+
     private void drinkPurifiedWater(Player player) {
         UUID playerId = player.getUniqueId();
-        
+
         int currentThirst = thirstLevels.getOrDefault(playerId, MAX_THIRST);
         addThirst(player, 10);
         int newThirst = thirstLevels.getOrDefault(playerId, MAX_THIRST);
         int gained = newThirst - currentThirst;
-        
+
         if (gained > 0) {
             ActionBarManager.send(player, "§b+§f" + gained + " §bThirst §7(Purified)");
         }
     }
-    
+
     private void checkWaterPurification(Player player) {
         ItemStack item = player.getInventory().getItemInMainHand();
         if (item.getType() != Material.POTION) return;
-        
+
         double heat = ItemHeatSystem.getItemHeat(item);
         if (heat < 100.0) return;
-        
+
         org.bukkit.inventory.meta.PotionMeta meta = (org.bukkit.inventory.meta.PotionMeta) item.getItemMeta();
         if (meta != null && !meta.hasCustomEffect(PotionEffectType.REGENERATION)) {
-            org.shotrush.atom.core.items.CustomItem purifiedWater = 
-                org.shotrush.atom.Atom.getInstance().getItemRegistry().getItem("purified_water");
+            org.shotrush.atom.core.items.CustomItem purifiedWater =
+                    org.shotrush.atom.Atom.getInstance().getItemRegistry().getItem("purified_water");
             if (purifiedWater != null) {
                 ItemStack newItem = purifiedWater.create();
                 ItemHeatSystem.setItemHeat(newItem, heat);
@@ -253,23 +224,28 @@ public class ThirstSystem implements Listener {
             }
         }
     }
-    
+
     private void updateThirstDisplay(Player player) {
         int thirst = thirstLevels.getOrDefault(player.getUniqueId(), MAX_THIRST);
-        
-        player.setMaximumAir(300);
-        
-        int airValue = (thirst * 300) / MAX_THIRST;
-        
-        if (player.isInWater() || player.getEyeLocation().getBlock().getType() == Material.WATER) {
-            player.setRemainingAir(Math.min(300, airValue));
+
+        String color;
+
+        if (thirst <= 0) {
+            color = "<dark_red>";
+        } else if (thirst <= 5) {
+            color = "<red>";
+        } else if (thirst <= 10) {
+            color = "<gold>";
+        } else if (thirst <= 15) {
+            color = "<yellow>";
         } else {
-            
-            player.setRemainingAir(airValue);
+            color = "<aqua>";
         }
-        
+
+        String message = color + thirst + "<dark_gray>/<gray>" + MAX_THIRST;
+        ActionBarManager.getInstance().setMessage(player, "thirst", message);
     }
-    
+
     public void addThirst(Player player, int amount) {
         UUID playerId = player.getUniqueId();
         int currentThirst = thirstLevels.getOrDefault(playerId, MAX_THIRST);
@@ -277,7 +253,7 @@ public class ThirstSystem implements Listener {
         thirstLevels.put(playerId, newThirst);
         updateThirstDisplay(player);
     }
-    
+
     public int getThirst(Player player) {
         return thirstLevels.getOrDefault(player.getUniqueId(), MAX_THIRST);
     }
