@@ -44,7 +44,7 @@ recipes:
       - A
     ingredients:
       A: "#minecraft:logs"
-      B: atom:pebble
+      B: "#atom:leather"
     result:
       id: atom:knapping_station
       count: 1
