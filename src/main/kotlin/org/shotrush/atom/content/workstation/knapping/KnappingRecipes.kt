@@ -210,6 +210,13 @@ object KnappingRecipes {
             )
             transform(invertX)
         }
+        register(MoldShape.Hoe) {
+            rows(
+                "#####",
+                "  ###"
+            )
+            transform(invertX)
+        }
         register(MoldShape.Ingot) {
             rows(
                 "#   #",

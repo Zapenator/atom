@@ -79,7 +79,6 @@ tasks {
 
     var spec = runPaper.downloadPluginsSpec {
         url("https://github.com/dmulloy2/ProtocolLib/releases/download/5.4.0/ProtocolLib.jar")
-        modrinth("craftengine", "0.0.65")
         modrinth("terra", "6.6.6-BETA-bukkit")
         hangar("BetterModel", "1.14.2-SNAPSHOT-427")
 //        modrinth("betterhud2", "OUzj5ALL")

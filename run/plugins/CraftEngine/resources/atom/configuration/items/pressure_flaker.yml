@@ -2,10 +2,10 @@ items:
   atom:pressure_flaker:
     material: iron_nugget
     data:
-      item-name: <!i><white><lang:item.pressure_flaker.name>
+      item-name: <!i><white><l10n:item.pressure_flaker.name>
       lore:
-        - <!i><gray><lang:item.pressure_flaker.lore_1>
-        - <!i><gray><lang:item.pressure_flaker.lore_2>
+        - <!i><gray><l10n:item.pressure_flaker.lore_1>
+        - <!i><gray><l10n:item.pressure_flaker.lore_2>
         - ""
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_foraging>
       components:
@@ -17,7 +17,7 @@ items:
       template: default:model/simplified_generated
       arguments:
         path: minecraft:item/bone
-lang:
+translations:
   en:
     item.pressure_flaker.name: Pressure Flaker
     item.pressure_flaker.lore_1: "A bone tool for precision knapping"

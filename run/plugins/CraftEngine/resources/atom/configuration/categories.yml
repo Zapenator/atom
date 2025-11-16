@@ -1,51 +1,40 @@
 categories:
-  atom:default:
-    priority: 1
-    name: <!i><white><lang:category.atom.name></white>
-    lore:
-      - <!i><gray><lang:category.atom.lore>
-    icon: atom:sharpened_flint
-    list:
-      - '#atom:foraging'
-      - '#atom:copper'
-      - '#atom:bronze'
-      - '#atom:tools'
-      - '#atom:tool_heads'
-      - '#atom:animal_product'
   atom:foraging:
-    name: <!i><white><lang:category.foraging.name></white>
-    hidden: true
+    priority: 0
+    name: <!i><white><l10n:category.foraging.name></white>
     lore:
-      - <!i><gray><lang:category.foraging.lore>
+      - <!i><gray><l10n:category.foraging.lore>
       - <!i><white><image:atom:badge_age_foraging>
     icon: atom:pebble
     list:
       - '#atom:animal_product'
+      - 'minecraft:stick'
+      - 'minecraft:vine'
       - 'atom:knapping_station'
       - 'atom:leather_bed'
       - 'atom:crafting_basket'
       - 'atom:clay_cauldron'
-      - 'atom:sharpened_flint'
+      - 'atom:sharpened_rock'
       - 'atom:pebble'
       - 'atom:flint_knife'
       - 'atom:flint_spear'
       - 'atom:straw'
       - 'atom:pressure_flaker'
   atom:copper:
-    name: <!i><white><lang:category.copper.name></white>
-    hidden: true
+    priority: 50
+    name: <!i><white><l10n:category.copper.name></white>
     lore:
-      - <!i><gray><lang:category.copper.lore>
+      - <!i><gray><l10n:category.copper.lore>
       - <!i><white><image:atom:badge_age_copper>
     icon: minecraft:copper_ingot
     list:
       - '#atom:molds'
       - '#atom:tool_heads'
   atom:bronze:
-    name: <!i><white><lang:category.bronze.name></white>
-    hidden: true
+    priority: 100
+    name: <!i><white><l10n:category.bronze.name></white>
     lore:
-      - <!i><gray><lang:category.bronze.lore>
+      - <!i><gray><l10n:category.bronze.lore>
       - <!i><white><image:atom:badge_age_bronze>
     icon: atom:raw_tin
     list:

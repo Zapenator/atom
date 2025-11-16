@@ -7,3 +7,26 @@ recipes:
     result:
       id: minecraft:brick
       count: 1
+  atom:campfire:
+    type: shaped
+    pattern:
+      - 'BBB'
+      - 'PLP'
+    ingredients:
+      P: atom:pebble
+      L: "#minecraft:logs"
+      B: atom:stick_bundle
+    result:
+      id: minecraft:campfire
+      count: 1
+  atom:saw_test:
+    type: shaped
+    pattern:
+      - 'S'
+      - 'L'
+    ingredients:
+      S: atom:material_saw
+      L: "minecraft:material_log"
+    result:
+      id: minecraft:material_planks
+      count: 2

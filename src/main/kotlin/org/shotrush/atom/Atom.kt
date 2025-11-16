@@ -72,7 +72,6 @@ class Atom : SuspendingJavaPlugin() {
 
         TestListener.register(this)
         PlayerDataTrackingListener.register(this)
-        RecipeManagement.handle(this)
         setupCommands()
         logger.info("Atom plugin has been enabled!")
     }

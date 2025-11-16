@@ -2,9 +2,9 @@ items:
   atom:crafting_basket:
     material: nether_brick
     data:
-      item-name: <!i><lang:item.crafting_basket.name>
+      item-name: <!i><l10n:item.crafting_basket.name>
       lore:
-        - <!i><gray><lang:item.crafting_basket.lore_1>
+        - <!i><gray><l10n:item.crafting_basket.lore_1>
         - ""
         - <!i><white><image:atom:badge_workstation> <image:atom:badge_age_foraging>
     model:
@@ -54,7 +54,7 @@ recipes:
    result:
      id: atom:crafting_basket
      count: 1
-lang:
+translations:
  en:
    item.crafting_basket.name: Crafting Basket
    item.crafting_basket.lore_1: "Right-click to open crafting GUI"

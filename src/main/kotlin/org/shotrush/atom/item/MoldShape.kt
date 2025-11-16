@@ -2,6 +2,7 @@ package org.shotrush.atom.item
 
 enum class MoldShape(val id: String, val mold: String, val vanillaItem: org.bukkit.Material? = null) {
     Axe("axe", "axe_head"),
+    Hoe("hoe", "hoe_head"),
     Hammer("hammer", "hammer_head"),
     Pickaxe("pickaxe", "pickaxe_head"),
     Shovel("shovel", "shovel_head"),

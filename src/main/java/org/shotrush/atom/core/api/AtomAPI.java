@@ -96,7 +96,7 @@ public final class AtomAPI {
             throw new IllegalStateException("AtomAPI not initialized!");
         }
         plugin.getLogger().info("Registering commands...");
-        org.shotrush.atom.core.AutoRegisterManager.registerCommands(plugin, commandManager);
+//        org.shotrush.atom.core.AutoRegisterManager.registerCommands(plugin, commandManager);
     }
 
 

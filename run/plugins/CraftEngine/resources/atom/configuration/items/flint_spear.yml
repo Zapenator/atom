@@ -11,10 +11,10 @@ items:
       tags:
         - default:topaz_tools
     data:
-      item-name: <!i><white><lang:item.flint_spear.name>
+      item-name: <!i><white><l10n:item.flint_spear.name>
       lore:
-        - <!i><gray><lang:item.flint_spear.lore_1>
-        - <!i><gray><lang:item.flint_spear.lore_2>
+        - <!i><gray><l10n:item.flint_spear.lore_1>
+        - <!i><gray><l10n:item.flint_spear.lore_2>
         - ""
         - <!i><white><image:atom:badge_weapon> <image:atom:badge_age_foraging>
       max-damage: 300

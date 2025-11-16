@@ -1,5 +1,7 @@
 package org.shotrush.atom.content.workstation.clay_cauldron
 
+import com.github.shynixn.mccoroutine.folia.launch
+import com.github.shynixn.mccoroutine.folia.regionDispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -88,7 +90,7 @@ class ClayCauldronBlockBehavior(block: CustomBlock) : AbstractBlockBehavior(bloc
         blockEntityType: BlockEntityType<T>,
     ): BlockEntityTicker<T> {
         return EntityBlockBehavior.createTickerHelper { _, _, _, be: ClayCauldronBlockEntity ->
-            be.tick()
+            Atom.instance.launch(Atom.instance.regionDispatcher(be.location)) { be.tick() }
         }
     }
 }

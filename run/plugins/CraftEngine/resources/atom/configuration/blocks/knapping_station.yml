@@ -1,13 +1,16 @@
 items:
   atom:knapping_station:
     material: nether_brick
-    data:
-      item-name: <!i><lang:item.knapping_station.name>
+    client-bound-data:
       lore:
-        - <!i><gray><lang:item.knapping_station.lore_1>
-        - <!i><gray><lang:item.knapping_station.lore_2>
+        - ""
+        - <!i><dark_gray><l10n:item.knapping_station.lore_1>
+        - <!i><dark_gray><l10n:item.knapping_station.lore_2>
+        - <!i><dark_gray><l10n:item.knapping_station.lore_3>
         - ""
         - <!i><white><image:atom:badge_workstation> <image:atom:badge_age_foraging>
+    data:
+      item-name: <!i><l10n:item.knapping_station.name>
     model:
       type: minecraft:model
       path: minecraft:block/knapping_station
@@ -48,3 +51,9 @@ recipes:
     result:
       id: atom:knapping_station
       count: 1
+translations:
+  en:
+    item.knapping_station.name: Knapping Station
+    item.knapping_station.lore_1: "Used to create <gray>tool heads</gray> and <gray>molds</gray>"
+    item.knapping_station.lore_2: " use with <#969696>Pebble</#969696>, <#b0d2dd>Clay</#b0d2dd>, or <#dec41b>Honeycomb</#dec41b>"
+    item.knapping_station.lore_3: " to begin knapping."

@@ -1,358 +1,374 @@
 items:
   atom:clay_mold_axe_head:
     material: clay_ball
-    data:
-      item-name: <!i><white><lang:item.mold.clay.axe_head.name>
-      lore:
-        - <!i><gray><lang:item.mold.common.lore>
-        - <!i><red><lang:item.mold.unfired.lore>
-        - ""
-        - <!i><dark_gray><lang:item.mold.axe_head.lore>
-        - ""
-        - <!i><white><image:atom:badge_material> <image:atom:badge_age_copper>
     model:
       template: default:model/simplified_generated
       arguments:
         path: minecraft:item/ceramic/unfired_axe_head
+    client-bound-data:
+      lore:
+        - <!i><gray><l10n:item.mold.common.lore>
+        - <!i><red><l10n:item.mold.unfired.lore>
+        - ""
+        - <!i><dark_gray><l10n:item.mold.axe_head.lore>
+        - ""
+        - <!i><white><image:atom:badge_material> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.clay.axe_head.name>
   atom:fired_mold_axe_head:
     material: brick
-    data:
-      item-name: <!i><white><lang:item.mold.fired.axe_head.name>
-      lore:
-        - <!i><gray><lang:item.mold.common.lore>
-        - ""
-        - <!i><dark_gray><lang:item.mold.axe_head.lore>
-        - ""
-        - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
     model:
       template: default:model/simplified_generated
       arguments:
         path: minecraft:item/ceramic/fired/axe_head_empty
-  atom:wax_mold_axe_head:
-    material: brick
-    data:
-      item-name: <!i><white><lang:item.mold.wax.axe_head.name>
+    client-bound-data:
       lore:
-        - <!i><gray><lang:item.mold.common.lore>
+        - <!i><gray><l10n:item.mold.common.lore>
         - ""
-        - <!i><dark_gray><lang:item.mold.axe_head.lore>
+        - <!i><dark_gray><l10n:item.mold.axe_head.lore>
         - ""
         - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.fired.axe_head.name>
+  atom:wax_mold_axe_head:
+    material: brick
     model:
       template: default:model/simplified_generated
       arguments:
         path: minecraft:item/ceramic/wax_axe_head
+    client-bound-data:
+      lore:
+        - <!i><gray><l10n:item.mold.common.lore>
+        - ""
+        - <!i><dark_gray><l10n:item.mold.axe_head.lore>
+        - ""
+        - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.wax.axe_head.name>
   atom:clay_mold_hammer_head:
     material: clay_ball
-    data:
-      item-name: <!i><white><lang:item.mold.clay.hammer_head.name>
-      lore:
-        - <!i><gray><lang:item.mold.common.lore>
-        - <!i><red><lang:item.mold.unfired.lore>
-        - ""
-        - <!i><dark_gray><lang:item.mold.hammer_head.lore>
-        - ""
-        - <!i><white><image:atom:badge_material> <image:atom:badge_age_copper>
     model:
       template: default:model/simplified_generated
       arguments:
         path: minecraft:item/ceramic/unfired_hammer_head
+    client-bound-data:
+      lore:
+        - <!i><gray><l10n:item.mold.common.lore>
+        - <!i><red><l10n:item.mold.unfired.lore>
+        - ""
+        - <!i><dark_gray><l10n:item.mold.hammer_head.lore>
+        - ""
+        - <!i><white><image:atom:badge_material> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.clay.hammer_head.name>
   atom:fired_mold_hammer_head:
     material: brick
-    data:
-      item-name: <!i><white><lang:item.mold.fired.hammer_head.name>
-      lore:
-        - <!i><gray><lang:item.mold.common.lore>
-        - ""
-        - <!i><dark_gray><lang:item.mold.hammer_head.lore>
-        - ""
-        - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
     model:
       template: default:model/simplified_generated
       arguments:
         path: minecraft:item/ceramic/fired/hammer_head_empty
-  atom:wax_mold_hammer_head:
-    material: brick
-    data:
-      item-name: <!i><white><lang:item.mold.wax.hammer_head.name>
+    client-bound-data:
       lore:
-        - <!i><gray><lang:item.mold.common.lore>
+        - <!i><gray><l10n:item.mold.common.lore>
         - ""
-        - <!i><dark_gray><lang:item.mold.hammer_head.lore>
+        - <!i><dark_gray><l10n:item.mold.hammer_head.lore>
         - ""
         - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.fired.hammer_head.name>
+  atom:wax_mold_hammer_head:
+    material: brick
     model:
       template: default:model/simplified_generated
       arguments:
         path: minecraft:item/ceramic/wax_hammer_head
+    client-bound-data:
+      lore:
+        - <!i><gray><l10n:item.mold.common.lore>
+        - ""
+        - <!i><dark_gray><l10n:item.mold.hammer_head.lore>
+        - ""
+        - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.wax.hammer_head.name>
   atom:clay_mold_ingot:
     material: clay_ball
-    data:
-      item-name: <!i><white><lang:item.mold.clay.ingot.name>
-      lore:
-        - <!i><gray><lang:item.mold.common.lore>
-        - <!i><red><lang:item.mold.unfired.lore>
-        - ""
-        - <!i><dark_gray><lang:item.mold.ingot.lore>
-        - ""
-        - <!i><white><image:atom:badge_material> <image:atom:badge_age_copper>
     model:
       template: default:model/simplified_generated
       arguments:
         path: minecraft:item/ceramic/unfired_ingot
+    client-bound-data:
+      lore:
+        - <!i><gray><l10n:item.mold.common.lore>
+        - <!i><red><l10n:item.mold.unfired.lore>
+        - ""
+        - <!i><dark_gray><l10n:item.mold.ingot.lore>
+        - ""
+        - <!i><white><image:atom:badge_material> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.clay.ingot.name>
   atom:fired_mold_ingot:
     material: brick
-    data:
-      item-name: <!i><white><lang:item.mold.fired.ingot.name>
-      lore:
-        - <!i><gray><lang:item.mold.common.lore>
-        - ""
-        - <!i><dark_gray><lang:item.mold.ingot.lore>
-        - ""
-        - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
     model:
       template: default:model/simplified_generated
       arguments:
         path: minecraft:item/ceramic/fired/ingot_empty
-  atom:wax_mold_ingot:
-    material: brick
-    data:
-      item-name: <!i><white><lang:item.mold.wax.ingot.name>
+    client-bound-data:
       lore:
-        - <!i><gray><lang:item.mold.common.lore>
+        - <!i><gray><l10n:item.mold.common.lore>
         - ""
-        - <!i><dark_gray><lang:item.mold.ingot.lore>
+        - <!i><dark_gray><l10n:item.mold.ingot.lore>
         - ""
         - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.fired.ingot.name>
+  atom:wax_mold_ingot:
+    material: brick
     model:
       template: default:model/simplified_generated
       arguments:
         path: minecraft:item/ceramic/wax_ingot
+    client-bound-data:
+      lore:
+        - <!i><gray><l10n:item.mold.common.lore>
+        - ""
+        - <!i><dark_gray><l10n:item.mold.ingot.lore>
+        - ""
+        - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.wax.ingot.name>
   atom:clay_mold_knife_blade:
     material: clay_ball
-    data:
-      item-name: <!i><white><lang:item.mold.clay.knife_blade.name>
-      lore:
-        - <!i><gray><lang:item.mold.common.lore>
-        - <!i><red><lang:item.mold.unfired.lore>
-        - ""
-        - <!i><dark_gray><lang:item.mold.knife_blade.lore>
-        - ""
-        - <!i><white><image:atom:badge_material> <image:atom:badge_age_copper>
     model:
       template: default:model/simplified_generated
       arguments:
         path: minecraft:item/ceramic/unfired_knife_blade
+    client-bound-data:
+      lore:
+        - <!i><gray><l10n:item.mold.common.lore>
+        - <!i><red><l10n:item.mold.unfired.lore>
+        - ""
+        - <!i><dark_gray><l10n:item.mold.knife_blade.lore>
+        - ""
+        - <!i><white><image:atom:badge_material> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.clay.knife_blade.name>
   atom:fired_mold_knife_blade:
     material: brick
-    data:
-      item-name: <!i><white><lang:item.mold.fired.knife_blade.name>
-      lore:
-        - <!i><gray><lang:item.mold.common.lore>
-        - ""
-        - <!i><dark_gray><lang:item.mold.knife_blade.lore>
-        - ""
-        - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
     model:
       template: default:model/simplified_generated
       arguments:
         path: minecraft:item/ceramic/fired/knife_blade_empty
-  atom:wax_mold_knife_blade:
-    material: brick
-    data:
-      item-name: <!i><white><lang:item.mold.wax.knife_blade.name>
+    client-bound-data:
       lore:
-        - <!i><gray><lang:item.mold.common.lore>
+        - <!i><gray><l10n:item.mold.common.lore>
         - ""
-        - <!i><dark_gray><lang:item.mold.knife_blade.lore>
+        - <!i><dark_gray><l10n:item.mold.knife_blade.lore>
         - ""
         - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.fired.knife_blade.name>
+  atom:wax_mold_knife_blade:
+    material: brick
     model:
       template: default:model/simplified_generated
       arguments:
         path: minecraft:item/ceramic/wax_knife_blade
+    client-bound-data:
+      lore:
+        - <!i><gray><l10n:item.mold.common.lore>
+        - ""
+        - <!i><dark_gray><l10n:item.mold.knife_blade.lore>
+        - ""
+        - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.wax.knife_blade.name>
   atom:clay_mold_pickaxe_head:
     material: clay_ball
-    data:
-      item-name: <!i><white><lang:item.mold.clay.pickaxe_head.name>
-      lore:
-        - <!i><gray><lang:item.mold.common.lore>
-        - <!i><red><lang:item.mold.unfired.lore>
-        - ""
-        - <!i><dark_gray><lang:item.mold.pickaxe_head.lore>
-        - ""
-        - <!i><white><image:atom:badge_material> <image:atom:badge_age_copper>
     model:
       template: default:model/simplified_generated
       arguments:
         path: minecraft:item/ceramic/unfired_pickaxe_head
+    client-bound-data:
+      lore:
+        - <!i><gray><l10n:item.mold.common.lore>
+        - <!i><red><l10n:item.mold.unfired.lore>
+        - ""
+        - <!i><dark_gray><l10n:item.mold.pickaxe_head.lore>
+        - ""
+        - <!i><white><image:atom:badge_material> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.clay.pickaxe_head.name>
   atom:fired_mold_pickaxe_head:
     material: brick
-    data:
-      item-name: <!i><white><lang:item.mold.fired.pickaxe_head.name>
-      lore:
-        - <!i><gray><lang:item.mold.common.lore>
-        - ""
-        - <!i><dark_gray><lang:item.mold.pickaxe_head.lore>
-        - ""
-        - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
     model:
       template: default:model/simplified_generated
       arguments:
         path: minecraft:item/ceramic/fired/pickaxe_head_empty
-  atom:wax_mold_pickaxe_head:
-    material: brick
-    data:
-      item-name: <!i><white><lang:item.mold.wax.pickaxe_head.name>
+    client-bound-data:
       lore:
-        - <!i><gray><lang:item.mold.common.lore>
+        - <!i><gray><l10n:item.mold.common.lore>
         - ""
-        - <!i><dark_gray><lang:item.mold.pickaxe_head.lore>
+        - <!i><dark_gray><l10n:item.mold.pickaxe_head.lore>
         - ""
         - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.fired.pickaxe_head.name>
+  atom:wax_mold_pickaxe_head:
+    material: brick
     model:
       template: default:model/simplified_generated
       arguments:
         path: minecraft:item/ceramic/wax_pickaxe_head
+    client-bound-data:
+      lore:
+        - <!i><gray><l10n:item.mold.common.lore>
+        - ""
+        - <!i><dark_gray><l10n:item.mold.pickaxe_head.lore>
+        - ""
+        - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.wax.pickaxe_head.name>
   atom:clay_mold_saw_blade:
     material: clay_ball
-    data:
-      item-name: <!i><white><lang:item.mold.clay.saw_blade.name>
-      lore:
-        - <!i><gray><lang:item.mold.common.lore>
-        - <!i><red><lang:item.mold.unfired.lore>
-        - ""
-        - <!i><dark_gray><lang:item.mold.saw_blade.lore>
-        - ""
-        - <!i><white><image:atom:badge_material> <image:atom:badge_age_copper>
     model:
       template: default:model/simplified_generated
       arguments:
         path: minecraft:item/ceramic/unfired_saw_blade
+    client-bound-data:
+      lore:
+        - <!i><gray><l10n:item.mold.common.lore>
+        - <!i><red><l10n:item.mold.unfired.lore>
+        - ""
+        - <!i><dark_gray><l10n:item.mold.saw_blade.lore>
+        - ""
+        - <!i><white><image:atom:badge_material> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.clay.saw_blade.name>
   atom:fired_mold_saw_blade:
     material: brick
-    data:
-      item-name: <!i><white><lang:item.mold.fired.saw_blade.name>
-      lore:
-        - <!i><gray><lang:item.mold.common.lore>
-        - ""
-        - <!i><dark_gray><lang:item.mold.saw_blade.lore>
-        - ""
-        - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
     model:
       template: default:model/simplified_generated
       arguments:
         path: minecraft:item/ceramic/fired/saw_blade_empty
-  atom:wax_mold_saw_blade:
-    material: brick
-    data:
-      item-name: <!i><white><lang:item.mold.wax.saw_blade.name>
+    client-bound-data:
       lore:
-        - <!i><gray><lang:item.mold.common.lore>
+        - <!i><gray><l10n:item.mold.common.lore>
         - ""
-        - <!i><dark_gray><lang:item.mold.saw_blade.lore>
+        - <!i><dark_gray><l10n:item.mold.saw_blade.lore>
         - ""
         - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.fired.saw_blade.name>
+  atom:wax_mold_saw_blade:
+    material: brick
     model:
       template: default:model/simplified_generated
       arguments:
         path: minecraft:item/ceramic/wax_saw_blade
+    client-bound-data:
+      lore:
+        - <!i><gray><l10n:item.mold.common.lore>
+        - ""
+        - <!i><dark_gray><l10n:item.mold.saw_blade.lore>
+        - ""
+        - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.wax.saw_blade.name>
   atom:clay_mold_shovel_head:
     material: clay_ball
-    data:
-      item-name: <!i><white><lang:item.mold.clay.shovel_head.name>
-      lore:
-        - <!i><gray><lang:item.mold.common.lore>
-        - <!i><red><lang:item.mold.unfired.lore>
-        - ""
-        - <!i><dark_gray><lang:item.mold.shovel_head.lore>
-        - ""
-        - <!i><white><image:atom:badge_material> <image:atom:badge_age_copper>
     model:
       template: default:model/simplified_generated
       arguments:
         path: minecraft:item/ceramic/unfired_shovel_head
+    client-bound-data:
+      lore:
+        - <!i><gray><l10n:item.mold.common.lore>
+        - <!i><red><l10n:item.mold.unfired.lore>
+        - ""
+        - <!i><dark_gray><l10n:item.mold.shovel_head.lore>
+        - ""
+        - <!i><white><image:atom:badge_material> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.clay.shovel_head.name>
   atom:fired_mold_shovel_head:
     material: brick
-    data:
-      item-name: <!i><white><lang:item.mold.fired.shovel_head.name>
-      lore:
-        - <!i><gray><lang:item.mold.common.lore>
-        - ""
-        - <!i><dark_gray><lang:item.mold.shovel_head.lore>
-        - ""
-        - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
     model:
       template: default:model/simplified_generated
       arguments:
         path: minecraft:item/ceramic/fired/shovel_head_empty
-  atom:wax_mold_shovel_head:
-    material: brick
-    data:
-      item-name: <!i><white><lang:item.mold.wax.shovel_head.name>
+    client-bound-data:
       lore:
-        - <!i><gray><lang:item.mold.common.lore>
+        - <!i><gray><l10n:item.mold.common.lore>
         - ""
-        - <!i><dark_gray><lang:item.mold.shovel_head.lore>
+        - <!i><dark_gray><l10n:item.mold.shovel_head.lore>
         - ""
         - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.fired.shovel_head.name>
+  atom:wax_mold_shovel_head:
+    material: brick
     model:
       template: default:model/simplified_generated
       arguments:
         path: minecraft:item/ceramic/wax_shovel_head
+    client-bound-data:
+      lore:
+        - <!i><gray><l10n:item.mold.common.lore>
+        - ""
+        - <!i><dark_gray><l10n:item.mold.shovel_head.lore>
+        - ""
+        - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.wax.shovel_head.name>
   atom:clay_mold_sword_blade:
     material: clay_ball
-    data:
-      item-name: <!i><white><lang:item.mold.clay.sword_blade.name>
-      lore:
-        - <!i><gray><lang:item.mold.common.lore>
-        - <!i><red><lang:item.mold.unfired.lore>
-        - ""
-        - <!i><dark_gray><lang:item.mold.sword_blade.lore>
-        - ""
-        - <!i><white><image:atom:badge_material> <image:atom:badge_age_copper>
     model:
       template: default:model/simplified_generated
       arguments:
         path: minecraft:item/ceramic/unfired_sword_blade
+    client-bound-data:
+      lore:
+        - <!i><gray><l10n:item.mold.common.lore>
+        - <!i><red><l10n:item.mold.unfired.lore>
+        - ""
+        - <!i><dark_gray><l10n:item.mold.sword_blade.lore>
+        - ""
+        - <!i><white><image:atom:badge_material> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.clay.sword_blade.name>
   atom:fired_mold_sword_blade:
     material: brick
-    data:
-      item-name: <!i><white><lang:item.mold.fired.sword_blade.name>
-      lore:
-        - <!i><gray><lang:item.mold.common.lore>
-        - ""
-        - <!i><dark_gray><lang:item.mold.sword_blade.lore>
-        - ""
-        - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
     model:
       template: default:model/simplified_generated
       arguments:
         path: minecraft:item/ceramic/fired/sword_blade_empty
-  atom:wax_mold_sword_blade:
-    material: brick
-    data:
-      item-name: <!i><white><lang:item.mold.wax.sword_blade.name>
+    client-bound-data:
       lore:
-        - <!i><gray><lang:item.mold.common.lore>
+        - <!i><gray><l10n:item.mold.common.lore>
         - ""
-        - <!i><dark_gray><lang:item.mold.sword_blade.lore>
+        - <!i><dark_gray><l10n:item.mold.sword_blade.lore>
         - ""
         - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.fired.sword_blade.name>
+  atom:wax_mold_sword_blade:
+    material: brick
     model:
       template: default:model/simplified_generated
       arguments:
         path: minecraft:item/ceramic/wax_sword_blade
-  atom:filled_fired_mold_axe_head:
-    material: brick
-    data:
-      item-name: <!i><white><lang:item.mold.fired.axe_head.name>
+    client-bound-data:
       lore:
-        - "<!i><gray>Filled with: <gold>MATERIAL_HERE</gold>"
+        - <!i><gray><l10n:item.mold.common.lore>
         - ""
-        - <!i><dark_gray><lang:item.mold.axe_head.lore>
+        - <!i><dark_gray><l10n:item.mold.sword_blade.lore>
         - ""
         - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.wax.sword_blade.name>
+  atom:filled_fired_mold_axe_head:
+    material: brick
     model:
       type: minecraft:model
       path: minecraft:item/custom/gen/tool/filled_fired_axe_head
@@ -366,16 +382,17 @@ items:
           value: 255,255,255
         - type: minecraft:dye
           default: 255,255,255
-  atom:filled_wax_mold_axe_head:
-    material: brick
-    data:
-      item-name: <!i><white><lang:item.mold.wax.axe_head.name>
+    client-bound-data:
       lore:
         - "<!i><gray>Filled with: <gold>MATERIAL_HERE</gold>"
         - ""
-        - <!i><dark_gray><lang:item.mold.axe_head.lore>
+        - <!i><dark_gray><l10n:item.mold.axe_head.lore>
         - ""
         - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.fired.axe_head.name>
+  atom:filled_wax_mold_axe_head:
+    material: brick
     model:
       type: minecraft:model
       path: minecraft:item/custom/gen/tool/filled_wax_axe_head
@@ -389,16 +406,17 @@ items:
           value: 255,255,255
         - type: minecraft:dye
           default: 255,255,255
-  atom:filled_fired_mold_hammer_head:
-    material: brick
-    data:
-      item-name: <!i><white><lang:item.mold.fired.hammer_head.name>
+    client-bound-data:
       lore:
         - "<!i><gray>Filled with: <gold>MATERIAL_HERE</gold>"
         - ""
-        - <!i><dark_gray><lang:item.mold.hammer_head.lore>
+        - <!i><dark_gray><l10n:item.mold.axe_head.lore>
         - ""
         - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.wax.axe_head.name>
+  atom:filled_fired_mold_hammer_head:
+    material: brick
     model:
       type: minecraft:model
       path: minecraft:item/custom/gen/tool/filled_fired_hammer_head
@@ -412,16 +430,17 @@ items:
           value: 255,255,255
         - type: minecraft:dye
           default: 255,255,255
-  atom:filled_wax_mold_hammer_head:
-    material: brick
-    data:
-      item-name: <!i><white><lang:item.mold.wax.hammer_head.name>
+    client-bound-data:
       lore:
         - "<!i><gray>Filled with: <gold>MATERIAL_HERE</gold>"
         - ""
-        - <!i><dark_gray><lang:item.mold.hammer_head.lore>
+        - <!i><dark_gray><l10n:item.mold.hammer_head.lore>
         - ""
         - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.fired.hammer_head.name>
+  atom:filled_wax_mold_hammer_head:
+    material: brick
     model:
       type: minecraft:model
       path: minecraft:item/custom/gen/tool/filled_wax_hammer_head
@@ -435,16 +454,17 @@ items:
           value: 255,255,255
         - type: minecraft:dye
           default: 255,255,255
-  atom:filled_fired_mold_ingot:
-    material: brick
-    data:
-      item-name: <!i><white><lang:item.mold.fired.ingot.name>
+    client-bound-data:
       lore:
         - "<!i><gray>Filled with: <gold>MATERIAL_HERE</gold>"
         - ""
-        - <!i><dark_gray><lang:item.mold.ingot.lore>
+        - <!i><dark_gray><l10n:item.mold.hammer_head.lore>
         - ""
         - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.wax.hammer_head.name>
+  atom:filled_fired_mold_ingot:
+    material: brick
     model:
       type: minecraft:model
       path: minecraft:item/custom/gen/tool/filled_fired_ingot
@@ -458,16 +478,17 @@ items:
           value: 255,255,255
         - type: minecraft:dye
           default: 255,255,255
-  atom:filled_wax_mold_ingot:
-    material: brick
-    data:
-      item-name: <!i><white><lang:item.mold.wax.ingot.name>
+    client-bound-data:
       lore:
         - "<!i><gray>Filled with: <gold>MATERIAL_HERE</gold>"
         - ""
-        - <!i><dark_gray><lang:item.mold.ingot.lore>
+        - <!i><dark_gray><l10n:item.mold.ingot.lore>
         - ""
         - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.fired.ingot.name>
+  atom:filled_wax_mold_ingot:
+    material: brick
     model:
       type: minecraft:model
       path: minecraft:item/custom/gen/tool/filled_wax_ingot
@@ -481,16 +502,17 @@ items:
           value: 255,255,255
         - type: minecraft:dye
           default: 255,255,255
-  atom:filled_fired_mold_knife_blade:
-    material: brick
-    data:
-      item-name: <!i><white><lang:item.mold.fired.knife_blade.name>
+    client-bound-data:
       lore:
         - "<!i><gray>Filled with: <gold>MATERIAL_HERE</gold>"
         - ""
-        - <!i><dark_gray><lang:item.mold.knife_blade.lore>
+        - <!i><dark_gray><l10n:item.mold.ingot.lore>
         - ""
         - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.wax.ingot.name>
+  atom:filled_fired_mold_knife_blade:
+    material: brick
     model:
       type: minecraft:model
       path: minecraft:item/custom/gen/tool/filled_fired_knife_blade
@@ -504,16 +526,17 @@ items:
           value: 255,255,255
         - type: minecraft:dye
           default: 255,255,255
-  atom:filled_wax_mold_knife_blade:
-    material: brick
-    data:
-      item-name: <!i><white><lang:item.mold.wax.knife_blade.name>
+    client-bound-data:
       lore:
         - "<!i><gray>Filled with: <gold>MATERIAL_HERE</gold>"
         - ""
-        - <!i><dark_gray><lang:item.mold.knife_blade.lore>
+        - <!i><dark_gray><l10n:item.mold.knife_blade.lore>
         - ""
         - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.fired.knife_blade.name>
+  atom:filled_wax_mold_knife_blade:
+    material: brick
     model:
       type: minecraft:model
       path: minecraft:item/custom/gen/tool/filled_wax_knife_blade
@@ -527,16 +550,17 @@ items:
           value: 255,255,255
         - type: minecraft:dye
           default: 255,255,255
-  atom:filled_fired_mold_pickaxe_head:
-    material: brick
-    data:
-      item-name: <!i><white><lang:item.mold.fired.pickaxe_head.name>
+    client-bound-data:
       lore:
         - "<!i><gray>Filled with: <gold>MATERIAL_HERE</gold>"
         - ""
-        - <!i><dark_gray><lang:item.mold.pickaxe_head.lore>
+        - <!i><dark_gray><l10n:item.mold.knife_blade.lore>
         - ""
         - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.wax.knife_blade.name>
+  atom:filled_fired_mold_pickaxe_head:
+    material: brick
     model:
       type: minecraft:model
       path: minecraft:item/custom/gen/tool/filled_fired_pickaxe_head
@@ -550,16 +574,17 @@ items:
           value: 255,255,255
         - type: minecraft:dye
           default: 255,255,255
-  atom:filled_wax_mold_pickaxe_head:
-    material: brick
-    data:
-      item-name: <!i><white><lang:item.mold.wax.pickaxe_head.name>
+    client-bound-data:
       lore:
         - "<!i><gray>Filled with: <gold>MATERIAL_HERE</gold>"
         - ""
-        - <!i><dark_gray><lang:item.mold.pickaxe_head.lore>
+        - <!i><dark_gray><l10n:item.mold.pickaxe_head.lore>
         - ""
         - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.fired.pickaxe_head.name>
+  atom:filled_wax_mold_pickaxe_head:
+    material: brick
     model:
       type: minecraft:model
       path: minecraft:item/custom/gen/tool/filled_wax_pickaxe_head
@@ -573,16 +598,17 @@ items:
           value: 255,255,255
         - type: minecraft:dye
           default: 255,255,255
-  atom:filled_fired_mold_saw_blade:
-    material: brick
-    data:
-      item-name: <!i><white><lang:item.mold.fired.saw_blade.name>
+    client-bound-data:
       lore:
         - "<!i><gray>Filled with: <gold>MATERIAL_HERE</gold>"
         - ""
-        - <!i><dark_gray><lang:item.mold.saw_blade.lore>
+        - <!i><dark_gray><l10n:item.mold.pickaxe_head.lore>
         - ""
         - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.wax.pickaxe_head.name>
+  atom:filled_fired_mold_saw_blade:
+    material: brick
     model:
       type: minecraft:model
       path: minecraft:item/custom/gen/tool/filled_fired_saw_blade
@@ -596,16 +622,17 @@ items:
           value: 255,255,255
         - type: minecraft:dye
           default: 255,255,255
-  atom:filled_wax_mold_saw_blade:
-    material: brick
-    data:
-      item-name: <!i><white><lang:item.mold.wax.saw_blade.name>
+    client-bound-data:
       lore:
         - "<!i><gray>Filled with: <gold>MATERIAL_HERE</gold>"
         - ""
-        - <!i><dark_gray><lang:item.mold.saw_blade.lore>
+        - <!i><dark_gray><l10n:item.mold.saw_blade.lore>
         - ""
         - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.fired.saw_blade.name>
+  atom:filled_wax_mold_saw_blade:
+    material: brick
     model:
       type: minecraft:model
       path: minecraft:item/custom/gen/tool/filled_wax_saw_blade
@@ -619,16 +646,17 @@ items:
           value: 255,255,255
         - type: minecraft:dye
           default: 255,255,255
-  atom:filled_fired_mold_shovel_head:
-    material: brick
-    data:
-      item-name: <!i><white><lang:item.mold.fired.shovel_head.name>
+    client-bound-data:
       lore:
         - "<!i><gray>Filled with: <gold>MATERIAL_HERE</gold>"
         - ""
-        - <!i><dark_gray><lang:item.mold.shovel_head.lore>
+        - <!i><dark_gray><l10n:item.mold.saw_blade.lore>
         - ""
         - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.wax.saw_blade.name>
+  atom:filled_fired_mold_shovel_head:
+    material: brick
     model:
       type: minecraft:model
       path: minecraft:item/custom/gen/tool/filled_fired_shovel_head
@@ -642,16 +670,17 @@ items:
           value: 255,255,255
         - type: minecraft:dye
           default: 255,255,255
-  atom:filled_wax_mold_shovel_head:
-    material: brick
-    data:
-      item-name: <!i><white><lang:item.mold.wax.shovel_head.name>
+    client-bound-data:
       lore:
         - "<!i><gray>Filled with: <gold>MATERIAL_HERE</gold>"
         - ""
-        - <!i><dark_gray><lang:item.mold.shovel_head.lore>
+        - <!i><dark_gray><l10n:item.mold.shovel_head.lore>
         - ""
         - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.fired.shovel_head.name>
+  atom:filled_wax_mold_shovel_head:
+    material: brick
     model:
       type: minecraft:model
       path: minecraft:item/custom/gen/tool/filled_wax_shovel_head
@@ -665,16 +694,17 @@ items:
           value: 255,255,255
         - type: minecraft:dye
           default: 255,255,255
-  atom:filled_fired_mold_sword_blade:
-    material: brick
-    data:
-      item-name: <!i><white><lang:item.mold.fired.sword_blade.name>
+    client-bound-data:
       lore:
         - "<!i><gray>Filled with: <gold>MATERIAL_HERE</gold>"
         - ""
-        - <!i><dark_gray><lang:item.mold.sword_blade.lore>
+        - <!i><dark_gray><l10n:item.mold.shovel_head.lore>
         - ""
         - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.wax.shovel_head.name>
+  atom:filled_fired_mold_sword_blade:
+    material: brick
     model:
       type: minecraft:model
       path: minecraft:item/custom/gen/tool/filled_fired_sword_blade
@@ -688,16 +718,17 @@ items:
           value: 255,255,255
         - type: minecraft:dye
           default: 255,255,255
-  atom:filled_wax_mold_sword_blade:
-    material: brick
-    data:
-      item-name: <!i><white><lang:item.mold.wax.sword_blade.name>
+    client-bound-data:
       lore:
         - "<!i><gray>Filled with: <gold>MATERIAL_HERE</gold>"
         - ""
-        - <!i><dark_gray><lang:item.mold.sword_blade.lore>
+        - <!i><dark_gray><l10n:item.mold.sword_blade.lore>
         - ""
         - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.fired.sword_blade.name>
+  atom:filled_wax_mold_sword_blade:
+    material: brick
     model:
       type: minecraft:model
       path: minecraft:item/custom/gen/tool/filled_wax_sword_blade
@@ -711,12 +742,21 @@ items:
           value: 255,255,255
         - type: minecraft:dye
           default: 255,255,255
+    client-bound-data:
+      lore:
+        - "<!i><gray>Filled with: <gold>MATERIAL_HERE</gold>"
+        - ""
+        - <!i><dark_gray><l10n:item.mold.sword_blade.lore>
+        - ""
+        - <!i><white><image:atom:badge_utility> <image:atom:badge_age_copper>
+    data:
+      item-name: <!i><white><l10n:item.mold.wax.sword_blade.name>
 categories:
   atom:molds:
-    name: <!i><white><lang:category.molds.name></white>
-    hidden: true
+    name: <!i><white><l10n:category.molds.name></white>
+    hidden: false
     lore:
-      - <!i><gray><lang:category.molds.lore>
+      - <!i><gray><l10n:category.molds.lore>
     icon: atom:clay_mold_shovel_head
     list:
       - atom:clay_mold_axe_head
@@ -759,7 +799,8 @@ categories:
       - atom:filled_wax_mold_shovel_head
       - atom:filled_fired_mold_sword_blade
       - atom:filled_wax_mold_sword_blade
-lang:
+    priority: 51
+translations:
   en:
     category.molds.name: Clay and Fired Molds
     category.molds.lore: Reusable molds for shaping tools and parts
