@@ -1013,7 +1013,7 @@ lang:
     item.tool_head.steel.saw.name: Steel Saw Blade
     item.tool.steel.saw.name: Steel Saw
 recipes:
-  atom:stone_pickaxe:
+  minecraft:stone_pickaxe:
     type: shaped
     pattern:
       - H
@@ -1026,7 +1026,7 @@ recipes:
     result:
       id: minecraft:stone_pickaxe
       count: 1
-  atom:stone_shovel:
+  minecraft:stone_shovel:
     type: shaped
     pattern:
       - H
@@ -1039,7 +1039,7 @@ recipes:
     result:
       id: minecraft:stone_shovel
       count: 1
-  atom:stone_hoe:
+  minecraft:stone_hoe:
     type: shaped
     pattern:
       - H
@@ -1052,7 +1052,7 @@ recipes:
     result:
       id: minecraft:stone_hoe
       count: 1
-  atom:stone_sword:
+  minecraft:stone_sword:
     type: shaped
     pattern:
       - H
@@ -1065,7 +1065,7 @@ recipes:
     result:
       id: minecraft:stone_sword
       count: 1
-  atom:stone_axe:
+  minecraft:stone_axe:
     type: shaped
     pattern:
       - H
@@ -1078,7 +1078,7 @@ recipes:
     result:
       id: minecraft:stone_axe
       count: 1
-  atom:stone_hammer:
+  minecraft:stone_hammer:
     type: shaped
     pattern:
       - H
@@ -1091,7 +1091,7 @@ recipes:
     result:
       id: atom:stone_hammer
       count: 1
-  atom:stone_knife:
+  minecraft:stone_knife:
     type: shaped
     pattern:
       - H
@@ -1104,7 +1104,7 @@ recipes:
     result:
       id: atom:stone_knife
       count: 1
-  atom:stone_saw:
+  minecraft:stone_saw:
     type: shaped
     pattern:
       - H
@@ -1117,7 +1117,7 @@ recipes:
     result:
       id: atom:stone_saw
       count: 1
-  atom:iron_pickaxe:
+  minecraft:iron_pickaxe:
     type: shaped
     pattern:
       - H
@@ -1128,7 +1128,7 @@ recipes:
     result:
       id: minecraft:iron_pickaxe
       count: 1
-  atom:iron_shovel:
+  minecraft:iron_shovel:
     type: shaped
     pattern:
       - H
@@ -1139,7 +1139,7 @@ recipes:
     result:
       id: minecraft:iron_shovel
       count: 1
-  atom:iron_hoe:
+  minecraft:iron_hoe:
     type: shaped
     pattern:
       - H
@@ -1150,7 +1150,7 @@ recipes:
     result:
       id: minecraft:iron_hoe
       count: 1
-  atom:iron_sword:
+  minecraft:iron_sword:
     type: shaped
     pattern:
       - H
@@ -1161,7 +1161,7 @@ recipes:
     result:
       id: minecraft:iron_sword
       count: 1
-  atom:iron_axe:
+  minecraft:iron_axe:
     type: shaped
     pattern:
       - H
@@ -1172,7 +1172,7 @@ recipes:
     result:
       id: minecraft:iron_axe
       count: 1
-  atom:iron_hammer:
+  minecraft:iron_hammer:
     type: shaped
     pattern:
       - H
@@ -1183,7 +1183,7 @@ recipes:
     result:
       id: atom:iron_hammer
       count: 1
-  atom:iron_knife:
+  minecraft:iron_knife:
     type: shaped
     pattern:
       - H
@@ -1194,7 +1194,7 @@ recipes:
     result:
       id: atom:iron_knife
       count: 1
-  atom:iron_saw:
+  minecraft:iron_saw:
     type: shaped
     pattern:
       - H
@@ -1205,7 +1205,7 @@ recipes:
     result:
       id: atom:iron_saw
       count: 1
-  atom:copper_pickaxe:
+  minecraft:copper_pickaxe:
     type: shaped
     pattern:
       - H
@@ -1216,7 +1216,7 @@ recipes:
     result:
       id: atom:copper_pickaxe
       count: 1
-  atom:copper_shovel:
+  minecraft:copper_shovel:
     type: shaped
     pattern:
       - H
@@ -1227,7 +1227,7 @@ recipes:
     result:
       id: atom:copper_shovel
       count: 1
-  atom:copper_hoe:
+  minecraft:copper_hoe:
     type: shaped
     pattern:
       - H
@@ -1238,7 +1238,7 @@ recipes:
     result:
       id: atom:copper_hoe
       count: 1
-  atom:copper_sword:
+  minecraft:copper_sword:
     type: shaped
     pattern:
       - H
@@ -1249,7 +1249,7 @@ recipes:
     result:
       id: atom:copper_sword
       count: 1
-  atom:copper_axe:
+  minecraft:copper_axe:
     type: shaped
     pattern:
       - H
@@ -1260,7 +1260,7 @@ recipes:
     result:
       id: atom:copper_axe
       count: 1
-  atom:copper_hammer:
+  minecraft:copper_hammer:
     type: shaped
     pattern:
       - H
@@ -1271,7 +1271,7 @@ recipes:
     result:
       id: atom:copper_hammer
       count: 1
-  atom:copper_knife:
+  minecraft:copper_knife:
     type: shaped
     pattern:
       - H
@@ -1282,7 +1282,7 @@ recipes:
     result:
       id: atom:copper_knife
       count: 1
-  atom:copper_saw:
+  minecraft:copper_saw:
     type: shaped
     pattern:
       - H
@@ -1293,7 +1293,7 @@ recipes:
     result:
       id: atom:copper_saw
       count: 1
-  atom:bronze_pickaxe:
+  minecraft:bronze_pickaxe:
     type: shaped
     pattern:
       - H
@@ -1304,7 +1304,7 @@ recipes:
     result:
       id: atom:bronze_pickaxe
       count: 1
-  atom:bronze_shovel:
+  minecraft:bronze_shovel:
     type: shaped
     pattern:
       - H
@@ -1315,7 +1315,7 @@ recipes:
     result:
       id: atom:bronze_shovel
       count: 1
-  atom:bronze_hoe:
+  minecraft:bronze_hoe:
     type: shaped
     pattern:
       - H
@@ -1326,7 +1326,7 @@ recipes:
     result:
       id: atom:bronze_hoe
       count: 1
-  atom:bronze_sword:
+  minecraft:bronze_sword:
     type: shaped
     pattern:
       - H
@@ -1337,7 +1337,7 @@ recipes:
     result:
       id: atom:bronze_sword
       count: 1
-  atom:bronze_axe:
+  minecraft:bronze_axe:
     type: shaped
     pattern:
       - H
@@ -1348,7 +1348,7 @@ recipes:
     result:
       id: atom:bronze_axe
       count: 1
-  atom:bronze_hammer:
+  minecraft:bronze_hammer:
     type: shaped
     pattern:
       - H
@@ -1359,7 +1359,7 @@ recipes:
     result:
       id: atom:bronze_hammer
       count: 1
-  atom:bronze_knife:
+  minecraft:bronze_knife:
     type: shaped
     pattern:
       - H
@@ -1370,7 +1370,7 @@ recipes:
     result:
       id: atom:bronze_knife
       count: 1
-  atom:bronze_saw:
+  minecraft:bronze_saw:
     type: shaped
     pattern:
       - H
@@ -1381,7 +1381,7 @@ recipes:
     result:
       id: atom:bronze_saw
       count: 1
-  atom:steel_pickaxe:
+  minecraft:steel_pickaxe:
     type: shaped
     pattern:
       - H
@@ -1392,7 +1392,7 @@ recipes:
     result:
       id: atom:steel_pickaxe
       count: 1
-  atom:steel_shovel:
+  minecraft:steel_shovel:
     type: shaped
     pattern:
       - H
@@ -1403,7 +1403,7 @@ recipes:
     result:
       id: atom:steel_shovel
       count: 1
-  atom:steel_hoe:
+  minecraft:steel_hoe:
     type: shaped
     pattern:
       - H
@@ -1414,7 +1414,7 @@ recipes:
     result:
       id: atom:steel_hoe
       count: 1
-  atom:steel_sword:
+  minecraft:steel_sword:
     type: shaped
     pattern:
       - H
@@ -1425,7 +1425,7 @@ recipes:
     result:
       id: atom:steel_sword
       count: 1
-  atom:steel_axe:
+  minecraft:steel_axe:
     type: shaped
     pattern:
       - H
@@ -1436,7 +1436,7 @@ recipes:
     result:
       id: atom:steel_axe
       count: 1
-  atom:steel_hammer:
+  minecraft:steel_hammer:
     type: shaped
     pattern:
       - H
@@ -1447,7 +1447,7 @@ recipes:
     result:
       id: atom:steel_hammer
       count: 1
-  atom:steel_knife:
+  minecraft:steel_knife:
     type: shaped
     pattern:
       - H
@@ -1458,7 +1458,7 @@ recipes:
     result:
       id: atom:steel_knife
       count: 1
-  atom:steel_saw:
+  minecraft:steel_saw:
     type: shaped
     pattern:
       - H
