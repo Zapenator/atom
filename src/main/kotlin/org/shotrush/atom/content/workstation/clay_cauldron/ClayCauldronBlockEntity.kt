@@ -126,10 +126,9 @@ class ClayCauldronBlockEntity(
     fun canStoreItem(item: ItemStack): Boolean {
         if (item.isEmpty) return false
         if (allowedItems.none { item.matches(it) }) return false
-        if (fluid == Material.Copper) {
-            if (!item.matches("minecraft:raw_copper")) return false
-        } else if (fluid == Material.Iron) {
-            if (!item.matches("minecraft:raw_iron")) return false
+        if (fluid != null) {
+            if (fluid == Material.Copper && !item.matches("minecraft:raw_copper")) return false
+            if (fluid == Material.Iron && !item.matches("minecraft:raw_iron")) return false
         }
         return storedItem.isEmpty || storedItem.isSimilar(item) && storedItem.amount != storedItem.maxStackSize
     }
@@ -151,7 +150,9 @@ class ClayCauldronBlockEntity(
             markDirty()
             return
         }
-        if (fluidStored + FLUID_PER_TICK >= MAX_FLUID) return
+        if (fluidStored + FLUID_PER_TICK >= MAX_FLUID) {
+            return
+        }
         if (consumingProgress >= TICKS_TO_MELT) {
             consumingProgress = 0
             currentlyConsuming.amount--

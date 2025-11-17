@@ -19,7 +19,7 @@ import kotlin.jvm.optionals.getOrElse
 
 fun ItemStack.isCustomItem() = CraftEngineItems.isCustomItem(this)
 fun ItemStack.getNamespacedKey(): String = if(isCustomItem()) {
-    CraftEngineItems.getCustomItemId(this).toString()
+    CraftEngineItems.getCustomItemId(this)?.toString() ?: type.key.toString()
 } else {
     type.key.toString()
 }

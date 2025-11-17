@@ -35,6 +35,7 @@ import org.shotrush.atom.content.workstation.core.InteractiveSurface
 import org.shotrush.atom.content.workstation.core.PlacedItem
 import org.shotrush.atom.content.workstation.core.WorkstationDataManager
 import org.shotrush.atom.core.util.ActionBarManager
+import org.shotrush.atom.isCustomItem
 import org.shotrush.atom.item.Molds
 import org.shotrush.atom.matches
 
@@ -61,7 +62,8 @@ class ClayCauldronBlockBehavior(block: CustomBlock) : AbstractBlockBehavior(bloc
         state: ImmutableBlockState,
     ): InteractionResult {
         val player = context.player?.platformPlayer() as? Player ?: return InteractionResult.PASS
-        val item = context.item.item as? ItemStack ?: return InteractionResult.PASS
+        val item = context.item.item
+        if (item !is ItemStack) return InteractionResult.PASS
         val pos = context.clickedPos
 
         val blockEntity = context.level.storageWorld().getBlockEntityAtIfLoaded(pos)

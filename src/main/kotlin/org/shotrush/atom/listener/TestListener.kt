@@ -20,7 +20,9 @@ object TestListener : Listener {
     @EventHandler
     fun onPlayerInteract(event: PlayerInteractEvent) {
         val item = event.item ?: return
+        if (!event.player.isSneaking) return
         if (Molds.isFilledMold(item)) {
+            event.isCancelled = true
             val (mold, head) = Molds.emptyMold(item)
             event.player.inventory.remove(item.clone().apply { amount = 1 })
             if (!mold.isEmpty) event.player.inventory.addItem(mold)
