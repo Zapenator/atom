@@ -52,7 +52,7 @@ class PatternSetBuilder(
     private val patterns = mutableListOf<Pattern>()
     private var last: Pattern? = null
 
-    
+
     fun rows(vararg r: String) {
         require(r.isNotEmpty()) { "Provide at least one row" }
         val w = r.first().length
@@ -145,7 +145,9 @@ data class KnappingRecipe(
 )
 
 object KnappingRecipes {
-    private val recipes = mutableMapOf<String, KnappingRecipe>()
+    val recipes = mutableMapOf<String, KnappingRecipe>()
+
+    val allRecipes: List<KnappingRecipe> get() = recipes.values.toList()
 
     fun register(shape: ToolShape, block: PatternSetBuilder.() -> Unit) {
         val pats = patternSet(block)
@@ -155,10 +157,9 @@ object KnappingRecipes {
     fun getResult(gridColumnMajor: List<Boolean>): ToolShape? {
         for (recipe in recipes.values) {
             for (pattern in recipe.patterns) {
-                
                 val ok = if (pattern.height == N && pattern.width == N) {
                     matchesAt(gridColumnMajor, pattern, 0, 0, setOf('#')) &&
-                            outsideRegionEmpty(gridColumnMajor, 0, 0, N, N) 
+                            outsideRegionEmpty(gridColumnMajor, 0, 0, N, N)
                 } else {
                     matchesPatternAnywhere(gridColumnMajor, pattern, setOf('#'))
                 }
@@ -219,13 +220,13 @@ object KnappingRecipes {
                 "#####",
             )
         }
-//        register(MoldShape.Hammer) {
-//            rows(
-//                "#####",
-//                "#####",
-//                "#####",
-//            )
-//        }
+        register(ToolShape.Hammer) {
+            rows(
+                "#####",
+                "#####",
+                "#####",
+            )
+        }
         register(ToolShape.Knife) {
             rows(
                 " #",

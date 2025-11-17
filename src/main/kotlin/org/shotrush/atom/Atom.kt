@@ -4,14 +4,9 @@ import co.aikar.commands.PaperCommandManager
 import com.github.shynixn.mccoroutine.folia.SuspendingJavaPlugin
 import dev.jorel.commandapi.CommandAPI
 import dev.jorel.commandapi.CommandAPIPaperConfig
-import net.minecraft.world.item.ToolMaterial
 import org.bukkit.Bukkit
 import org.bukkit.Material
-import org.bukkit.NamespacedKey
 import org.shotrush.atom.commands.Commands
-import org.shotrush.atom.commands.LivingCommands
-import org.shotrush.atom.commands.MoldCommand
-import org.shotrush.atom.content.RecipeManagement
 import org.shotrush.atom.content.mobs.ai.debug.MobAIDebugCommand
 import org.shotrush.atom.content.mobs.ai.debug.VisualDebugger
 import org.shotrush.atom.content.mobs.commands.HerdCommand
@@ -27,9 +22,9 @@ import org.shotrush.atom.core.blocks.CustomBlockManager
 import org.shotrush.atom.core.items.CustomItemRegistry
 import org.shotrush.atom.core.storage.DataStorage
 import org.shotrush.atom.core.workstations.WorkstationManager
-import org.shotrush.atom.listener.PlayerChatListener
 import org.shotrush.atom.listener.PlayerDataTrackingListener
 import org.shotrush.atom.listener.PlayerMiningListener
+import org.shotrush.atom.listener.RecipeUnlockHandler
 import org.shotrush.atom.listener.TestListener
 
 class Atom : SuspendingJavaPlugin() {
@@ -75,6 +70,7 @@ class Atom : SuspendingJavaPlugin() {
         TestListener.register(this)
         PlayerDataTrackingListener.register(this)
         PlayerMiningListener.register(this)
+        RecipeUnlockHandler.register(this)
 //        PlayerChatListener.register(this)
         setupCommands()
         logger.info("Atom plugin has been enabled!")

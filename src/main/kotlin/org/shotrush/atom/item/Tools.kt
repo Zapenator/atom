@@ -4,7 +4,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import net.momirealms.craftengine.bukkit.api.CraftEngineItems
 import net.momirealms.craftengine.core.util.Key
 import org.bukkit.inventory.ItemStack
-import org.shotrush.atom.content.Age
+import org.shotrush.atom.Age
 import org.bukkit.Material as BukkitMat
 
 object Tools {

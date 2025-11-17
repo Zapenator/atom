@@ -1,4 +1,4 @@
-package org.shotrush.atom.content
+package org.shotrush.atom
 
 import org.bukkit.Color
 
@@ -9,6 +9,9 @@ enum class Age(val id: String, val rgb: Color) {
     Iron("iron", Color.fromRGB(210, 210, 210)),
     Steel("steel", Color.fromRGB(128, 128, 128)),
     ;
+
+    val enabled: Boolean
+        get() = ordinal <= Bronze.ordinal
 
     val badge: String = "<image:atom:badge_age_$id>"
 }

@@ -142,9 +142,9 @@ public class EnvironmentalFactorAPI {
     
     public static double calculateEnvironmentalTemperatureChange(Player player, Location location, double multiplier) {
         double tempChange = 0.0;
-        
-        Biome biome = location.getBlock().getBiome();
-        tempChange += getBiomeTemperature(biome);
+
+        tempChange += location.getBlock().getTemperature() * 16;
+//        tempChange += getBiomeTemperature(biome);
         tempChange += getDayNightModifier(location.getWorld());
         tempChange += getLightLevelModifier(location);
         tempChange += getWaterIceModifier(player, location);

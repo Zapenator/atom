@@ -1,10 +1,17 @@
 package org.shotrush.atom.content.workstation.knapping
 
+import com.github.shynixn.mccoroutine.folia.launch
+import dev.triumphteam.gui.GuiView
+import dev.triumphteam.gui.paper.Gui
 import dev.triumphteam.gui.paper.builder.item.ItemBuilder
 import dev.triumphteam.gui.paper.kotlin.builder.buildGui
 import dev.triumphteam.gui.paper.kotlin.builder.chestContainer
 import dev.triumphteam.nova.getValue
 import dev.triumphteam.nova.mutableListStateOf
+import dev.triumphteam.nova.mutableStateOf
+import dev.triumphteam.nova.setValue
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.momirealms.craftengine.core.block.BlockBehavior
@@ -25,12 +32,18 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.shotrush.atom.Atom
 import org.shotrush.atom.content.workstation.Workstations
+import org.shotrush.atom.format
 import org.shotrush.atom.getNamespacedKey
 import org.shotrush.atom.isCustomItem
 import org.shotrush.atom.item.Items
-import org.shotrush.atom.item.ToolShape
 import org.shotrush.atom.item.MoldType
 import org.shotrush.atom.item.Molds
+import org.shotrush.atom.item.ToolShape
+import kotlin.time.Duration.Companion.seconds
+
+private const val N = 5
+
+private fun idxColMajor(r: Int, c: Int): Int = r + c * N
 
 class KnappingBlockBehavior(block: CustomBlock) : AbstractBlockBehavior(block), EntityBlockBehavior {
     object Factory : BlockBehaviorFactory {
@@ -48,6 +61,51 @@ class KnappingBlockBehavior(block: CustomBlock) : AbstractBlockBehavior(block), 
         state: ImmutableBlockState,
     ): BlockEntity = KnappingBlockEntity(pos, state)
 
+    // ---------- Utilities for recipe rendering ----------
+
+    private data class RecipeEntry(
+        val id: String,
+        val patterns: List<Pattern>,
+        val resultShape: ToolShape,
+    )
+
+    private fun buildRecipeEntries(): List<RecipeEntry> {
+        return KnappingRecipes.allRecipes.mapNotNull { kr ->
+            if (kr.patterns.isEmpty()) null
+            else RecipeEntry(id = kr.id, patterns = kr.patterns, resultShape = kr.result)
+        }.sortedBy { it.id }
+    }
+
+    // Top-left aligned pattern into 5x5 boolean mask
+    private fun patternToGrid5x5(p: Pattern): List<Boolean> {
+        val grid = MutableList(N * N) { false }
+        for (r in 0 until p.height) {
+            val row = p[r]
+            for (c in 0 until p.width) {
+                val filled = row[c] == '#'
+                grid[idxColMajor(r, c)] = filled
+            }
+        }
+        return grid
+    }
+
+    // Centered pattern into 5x5 boolean mask (nicer for display)
+    private fun patternToCenteredGrid5x5(p: Pattern): List<Boolean> {
+        val grid = MutableList(N * N) { false }
+        val offsetR = (N - p.height) / 2
+        val offsetC = (N - p.width) / 2
+        for (r in 0 until p.height) {
+            val row = p[r]
+            for (c in 0 until p.width) {
+                val filled = row[c] == '#'
+                grid[idxColMajor(offsetR + r, offsetC + c)] = filled
+            }
+        }
+        return grid
+    }
+
+    // ---------- Main Knapping UI (craftable) ----------
+
     fun openUI(
         ui: KnappingUIItem,
         player: Player,
@@ -64,7 +122,8 @@ class KnappingBlockBehavior(block: CustomBlock) : AbstractBlockBehavior(block), 
             val clicks by clicksState
             containerType = chestContainer { rows = 5 }
             title(
-                MiniMessage.miniMessage().deserialize("<shift:-8><white><image:atom:ui_knapping_table><shift:-170><dark_gray>Knapping Station")
+                MiniMessage.miniMessage()
+                    .deserialize("<shift:-8><white><image:atom:ui_knapping_table><shift:-170><dark_gray>Knapping Station")
             )
             component {
                 remember(clicksState)
@@ -91,8 +150,8 @@ class KnappingBlockBehavior(block: CustomBlock) : AbstractBlockBehavior(block), 
                     if (result != null) {
                         val stack = transformer(result)
                         container[3, 8] = ItemBuilder.from(stack)
-                            .asGuiItem { player, ctx ->
-                                player.inventory.addItem(stack)
+                            .asGuiItem { player0, ctx ->
+                                player0.inventory.addItem(stack)
                                 clicks.fill(false)
                                 ctx.guiView.close()
                                 onCraftComplete?.invoke()
@@ -100,11 +159,178 @@ class KnappingBlockBehavior(block: CustomBlock) : AbstractBlockBehavior(block), 
                     }
                 }
             }
+
+            // Recipe Book button (wired)
+            component {
+                render { container ->
+                    container[5, 8] = ItemBuilder.from(Material.BOOK)
+                        .name(format("<green>Knapping Table Recipes</green>"))
+                        .lore(
+                            format("<gray>Click to view the knapping recipes.</gray>")
+                        )
+                        .asGuiItem { _, ctx ->
+                            openRecipeBook(
+                                ui = ui,
+                                player = player,
+                                originalUi = ctx.guiView,
+                                transformer = transformer,
+                                invert = invert
+                            )
+                        }
+                }
+            }
         }
 
         gui.open(player)
     }
 
+    // ---------- Recipe Book UI (read-only, paginated) ----------
+
+    fun openRecipeBook(
+        ui: KnappingUIItem,
+        player: Player,
+        originalUi: GuiView,
+        transformer: (shape: ToolShape) -> ItemStack,
+        invert: Boolean,
+    ) {
+        openRecipeBookWithInitialPage(
+            ui = ui,
+            player = player,
+            originalUi = originalUi,
+            transformer = transformer,
+            invert = invert,
+            initialPage = 0
+        )
+    }
+
+    fun openRecipeBookWithInitialPage(
+        ui: KnappingUIItem,
+        player: Player,
+        originalUi: GuiView,
+        transformer: (shape: ToolShape) -> ItemStack,
+        invert: Boolean,
+        initialPage: Int,
+    ) {
+        val entries = buildRecipeEntries()
+        if (entries.isEmpty()) {
+            player.sendMessage(Component.text("No knapping recipes registered."))
+            originalUi.open()
+            return
+        }
+
+        val itemA = ui.getItem(invert)
+        val itemB = ui.getItem(!invert)
+
+        val gui = buildGui {
+            spamPreventionDuration = 0.seconds
+            containerType = chestContainer { rows = 5 }
+            title(
+                MiniMessage.miniMessage()
+                    .deserialize("<shift:-8><white><image:atom:ui_knapping_table><shift:-170><dark_gray>Knapping Recipes")
+            )
+
+            val pageState = mutableStateOf(initialPage.coerceIn(0, entries.lastIndex))
+            var page by pageState
+            val patternIndexState = mutableStateOf(0)
+            var patternIndex by patternIndexState
+
+            val job = Atom.instance.launch {
+                while (true) {
+                    delay(3.seconds)
+                    val pats = entries[page].patterns
+                    if (pats.size <= 1) continue // no need to cycle
+                    val next = (patternIndex + 1) % pats.size
+                    patternIndex = next
+                }
+            }
+            onClose {
+                job.cancel()
+            }
+
+            component {
+                remember(pageState)
+                remember(patternIndexState)
+                render { container ->
+                    val entry = entries[page]
+
+                    // Render 5x5 area from centered mask
+                    val mask = patternToCenteredGrid5x5(entry.patterns[patternIndex])
+                    for (r in 1..5) {
+                        for (c in 1..5) {
+                            val slot = (r - 1) + (c - 1) * 5
+                            val filled = mask.getOrNull(slot) ?: false
+                            val material = if (!filled) itemA else itemB
+                            container[r, c] = ItemBuilder.from(material)
+                                .name(Component.text(" "))
+                                .asGuiItem() // read-only
+                        }
+                    }
+
+                    // Result item at [3,8]
+                    val stack = transformer(entry.resultShape)
+                    container[3, 8] = ItemBuilder.from(stack)
+                        .name(format("<white>${entry.resultShape.name}</white>"))
+                        .lore(format("<gray>Recipe: <white>${entry.id}</white>"))
+                        .asGuiItem()
+
+                    // Page indicator at [1,8]
+                    container[1, 8] = ItemBuilder.from(Material.PAPER)
+                        .name(format("<yellow>Page ${page + 1} / ${entries.size}</yellow>"))
+                        .lore(format("<gray>Use arrows to browse recipes.</gray>"))
+                        .asGuiItem()
+
+                    val hasPrev = page > 0
+                    val hasNext = page < entries.lastIndex
+
+                    // Prev at [5,7]
+                    container[5, 7] = ItemBuilder.from(Material.ARROW)
+                        .name(format(if (hasPrev) "<green>Previous</green>" else "<dark_gray>Previous</dark_gray>"))
+                        .lore(format("<gray>View previous recipe.</gray>"))
+                        .asGuiItem { _, _ ->
+                            if (hasPrev) {
+                                patternIndex = 0
+                                page -= 1;
+                            }
+                        }
+
+                    // Back at [5,8]
+                    container[5, 8] = ItemBuilder.from(Material.BOOK)
+                        .name(format("<red>Back</red>"))
+                        .lore(format("<gray>Return to knapping table.</gray>"))
+                        .asGuiItem { _, ctx ->
+                            originalUi.open()
+                        }
+
+                    // Next at [5,9]
+                    container[5, 9] = ItemBuilder.from(Material.ARROW)
+                        .name(format(if (hasNext) "<green>Next</green>" else "<dark_gray>Next</dark_gray>"))
+                        .lore(format("<gray>View next recipe.</gray>"))
+                        .asGuiItem { _, _ ->
+                            if (hasNext) {
+                                patternIndex = 0
+                                page += 1;
+                            }
+                        }
+                }
+            }
+        }
+
+        gui.open(player)
+    }
+
+    // Jump to a specific recipe id (optional helper)
+    fun openRecipeAt(
+        ui: KnappingUIItem,
+        player: Player,
+        originalUi: GuiView,
+        transformer: (shape: ToolShape) -> ItemStack,
+        invert: Boolean,
+        recipeId: String,
+    ) {
+        val entries = buildRecipeEntries()
+        val index = entries.indexOfFirst { it.id == recipeId }.let { if (it == -1) 0 else it }
+        openRecipeBookWithInitialPage(ui, player, originalUi, transformer, invert, index)
+    }
 
     override fun useOnBlock(
         context: UseOnContext,
@@ -118,7 +344,6 @@ class KnappingBlockBehavior(block: CustomBlock) : AbstractBlockBehavior(block), 
         if (!item.isCustomItem()) {
             if (item.type == Material.CLAY_BALL) {
                 openUI(KnappingUIItem.Clay, player, { shape ->
-                    // Check if this shape produces a vanilla item directly
                     if (shape.isVanillaItem()) {
                         ItemStack(shape.vanillaItem!!)
                     } else {
@@ -153,7 +378,8 @@ class KnappingBlockBehavior(block: CustomBlock) : AbstractBlockBehavior(block), 
                         } else {
                             Molds.getToolHead(shape, org.shotrush.atom.item.Material.Stone).buildItemStack()
                         }
-                    }, true
+                    },
+                    invert = true
                 ) {
                     if (player.gameMode != GameMode.CREATIVE)
                         context.item.count(context.item.count() - 1)

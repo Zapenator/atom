@@ -1,6 +1,7 @@
 package org.shotrush.atom
 
 import com.mojang.serialization.DataResult
+import net.kyori.adventure.text.minimessage.MiniMessage
 import net.momirealms.craftengine.bukkit.api.CraftEngineBlocks
 import net.momirealms.craftengine.bukkit.api.CraftEngineItems
 import net.momirealms.craftengine.bukkit.nms.FastNMS
@@ -60,7 +61,7 @@ fun CompoundTag.getItemStack(key: String): ItemStack {
 }
 
 fun CompoundTag.putItemStack(key: String, item: ItemStack) {
-    if(item.isEmpty) return
+    if (item.isEmpty) return
     CoreReflections.`instance$ItemStack$CODEC`.encodeStart(
         MRegistryOps.SPARROW_NBT,
         FastNMS.INSTANCE.`field$CraftItemStack$handle`(item)
@@ -68,9 +69,13 @@ fun CompoundTag.putItemStack(key: String, item: ItemStack) {
         val itemTag = success as CompoundTag
         this.put(key, itemTag)
     }.ifError(Consumer { error: DataResult.Error<Tag> ->
-        CraftEngine.instance().logger().severe("Error while saving storage item: $error")
+        Atom.instance.logger.severe("Error while saving storage item: $error")
     })
 }
 
 val Duration.inWholeTicks: Long
     get() = inWholeSeconds * 20
+
+
+fun format(string: String) = MiniMessage.miniMessage().deserialize(string)
+fun format(vararg strings: String) = strings.map { format(it) }

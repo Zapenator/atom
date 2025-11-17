@@ -33,11 +33,16 @@ object PlayerMiningListener : Listener {
         atom.server.pluginManager.registerSuspendingEvents(this, atom, eventDispatcher)
     }
 
-    // Single allowed shape and minimum tier per block
-    // Expand as needed or load from config/datapack.
-// Single allowed shape and minimum tier per block
     private val miningRequirements: Map<String, Pair<ToolShape, Material>> = buildMap {
-        // Stone family (overworld)
+        // Dirt/Grass
+        put("minecraft:dirt", ToolShape.Shovel to Material.Stone)
+        put("minecraft:grass_block", ToolShape.Shovel to Material.Stone)
+        put("minecraft:mud", ToolShape.Shovel to Material.Stone)
+        put("minecraft:podzol", ToolShape.Shovel to Material.Stone)
+        put("minecraft:coarse_dirt", ToolShape.Shovel to Material.Stone)
+        put("minecraft:rooted_dirt", ToolShape.Shovel to Material.Stone)
+
+        // Stone
         put("minecraft:stone", ToolShape.Pickaxe to Material.Stone)
         put("minecraft:cobblestone", ToolShape.Pickaxe to Material.Stone)
         put("minecraft:andesite", ToolShape.Pickaxe to Material.Stone)
@@ -46,9 +51,9 @@ object PlayerMiningListener : Listener {
         put("minecraft:tuff", ToolShape.Pickaxe to Material.Stone)
         put("minecraft:calcite", ToolShape.Pickaxe to Material.Stone)
         put("minecraft:dripstone_block", ToolShape.Pickaxe to Material.Stone)
-        put("minecraft:packed_mud", ToolShape.Shovel to Material.Stone)
+        put("minecraft:packed_mud", ToolShape.Pickaxe to Material.Stone)
 
-        // Deepslate family
+        // Deepslate
         put("minecraft:deepslate", ToolShape.Pickaxe to Material.Steel)
         put("minecraft:cobbled_deepslate", ToolShape.Pickaxe to Material.Steel)
         put("minecraft:polished_deepslate", ToolShape.Pickaxe to Material.Steel)
@@ -58,10 +63,11 @@ object PlayerMiningListener : Listener {
         // Ores (stone)
         put("minecraft:coal_ore", ToolShape.Pickaxe to Material.Stone)
         put("minecraft:copper_ore", ToolShape.Pickaxe to Material.Stone)
-        put("minecraft:iron_ore", ToolShape.Pickaxe to Material.Copper)
+        put("atom:tin_ore", ToolShape.Pickaxe to Material.Copper)
+        put("minecraft:iron_ore", ToolShape.Pickaxe to Material.Bronze)
         put("minecraft:gold_ore", ToolShape.Pickaxe to Material.Iron)
         put("minecraft:redstone_ore", ToolShape.Pickaxe to Material.Iron)
-        put("minecraft:lapis_ore", ToolShape.Pickaxe to Material.Stone)
+        put("minecraft:lapis_ore", ToolShape.Pickaxe to Material.Copper)
         put("minecraft:diamond_ore", ToolShape.Pickaxe to Material.Steel)
         put("minecraft:emerald_ore", ToolShape.Pickaxe to Material.Steel)
 
@@ -124,11 +130,8 @@ object PlayerMiningListener : Listener {
 
         // Bricks
         put("minecraft:bricks", ToolShape.Pickaxe to Material.Stone)
-        put("minecraft:nether_bricks", ToolShape.Pickaxe to Material.Stone)
-        put("minecraft:red_nether_bricks", ToolShape.Pickaxe to Material.Stone)
 
         // Misc hard blocks
-        put("minecraft:quartz_block", ToolShape.Pickaxe to Material.Copper)
         put("minecraft:prismarine", ToolShape.Pickaxe to Material.Stone)
         put("minecraft:packed_ice", ToolShape.Pickaxe to Material.Stone)
         put("minecraft:blue_ice", ToolShape.Pickaxe to Material.Stone)

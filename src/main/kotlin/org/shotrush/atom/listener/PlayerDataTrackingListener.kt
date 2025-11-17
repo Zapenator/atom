@@ -14,7 +14,7 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.persistence.PersistentDataType
 import org.shotrush.atom.Atom
-import org.shotrush.atom.content.Age
+import org.shotrush.atom.Age
 import plutoproject.adventurekt.component
 import plutoproject.adventurekt.text.style.textGold
 import plutoproject.adventurekt.text.style.textGray
@@ -80,7 +80,9 @@ object PlayerDataTrackingListener : Listener {
         player.sendMessage("")
         player.sendMessage(
             MiniMessage.miniMessage()
-                .deserialize("<gray>We are currently testing the <white>${Age.Foraging.badge} <gray>and the</gray> ${Age.Copper.badge}")
+                .deserialize("<gray>Ages Available: <white>${
+                    Age.entries.filter { it.enabled }.joinToString(" ") { it.badge }
+                }</white></gray>")
         )
         player.sendMessage("")
         delay(1500)

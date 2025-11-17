@@ -1,7 +1,7 @@
 package org.shotrush.atom.item
 
 import org.bukkit.Color
-import org.shotrush.atom.content.Age
+import org.shotrush.atom.Age
 
 enum class Material(val id: String, val tier: Int, val age: Age, val rgb: Color) {
     Stone("stone", 0, Age.Foraging, Color.fromRGB(128, 128, 128)),
