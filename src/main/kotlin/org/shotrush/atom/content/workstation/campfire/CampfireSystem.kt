@@ -158,14 +158,6 @@ class CampfireSystem(private val plugin: Plugin) : Listener {
         
         registry.brokenAt(b.location)
         
-        // Clear any fuel items that might still be displayed (legacy compatibility)
-        val campfire = b.state as? org.bukkit.block.Campfire
-        if (campfire != null) {
-            for (i in 0 until campfire.size) {
-                campfire.setItem(i, null)
-            }
-            campfire.update(false)
-        }
     }
 
     // Periodic task to process fuel queues
