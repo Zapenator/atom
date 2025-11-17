@@ -156,6 +156,7 @@ class LeatherBedBlockEntity(
                 Items.getAnimalProduct(animalType, AnimalProduct.RawMeat).buildItemStack()
             )
 
+            // Convert to processed leather and start curing
             storedItem = Items.getAnimalProduct(animalType, AnimalProduct.Leather).buildItemStack()
 
             // Trigger the curing process through the behavior using region dispatcher
