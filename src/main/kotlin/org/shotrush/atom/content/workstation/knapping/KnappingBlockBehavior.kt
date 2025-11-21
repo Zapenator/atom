@@ -342,18 +342,22 @@ class KnappingBlockBehavior(block: CustomBlock) : AbstractBlockBehavior(block), 
         if (item !is ItemStack) return InteractionResult.PASS
         val key = item.getNamespacedKey()
 
+        val consumeItem = {
+            if (player.gameMode != GameMode.CREATIVE) {
+                if (player.inventory.itemInMainHand.isSimilar(item)) {
+                    player.inventory.itemInMainHand.subtract()
+                } else if (player.inventory.itemInOffHand.isSimilar(item)) {
+                    player.inventory.itemInOffHand.subtract()
+                }
+            }
+        }
+
         if (!item.isCustomItem()) {
             if (item.type == Material.CLAY_BALL) {
-                openUI(KnappingMaterial.Clay, player) {
-                    if (player.gameMode != GameMode.CREATIVE)
-                        context.item.count(context.item.count() - 1)
-                }
+                openUI(KnappingMaterial.Clay, player, onCraftComplete = consumeItem)
                 return InteractionResult.SUCCESS
             } else if (item.type == Material.HONEYCOMB) {
-                openUI(KnappingMaterial.Wax, player) {
-                    if (player.gameMode != GameMode.CREATIVE)
-                        context.item.count(context.item.count() - 1)
-                }
+                openUI(KnappingMaterial.Wax, player, onCraftComplete = consumeItem)
                 return InteractionResult.SUCCESS
             }
         } else {
@@ -361,11 +365,9 @@ class KnappingBlockBehavior(block: CustomBlock) : AbstractBlockBehavior(block), 
                 openUI(
                     KnappingMaterial.Stone,
                     player,
-                    invert = true
-                ) {
-                    if (player.gameMode != GameMode.CREATIVE)
-                        context.item.count(context.item.count() - 1)
-                }
+                    invert = true,
+                    onCraftComplete = consumeItem
+                )
                 return InteractionResult.SUCCESS
             }
         }

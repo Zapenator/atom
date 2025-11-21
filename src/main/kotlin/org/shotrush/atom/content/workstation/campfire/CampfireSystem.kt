@@ -43,7 +43,7 @@ class CampfireSystem(private val plugin: Plugin) : Listener {
     private val universalFuel = UniversalFuelFeature()
 
     // Prevent duplicate fuel additions within 100ms
-    private val recentFuelAdditions = mutableMapOf<String, Long>()
+    private val recentFuelAdditions = java.util.concurrent.ConcurrentHashMap<String, Long>()
 
     init {
         plugin.server.pluginManager.registerEvents(this, plugin)
@@ -51,8 +51,8 @@ class CampfireSystem(private val plugin: Plugin) : Listener {
         registry.addListener(universalFuel)
         registry.addListener(mold)
     }
-    
-    private val resumedWorlds = mutableSetOf<String>()
+
+    private val resumedWorlds = java.util.concurrent.ConcurrentHashMap.newKeySet<String>()
     
     @EventHandler
     fun onWorldLoad(event: org.bukkit.event.world.WorldLoadEvent) {

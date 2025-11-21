@@ -19,7 +19,10 @@ import org.bukkit.event.Listener
 import org.bukkit.event.entity.ItemDespawnEvent
 import org.bukkit.event.entity.ItemMergeEvent
 import org.bukkit.event.entity.ItemSpawnEvent
+import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
@@ -61,18 +64,51 @@ class GroundItemDisplayHandler(private val plugin: Plugin) : Listener {
 
     private val pendingItems = mutableSetOf<UUID>()
     private val conversionJobs = mutableMapOf<UUID, Job>()
+    private val playerPickupJobs = mutableMapOf<UUID, Job>()
+
+    @EventHandler
+    fun onPlayerJoin(event: PlayerJoinEvent) {
+        val player = event.player
+        val job = Atom.instance.launch(Atom.instance.entityDispatcher(player)) {
+            val nearbyTracker = mutableMapOf<UUID, Long>()
+            while (!player.isDead && player.isOnline) {
+                delay(250L)
+
+                val nearby = findGroundItemsInRadius(player.location, 0.8)
+                val currentTimestamp = System.currentTimeMillis()
+                val currentItemIds = nearby.map { it.uniqueId }.toSet()
+
+                nearbyTracker.keys.retainAll(currentItemIds)
+
+                for (display in nearby) {
+                    val id = display.uniqueId
+                    val firstSeen = nearbyTracker.getOrPut(id) { currentTimestamp }
+
+                    if (currentTimestamp - firstSeen > 500) { // .5s
+                        if (display.isValid) {
+                            pickupGroundItem(player, display)
+                        }
+                        nearbyTracker.remove(id)
+                    }
+                }
+            }
+        }
+        playerPickupJobs[player.uniqueId] = job
+    }
+
+    @EventHandler
+    fun onPlayerQuit(event: PlayerQuitEvent) {
+        playerPickupJobs.remove(event.player.uniqueId)?.cancel()
+    }
 
     @EventHandler
     fun onItemSpawn(event: ItemSpawnEvent) {
         val item = event.entity
         if (item.itemStack.type == Material.AIR) return
-
-        // Mark item for conversion
         pendingItems.add(item.uniqueId)
+        val startTime = System.currentTimeMillis()
 
-        // Schedule conversion check using Folia's entity scheduler
         val job = Atom.instance.launch(Atom.instance.entityDispatcher(item)) {
-            // Check every 5 ticks (250ms)
             while (pendingItems.contains(item.uniqueId)) {
                 delay(250L)
 
@@ -81,7 +117,10 @@ class GroundItemDisplayHandler(private val plugin: Plugin) : Listener {
                     break
                 }
 
-                // Check if item has come to rest
+                if (System.currentTimeMillis() - startTime < 3000) {
+                    continue
+                }
+
                 val velocity = item.velocity
                 if (velocity.length() < VELOCITY_THRESHOLD && item.isOnGround) {
                     convertItemToDisplay(item)
@@ -97,15 +136,10 @@ class GroundItemDisplayHandler(private val plugin: Plugin) : Listener {
         val location = item.location
         val itemStack = item.itemStack
 
-        // Clean up tracking
         cleanupPendingItem(item.uniqueId)
-
-        // Remove original item
         item.remove()
 
-        // Try to stack with existing ground items first
         if (!tryStackWithExisting(location, itemStack)) {
-            // If not stacked, create new ground item display
             createGroundItemDisplay(location, itemStack)
         }
     }
@@ -189,17 +223,13 @@ class GroundItemDisplayHandler(private val plugin: Plugin) : Listener {
     private fun findFreePosition(location: Location): Location {
         val block = location.block
         val blockAbove = block.getRelative(0, 1, 0)
-        
-        // Check if the block we're trying to place on is solid or has special properties
+
         val baseY = when {
-            // If block is solid, place on top of it
             block.type.isSolid -> block.y + 1.0
-            // If block above is solid, place on top of that (avoid spawning inside blocks)
             blockAbove.type.isSolid -> blockAbove.y + 1.0
-            // Otherwise place slightly above current position
             else -> location.y + 0.1
         }
-        
+
         val baseLocation = location.clone().apply {
             y = baseY
         }
@@ -235,7 +265,11 @@ class GroundItemDisplayHandler(private val plugin: Plugin) : Listener {
     @EventHandler
     fun onPlayerInteract(event: PlayerInteractEvent) {
         if (event.hand != EquipmentSlot.HAND) return
-        if (!event.player.isSneaking) return
+
+        val action = event.action
+        val isInteract = action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK
+
+        if (!isInteract) return
 
         val player = event.player
         val eyeLocation = player.eyeLocation
@@ -351,5 +385,7 @@ class GroundItemDisplayHandler(private val plugin: Plugin) : Listener {
         conversionJobs.values.forEach { it.cancel() }
         conversionJobs.clear()
         pendingItems.clear()
+        playerPickupJobs.values.forEach { it.cancel() }
+        playerPickupJobs.clear()
     }
 }

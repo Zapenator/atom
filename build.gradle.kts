@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "org.shotrush.atom"
-version = "5.0-ALPHA"
+version = "0.0.1 INDEV"
 
 repositories {
     mavenCentral()
