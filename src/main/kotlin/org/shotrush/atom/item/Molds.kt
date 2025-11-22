@@ -14,7 +14,8 @@ import org.shotrush.atom.getNamespacedKey
 
 object Molds {
     fun getMold(tool: MoldShape, variant: MoldType): CustomItem<ItemStack> {
-        return CraftEngineItems.byId(Key.of("atom", "${variant.id}_mold_${tool.mold}"))!!
+        val key = Key.of("atom", "${variant.id}_mold_${tool.mold}")
+        return CraftEngineItems.byId(key) ?: error("Mold item not found: $key")
     }
 
     fun getToolHead(tool: MoldShape, material: Material): CustomItem<ItemStack> {

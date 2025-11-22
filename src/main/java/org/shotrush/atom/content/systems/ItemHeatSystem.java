@@ -15,18 +15,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.shotrush.atom.core.data.PersistentData;
 import org.shotrush.atom.core.util.ActionBarManager;
+import org.shotrush.atom.core.api.world.EnvironmentalFactorAPI;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-//@RegisterSystem(
-//    id = "item_heat_system",
-//    priority = 3,
-//    dependencies = {"action_bar_manager"},
-//    toggleable = true,
-//    description = "Manages item temperature and heat mechanics"
-//)
 public class ItemHeatSystem implements Listener {
     @Getter
     public static ItemHeatSystem instance;
@@ -52,7 +46,6 @@ public class ItemHeatSystem implements Listener {
         Player player = event.getPlayer();
         UUID playerId = player.getUniqueId();
         
-        
         Map<Integer, Double> slotHeatMap = playerItemHeatCache.get(playerId);
         if (slotHeatMap != null) {
             for (int slot = 0; slot < 9; slot++) {
@@ -66,7 +59,6 @@ public class ItemHeatSystem implements Listener {
             }
         }
         
-        
         playerItemHeatCache.remove(playerId);
         lastKnownItems.remove(playerId);
     }
@@ -74,7 +66,6 @@ public class ItemHeatSystem implements Listener {
     @EventHandler
     public void onItemHeld(PlayerItemHeldEvent event) {
         Player player = event.getPlayer();
-        
         
         int previousSlot = event.getPreviousSlot();
         ItemStack previousItem = player.getInventory().getItem(previousSlot);
@@ -120,21 +111,17 @@ public class ItemHeatSystem implements Listener {
         UUID playerId = player.getUniqueId();
         int slot = player.getInventory().getHeldItemSlot();
         
-        
         ItemStack lastItem = lastKnownItems.get(playerId);
         if (lastItem == null || !item.isSimilar(lastItem)) {
-            
             double heat = getItemHeat(item);
             playerItemHeatCache.computeIfAbsent(playerId, k -> new HashMap<>()).put(slot, heat);
             lastKnownItems.put(playerId, item.clone());
         }
         
-        
         double currentHeat = playerItemHeatCache.computeIfAbsent(playerId, k -> new HashMap<>())
             .computeIfAbsent(slot, k -> getItemHeat(item));
         
         org.bukkit.Location loc = player.getLocation();
-        
         
         double bodyTemp = 37.0;
         PlayerTemperatureSystem tempSystem = PlayerTemperatureSystem.getInstance();
@@ -142,14 +129,10 @@ public class ItemHeatSystem implements Listener {
             bodyTemp = tempSystem.getPlayerTemperature(player);
         }
         
-        
         double targetTemp = bodyTemp - 17.0; 
         
-        
-        double heatFromSources = org.shotrush.atom.core.api.world.EnvironmentalFactorAPI
-            .getNearbyHeatSources(loc, 6);
+        double heatFromSources = EnvironmentalFactorAPI.getNearbyHeatSources(loc, 6);
         targetTemp += heatFromSources * 10;
-        
         
         double heatDifference = targetTemp - currentHeat;
         double heatChange = heatDifference * 0.08; 
@@ -201,7 +184,6 @@ public class ItemHeatSystem implements Listener {
         ActionBarManager manager = ActionBarManager.getInstance();
         if (manager == null) return;
         
-        
         if (Math.abs(heat) < 5.0) {
             manager.removeMessage(player, "item_heat");
             return;
@@ -241,7 +223,6 @@ public class ItemHeatSystem implements Listener {
         
         ActionBarManager manager = ActionBarManager.getInstance();
         if (manager == null) return;
-        
         
         if (Math.abs(heat) < 5.0) {
             manager.removeMessage(player, "item_heat");
@@ -314,16 +295,77 @@ public class ItemHeatSystem implements Listener {
             ItemStack itemStack = droppedItem.getItemStack();
             double currentHeat = getItemHeat(itemStack);
             org.bukkit.Location loc = droppedItem.getLocation();
+
+            double ambientTemp = EnvironmentalFactorAPI.getAmbientTemperature(loc);
+            double heatDifference = ambientTemp - currentHeat;
             
-            double heatChange = org.shotrush.atom.core.api.world.EnvironmentalFactorAPI
-                .getNearbyHeatSources(loc, 6);
-            
-            double ambientTemp = 20.0;
-            if (currentHeat > ambientTemp) {
-                heatChange -= 0.5;
+            // Special handling for filled molds
+            if (org.shotrush.atom.item.Molds.INSTANCE.isFilledMold(itemStack)) {
+                // Slower cooling for molds (0.005 instead of 0.1)
+                double heatChange = heatDifference * 0.005;
+                double newHeat = currentHeat + heatChange;
+                
+                // Persistence logic for cooling
+                ItemMeta meta = itemStack.getItemMeta();
+                Long startTime = null;
+                if (meta != null) {
+                    startTime = meta.getPersistentDataContainer().get(COOLING_START_KEY, org.bukkit.persistence.PersistentDataType.LONG);
+                    if (startTime == null) {
+                        startTime = System.currentTimeMillis();
+                        meta.getPersistentDataContainer().set(COOLING_START_KEY, org.bukkit.persistence.PersistentDataType.LONG, startTime);
+                        itemStack.setItemMeta(meta);
+                        droppedItem.setItemStack(itemStack);
+                    }
+                }
+                
+                setItemHeat(itemStack, newHeat);
+                droppedItem.setItemStack(itemStack);
+                
+                // Visual effects
+                if (currentHeat > 50) {
+                    loc.getWorld().spawnParticle(org.bukkit.Particle.SMOKE, loc, 1, 0.1, 0.1, 0.1, 0.01);
+                    long elapsedTicks = (System.currentTimeMillis() - (startTime != null ? startTime : 0)) / 50;
+                    if (elapsedTicks % 100 == 0) { // Every 5 seconds
+                        loc.getWorld().playSound(loc, org.bukkit.Sound.BLOCK_FIRE_EXTINGUISH, 0.1f, 0.5f);
+                    }
+                }
+                
+                long elapsedMillis = System.currentTimeMillis() - (startTime != null ? startTime : System.currentTimeMillis());
+                
+                // 30 seconds = 30000 ms
+                if (elapsedMillis >= 30000) {
+                    try {
+                        kotlin.Pair<ItemStack, ItemStack> result = org.shotrush.atom.item.Molds.INSTANCE.emptyMold(itemStack);
+                        
+                        // Drop empty mold
+                        if (result.getFirst() != null && result.getFirst().getType() != Material.AIR) {
+                            droppedItem.getWorld().dropItem(loc, result.getFirst());
+                        }
+                        
+                        // Drop tool head
+                        if (result.getSecond() != null && result.getSecond().getType() != Material.AIR) {
+                            droppedItem.getWorld().dropItem(loc, result.getSecond());
+                        }
+                        
+                        // Effects
+                        loc.getWorld().playSound(loc, org.bukkit.Sound.ENTITY_ITEM_BREAK, 1.0f, 1.0f);
+                        loc.getWorld().spawnParticle(org.bukkit.Particle.LAVA, loc, 5, 0.1, 0.1, 0.1, 0.0);
+                        
+                        droppedItem.remove();
+                        task.cancel();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        task.cancel();
+                    }
+                }
+                return;
             }
             
-            double newHeat = Math.max(0, currentHeat + heatChange * 0.1);
+            // Standard Item Logic
+            double heatChange = heatDifference * 0.1;
+            
+            double newHeat = currentHeat + heatChange;
+            
             setItemHeat(itemStack, newHeat);
             droppedItem.setItemStack(itemStack);
             
@@ -342,31 +384,15 @@ public class ItemHeatSystem implements Listener {
     
     private void updateItemHeatFromEnvironment(Player player, ItemStack item) {
         double currentHeat = getItemHeat(item);
-        org.bukkit.Location loc = player.getLocation();
-        
-        
-        double tempChange = 0.0;
-        
-        
-        org.bukkit.block.Biome biome = loc.getBlock().getBiome();
-        tempChange += org.shotrush.atom.core.api.world.EnvironmentalFactorAPI.getBiomeTemperature(biome);
-        tempChange += org.shotrush.atom.core.api.world.EnvironmentalFactorAPI.getDayNightModifier(loc.getWorld());
-        tempChange += org.shotrush.atom.core.api.world.EnvironmentalFactorAPI.getLightLevelModifier(loc);
-        tempChange += org.shotrush.atom.core.api.world.EnvironmentalFactorAPI.getWaterIceModifier(player, loc);
-        tempChange += org.shotrush.atom.core.api.world.EnvironmentalFactorAPI.getNearbyHeatSources(loc, 5);
-        
-        
-        double targetTemp = 20.0 + (tempChange * 2.0);
-        
+
+        double targetTemp = EnvironmentalFactorAPI.getAmbientTemperature(player);
         
         double heatDifference = targetTemp - currentHeat;
         double heatChange = heatDifference * 0.08; 
         
         double newHeat = currentHeat + heatChange;
         
-        
         newHeat = Math.max(-150, Math.min(600, newHeat));
-        
         
         if (Math.abs(newHeat - currentHeat) > 0.5) {
             setItemHeat(item, newHeat);
@@ -415,7 +441,6 @@ public class ItemHeatSystem implements Listener {
         item.setItemMeta(meta);
     }
     
-    
     private void saveCachedHeatToItem(Player player, ItemStack item) {
         UUID playerId = player.getUniqueId();
         int slot = player.getInventory().getHeldItemSlot();
@@ -440,6 +465,8 @@ public class ItemHeatSystem implements Listener {
         }
     }
     
+    private static final NamespacedKey COOLING_START_KEY = new NamespacedKey("atom", "cooling_start_time");
+
     public static void startItemDisplayHeatTracking(org.bukkit.entity.ItemDisplay itemDisplay) {
         org.shotrush.atom.core.api.scheduler.SchedulerAPI.runTaskTimer(itemDisplay, task -> {
             if (itemDisplay.isDead() || !itemDisplay.isValid()) {
@@ -455,14 +482,75 @@ public class ItemHeatSystem implements Listener {
             
             double currentHeat = getItemHeat(itemStack);
             org.bukkit.Location loc = itemDisplay.getLocation();
+
+            double ambientTemp = EnvironmentalFactorAPI.getAmbientTemperature(loc);
+            double heatDifference = ambientTemp - currentHeat;
             
-            double heatFromSources = org.shotrush.atom.core.api.world.EnvironmentalFactorAPI
-                .getNearbyHeatSources(loc, 6);
+            // Special handling for filled molds
+            if (org.shotrush.atom.item.Molds.INSTANCE.isFilledMold(itemStack)) {
+                // Slower cooling for molds
+                double heatChange = heatDifference * 0.005;
+                double newHeat = currentHeat + heatChange;
+                
+                // Persistence logic for cooling
+                ItemMeta meta = itemStack.getItemMeta();
+                Long startTime = null;
+                if (meta != null) {
+                    startTime = meta.getPersistentDataContainer().get(COOLING_START_KEY, org.bukkit.persistence.PersistentDataType.LONG);
+                    if (startTime == null) {
+                        startTime = System.currentTimeMillis();
+                        meta.getPersistentDataContainer().set(COOLING_START_KEY, org.bukkit.persistence.PersistentDataType.LONG, startTime);
+                        itemStack.setItemMeta(meta);
+                        // Update the display with the modified item
+                        itemDisplay.setItemStack(itemStack);
+                    }
+                }
+                
+                setItemHeat(itemStack, newHeat);
+                itemDisplay.setItemStack(itemStack);
+                
+                // Visual effects
+                if (currentHeat > 50) {
+                    loc.getWorld().spawnParticle(org.bukkit.Particle.SMOKE, loc, 1, 0.1, 0.1, 0.1, 0.01);
+                    // Use startTime to determine tick-like intervals for sound
+                    long elapsedTicks = (System.currentTimeMillis() - (startTime != null ? startTime : 0)) / 50;
+                    if (elapsedTicks % 100 == 0) { // Every 5 seconds approx
+                        loc.getWorld().playSound(loc, org.bukkit.Sound.BLOCK_FIRE_EXTINGUISH, 0.1f, 0.5f);
+                    }
+                }
+                
+                long elapsedMillis = System.currentTimeMillis() - (startTime != null ? startTime : System.currentTimeMillis());
+                
+                // 30 seconds = 30000 ms
+                if (elapsedMillis >= 30000) {
+                    try {
+                        kotlin.Pair<ItemStack, ItemStack> result = org.shotrush.atom.item.Molds.INSTANCE.emptyMold(itemStack);
+                        
+                        // Drop empty mold
+                        if (result.getFirst() != null && result.getFirst().getType() != Material.AIR) {
+                            itemDisplay.getWorld().dropItem(loc, result.getFirst());
+                        }
+                        
+                        // Drop tool head
+                        if (result.getSecond() != null && result.getSecond().getType() != Material.AIR) {
+                            itemDisplay.getWorld().dropItem(loc, result.getSecond());
+                        }
+                        
+                        // Effects
+                        loc.getWorld().playSound(loc, org.bukkit.Sound.ENTITY_ITEM_BREAK, 1.0f, 1.0f);
+                        loc.getWorld().spawnParticle(org.bukkit.Particle.LAVA, loc, 5, 0.1, 0.1, 0.1, 0.0);
+                        
+                        itemDisplay.remove();
+                        task.cancel();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        task.cancel();
+                    }
+                }
+                return;
+            }
             
-            double ambientTemp = 20.0;
-            double targetTemp = ambientTemp + (heatFromSources * 10);
-            
-            double heatDifference = targetTemp - currentHeat;
+            // Standard Item Logic
             double heatChange = heatDifference * 0.05;
             double newHeat = currentHeat + heatChange;
             
@@ -474,7 +562,6 @@ public class ItemHeatSystem implements Listener {
             }
         }, 20L, 20L);
     }
-    
     
     public static void startDroppedItemFireTracking(org.bukkit.entity.Item item) {
         org.shotrush.atom.core.api.scheduler.SchedulerAPI.runTaskTimer(item, task -> {
@@ -491,13 +578,11 @@ public class ItemHeatSystem implements Listener {
             
             double currentHeat = getItemHeat(itemStack);
             
-            
             if (currentHeat > 200.0) {
                 igniteNearbyBlocks(item.getLocation(), currentHeat);
             }
-            
-            
-            double ambientTemp = 20.0;
+
+            double ambientTemp = EnvironmentalFactorAPI.getAmbientTemperature(item.getLocation());
             double heatDifference = ambientTemp - currentHeat;
             double heatChange = heatDifference * 0.02; 
             double newHeat = currentHeat + heatChange;
@@ -511,10 +596,8 @@ public class ItemHeatSystem implements Listener {
         }, 10L, 10L); 
     }
     
-    
     private static void igniteNearbyBlocks(org.bukkit.Location location, double temperature) {
         if (location.getWorld() == null) return;
-        
         
         int radius = (int) Math.min(3, (temperature - 200) / 100);
         
@@ -524,9 +607,7 @@ public class ItemHeatSystem implements Listener {
                     org.bukkit.Location checkLoc = location.clone().add(x, y, z);
                     org.bukkit.block.Block block = checkLoc.getBlock();
                     
-                    
                     if (isFlammable(block) && block.getRelative(org.bukkit.block.BlockFace.UP).getType() == Material.AIR) {
-                        
                         double igniteChance = Math.min(0.3, (temperature - 200) / 1000);
                         if (Math.random() < igniteChance) {
                             block.getRelative(org.bukkit.block.BlockFace.UP).setType(Material.FIRE);
@@ -536,7 +617,6 @@ public class ItemHeatSystem implements Listener {
             }
         }
     }
-    
     
     private static boolean isFlammable(org.bukkit.block.Block block) {
         Material type = block.getType();

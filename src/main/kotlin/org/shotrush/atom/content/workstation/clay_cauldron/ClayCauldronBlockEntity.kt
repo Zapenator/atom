@@ -22,6 +22,11 @@ import org.shotrush.atom.item.MoldShape
 import org.shotrush.atom.matches
 import org.shotrush.atom.putItemStack
 
+import org.bukkit.Particle
+import org.bukkit.Sound
+import org.shotrush.atom.core.util.ActionBarManager
+import kotlin.math.ceil
+
 class ClayCauldronBlockEntity(
     pos: BlockPos,
     blockState: ImmutableBlockState,
@@ -154,6 +159,11 @@ class ClayCauldronBlockEntity(
         if (consumingProgress >= TICKS_TO_MELT) {
             consumingProgress = 0
             currentlyConsuming.amount--
+
+            val bukkitWorld = world.world.platformWorld() as World
+            val location = org.bukkit.Location(bukkitWorld, pos.x() + 0.5, pos.y() + 0.5, pos.z() + 0.5)
+            bukkitWorld.playSound(location, Sound.BLOCK_LAVA_POP, 0.5f, 1.0f)
+            bukkitWorld.spawnParticle(Particle.SMOKE, location, 3, 0.1, 0.2, 0.1, 0.0)
         } else {
             consumingProgress++
             fluid = if (currentlyConsuming.matches("minecraft:raw_copper")) Material.Copper else Material.Iron
@@ -179,12 +189,31 @@ class ClayCauldronBlockEntity(
     }
 
     fun fillMold(player: Player, item: ItemStack, type: MoldType, shape: MoldShape): InteractionResult {
-        if (fluid == null) return InteractionResult.PASS
-        if (fluidStored < FLUID_PER_INGOT) return InteractionResult.PASS
+        if (fluid == null) {
+            ActionBarManager.send(player, "<red>The cauldron is empty!</red>")
+            return InteractionResult.PASS
+        }
+        if (fluidStored < FLUID_PER_INGOT) {
+            val missing = FLUID_PER_INGOT - fluidStored
+            val rawNeeded = ceil(missing.toDouble() / FLUID_PER_RAW).toInt()
+            val percent = (fluidStored.toDouble() / FLUID_PER_INGOT * 100).toInt()
+            val matName = if(fluid == Material.Copper) "Copper" else "Iron"
+
+            ActionBarManager.send(player, "<red>Need more $matName!</red> <gray>Add <white>$rawNeeded</white> more raw ore ($percent% full)</gray>")
+            return InteractionResult.PASS
+        }
         item.amount--
         fluidStored -= FLUID_PER_INGOT
         val filledMold = Molds.getFilledMold(shape, type, fluid!!)
+        
+        // Set initial heat to be very hot
+        org.shotrush.atom.content.systems.ItemHeatSystem.setItemHeat(filledMold, 300.0)
+        
         player.inventory.addItem(filledMold)
+
+        player.playSound(player.location, Sound.ITEM_BUCKET_FILL_LAVA, 1.0f, 1.0f)
+        ActionBarManager.send(player, "<green>Filled Mold!</green>")
+
         if (fluidStored <= 0) fluid = null
         return InteractionResult.SUCCESS
     }

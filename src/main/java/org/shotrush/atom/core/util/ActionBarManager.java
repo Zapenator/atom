@@ -22,7 +22,10 @@ import java.util.concurrent.ConcurrentHashMap;
 )
 public class ActionBarManager {
 
-    @Getter
+    public static ActionBarManager getInstance() {
+        return instance;
+    }
+
     private static ActionBarManager instance;
     private final Plugin plugin;
     private final Map<UUID, Map<String, String>> playerMessages = new ConcurrentHashMap<>();

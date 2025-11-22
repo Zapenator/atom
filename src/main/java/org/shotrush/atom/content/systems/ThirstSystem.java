@@ -18,6 +18,7 @@ import java.util.UUID;
 
 import org.shotrush.atom.core.api.annotation.RegisterSystem;
 import org.shotrush.atom.core.util.ActionBarManager;
+import org.shotrush.atom.core.api.world.EnvironmentalFactorAPI;
 
 @RegisterSystem(
         id = "thirst_system",
@@ -32,15 +33,12 @@ public class ThirstSystem implements Listener {
     public static ThirstSystem instance;
 
     private final Plugin plugin;
-    private final Map<UUID, Integer> thirstLevels = new HashMap<>();
-    private final Map<UUID, Long> thirstAccelerationEnd = new HashMap<>();
+    private final Map<UUID, Double> thirstLevels = new HashMap<>();
     private final Map<UUID, Integer> thirstDamageTicks = new HashMap<>();
-    private final Map<UUID, Integer> thirstTickCounter = new HashMap<>();
-
-    private static final int MAX_THIRST = 20;
-    private static final int THIRST_DECREASE_INTERVAL = 1;
-    private static final int THIRST_DRAIN_RATE = 600;
-    private static final int THIRST_DAMAGE_INTERVAL = 80;
+    
+    private static final double MAX_THIRST = 20.0;
+    private static final double THIRST_DAMAGE_THRESHOLD = 0.0;
+    private static final double BASE_DRAIN_PER_SEC = 0.0166; 
 
     public ThirstSystem(Plugin plugin) {
         this.plugin = plugin;
@@ -52,7 +50,7 @@ public class ThirstSystem implements Listener {
         Player player = event.getPlayer();
         UUID playerId = player.getUniqueId();
 
-        int savedThirst = org.shotrush.atom.core.api.player.PlayerDataAPI.getInt(player, "thirst.level", MAX_THIRST);
+        double savedThirst = org.shotrush.atom.core.api.player.PlayerDataAPI.getDouble(player, "thirst.level", MAX_THIRST);
 
         thirstLevels.put(playerId, savedThirst);
         updateThirstDisplay(player);
@@ -64,13 +62,11 @@ public class ThirstSystem implements Listener {
         Player player = event.getPlayer();
         UUID playerId = player.getUniqueId();
 
-        int thirst = thirstLevels.getOrDefault(playerId, MAX_THIRST);
-        org.shotrush.atom.core.api.player.PlayerDataAPI.setInt(player, "thirst.level", thirst);
+        double thirst = thirstLevels.getOrDefault(playerId, MAX_THIRST);
+        org.shotrush.atom.core.api.player.PlayerDataAPI.setDouble(player, "thirst.level", thirst);
 
         thirstLevels.remove(playerId);
-        thirstAccelerationEnd.remove(playerId);
         thirstDamageTicks.remove(playerId);
-        thirstTickCounter.remove(playerId);
         ActionBarManager.getInstance().removeMessage(player, "thirst");
     }
 
@@ -81,51 +77,52 @@ public class ThirstSystem implements Listener {
                 return;
             }
 
-            UUID playerId = player.getUniqueId();
-            int currentThirst = thirstLevels.getOrDefault(playerId, MAX_THIRST);
+            updateThirst(player);
+        }, 20L, 20L);
+    }
 
-            int tickCounter = thirstTickCounter.getOrDefault(playerId, 0) + 1;
-            thirstTickCounter.put(playerId, tickCounter);
+    private void updateThirst(Player player) {
+        UUID playerId = player.getUniqueId();
+        double currentThirst = thirstLevels.getOrDefault(playerId, MAX_THIRST);
+        
+        double drain = BASE_DRAIN_PER_SEC;
 
-            if (tickCounter >= THIRST_DRAIN_RATE) {
-                thirstTickCounter.put(playerId, 0);
+        if (player.isSprinting()) {
+            drain *= 2.0;
+        }
 
-                int decreaseAmount = 1;
+        double ambient = EnvironmentalFactorAPI.getAmbientTemperature(player);
+        if (ambient > 45.0) {
+            drain *= 3.0;
+        } else if (ambient > 30.0) {
+            drain *= 1.5;
+        }
+        
+        currentThirst -= drain;
+        currentThirst = Math.max(0, Math.min(MAX_THIRST, currentThirst));
+        thirstLevels.put(playerId, currentThirst);
 
-                Long accelerationEnd = thirstAccelerationEnd.get(playerId);
-                if (accelerationEnd != null && System.currentTimeMillis() < accelerationEnd) {
-                    decreaseAmount = 2;
-                } else {
-                    thirstAccelerationEnd.remove(playerId);
-                }
+        if (currentThirst <= THIRST_DAMAGE_THRESHOLD) {
+            int damageTicks = thirstDamageTicks.getOrDefault(playerId, 0);
+            damageTicks += 20;
+            thirstDamageTicks.put(playerId, damageTicks);
 
-                currentThirst -= decreaseAmount;
-                thirstLevels.put(playerId, Math.max(0, currentThirst));
+            if (damageTicks >= 80) { // Every 4 seconds damage
+                player.damage(1.0);
+                thirstDamageTicks.put(playerId, 0);
             }
+        } else {
+            thirstDamageTicks.remove(playerId);
 
-            if (currentThirst <= 0) {
-                int damageTicks = thirstDamageTicks.getOrDefault(playerId, 0);
-                damageTicks++;
-                thirstDamageTicks.put(playerId, damageTicks);
-
-                if (damageTicks >= THIRST_DAMAGE_INTERVAL) {
-                    player.damage(1.0);
-                    thirstDamageTicks.put(playerId, 0);
-                }
-            } else {
-                thirstDamageTicks.remove(playerId);
-
-                if (currentThirst <= 5) {
-                    player.addPotionEffect(new org.bukkit.potion.PotionEffect(
-                            org.bukkit.potion.PotionEffectType.SLOWNESS, 40, 0, false, false
-                    ));
-                }
+            if (currentThirst <= 5.0) {
+                player.addPotionEffect(new org.bukkit.potion.PotionEffect(
+                        org.bukkit.potion.PotionEffectType.SLOWNESS, 40, 0, false, false
+                ));
             }
+        }
 
-            checkWaterPurification(player);
-
-            updateThirstDisplay(player);
-        }, THIRST_DECREASE_INTERVAL, THIRST_DECREASE_INTERVAL);
+        checkWaterPurification(player);
+        updateThirstDisplay(player);
     }
 
     @EventHandler
@@ -177,33 +174,16 @@ public class ThirstSystem implements Listener {
     }
 
     private void drinkRawWater(Player player) {
-        UUID playerId = player.getUniqueId();
-
-        int currentThirst = thirstLevels.getOrDefault(playerId, MAX_THIRST);
         addThirst(player, 5);
-        int newThirst = thirstLevels.getOrDefault(playerId, MAX_THIRST);
-        int gained = newThirst - currentThirst;
-
-        if (gained > 0) {
-            ActionBarManager.send(player, "<aqua>+<gray>" + gained + "</gray> Thirst</aqua>");
-        }
 
         player.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 200, 0, false, false));
-
-        thirstAccelerationEnd.put(playerId, System.currentTimeMillis() + 30000);
+        
+        ActionBarManager.send(player, "<aqua>+5</aqua> Thirst <red>(Raw Water)</red>");
     }
 
     private void drinkPurifiedWater(Player player) {
-        UUID playerId = player.getUniqueId();
-
-        int currentThirst = thirstLevels.getOrDefault(playerId, MAX_THIRST);
         addThirst(player, 10);
-        int newThirst = thirstLevels.getOrDefault(playerId, MAX_THIRST);
-        int gained = newThirst - currentThirst;
-
-        if (gained > 0) {
-            ActionBarManager.send(player, "<aqua>+<gray>" + gained + "</gray> Thirst</aqua> <gray>(Purified)</gray>");
-        }
+        ActionBarManager.send(player, "<aqua>+10</aqua> Thirst <gray>(Purified)</gray>");
     }
 
     private void checkWaterPurification(Player player) {
@@ -226,7 +206,8 @@ public class ThirstSystem implements Listener {
     }
 
     private void updateThirstDisplay(Player player) {
-        int thirst = thirstLevels.getOrDefault(player.getUniqueId(), MAX_THIRST);
+        double thirst = thirstLevels.getOrDefault(player.getUniqueId(), MAX_THIRST);
+        int displayThirst = (int) Math.ceil(thirst);
 
         String color;
 
@@ -242,19 +223,19 @@ public class ThirstSystem implements Listener {
             color = "<aqua>";
         }
 
-        String message = color + thirst + "<dark_gray>/<gray>" + MAX_THIRST;
+        String message = color + displayThirst + "<dark_gray>/<gray>" + (int)MAX_THIRST;
         ActionBarManager.getInstance().setMessage(player, "thirst", message);
     }
 
     public void addThirst(Player player, int amount) {
         UUID playerId = player.getUniqueId();
-        int currentThirst = thirstLevels.getOrDefault(playerId, MAX_THIRST);
-        int newThirst = Math.min(currentThirst + amount, MAX_THIRST);
+        double currentThirst = thirstLevels.getOrDefault(playerId, MAX_THIRST);
+        double newThirst = Math.min(currentThirst + amount, MAX_THIRST);
         thirstLevels.put(playerId, newThirst);
         updateThirstDisplay(player);
     }
-
+    
     public int getThirst(Player player) {
-        return thirstLevels.getOrDefault(player.getUniqueId(), MAX_THIRST);
+        return (int) Math.ceil(thirstLevels.getOrDefault(player.getUniqueId(), MAX_THIRST));
     }
 }

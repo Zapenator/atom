@@ -66,7 +66,15 @@ public class PersistentData {
     }
     
     public static double getDouble(PersistentDataHolder holder, String key, double defaultValue) {
-        return holder.getPersistentDataContainer().getOrDefault(key(key), PersistentDataType.DOUBLE, defaultValue);
+        PersistentDataContainer container = holder.getPersistentDataContainer();
+        NamespacedKey namespacedKey = key(key);
+        if (container.has(namespacedKey, PersistentDataType.INTEGER)) {
+            int value = container.getOrDefault(namespacedKey, PersistentDataType.INTEGER, (int) defaultValue);
+            container.set(namespacedKey, PersistentDataType.DOUBLE, (double) value);
+            return (double) value;
+        }
+
+        return container.getOrDefault(namespacedKey, PersistentDataType.DOUBLE, defaultValue);
     }
     
     public static String getString(PersistentDataHolder holder, String key, String defaultValue) {

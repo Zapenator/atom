@@ -23,6 +23,7 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
+import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
@@ -34,6 +35,7 @@ import org.joml.Vector3f
 import org.shotrush.atom.Atom
 import org.shotrush.atom.core.api.annotation.RegisterSystem
 import org.shotrush.atom.core.data.PersistentData
+import org.shotrush.atom.content.systems.ItemHeatSystem
 import java.util.*
 import kotlin.math.cos
 import kotlin.math.sin
@@ -65,6 +67,26 @@ class GroundItemDisplayHandler(private val plugin: Plugin) : Listener {
     private val pendingItems = mutableSetOf<UUID>()
     private val conversionJobs = mutableMapOf<UUID, Job>()
     private val playerPickupJobs = mutableMapOf<UUID, Job>()
+
+    init {
+        // Resume tracking for any entities in already loaded worlds/chunks
+        org.bukkit.Bukkit.getWorlds().forEach { world ->
+            world.entities.forEach { entity ->
+                if (entity is ItemDisplay && isGroundItem(entity)) {
+                    ItemHeatSystem.startItemDisplayHeatTracking(entity)
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    fun onChunkLoad(event: ChunkLoadEvent) {
+        event.chunk.entities.forEach { entity ->
+            if (entity is ItemDisplay && isGroundItem(entity)) {
+                ItemHeatSystem.startItemDisplayHeatTracking(entity)
+            }
+        }
+    }
 
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
@@ -218,6 +240,9 @@ class GroundItemDisplayHandler(private val plugin: Plugin) : Listener {
         )
 
         location.world.playSound(location, Sound.ENTITY_ITEM_PICKUP, 0.5f, 0.8f)
+        
+        // Start heat tracking for the new display
+        org.shotrush.atom.content.systems.ItemHeatSystem.startItemDisplayHeatTracking(display)
     }
 
     private fun findFreePosition(location: Location): Location {

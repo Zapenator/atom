@@ -93,7 +93,7 @@ class Atom : SuspendingJavaPlugin() {
             commandManager.registerCommand(MobAIDebugCommand(visualDebugger, herdManager))
         }
 
-        Commands.register()
+        Commands.register(commandManager)
     }
 
     override fun onDisable() {

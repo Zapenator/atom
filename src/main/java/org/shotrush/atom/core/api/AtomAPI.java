@@ -79,6 +79,8 @@ public final class AtomAPI {
         }
         plugin.getLogger().info("Registering items...");
         org.shotrush.atom.core.AutoRegisterManager.registerItems(plugin, itemRegistry);
+
+        org.shotrush.atom.content.MoldRecipes.INSTANCE.register(plugin);
     }
 
 

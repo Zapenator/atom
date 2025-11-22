@@ -8,6 +8,7 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.Sound
+import org.bukkit.block.Campfire
 import org.bukkit.block.data.Lightable
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -21,10 +22,12 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
 import org.shotrush.atom.Atom
 import org.shotrush.atom.content.workstation.campfire.features.BurnoutFeature
-import org.shotrush.atom.content.workstation.campfire.features.MoldFiringFeature
+// import org.shotrush.atom.content.workstation.campfire.features.MoldFiringFeature
 import org.shotrush.atom.content.workstation.campfire.features.UniversalFuelFeature
 import org.shotrush.atom.core.api.annotation.RegisterSystem
 import org.shotrush.atom.core.util.ActionBarManager
+import org.shotrush.atom.item.MoldType
+import org.shotrush.atom.item.Molds
 import org.shotrush.atom.matches
 import kotlin.random.Random
 
@@ -39,7 +42,6 @@ class CampfireSystem(private val plugin: Plugin) : Listener {
 
     private val registry = CampfireRegistry(plugin)
     private val burnout = BurnoutFeature()
-    private val mold = MoldFiringFeature()
     private val universalFuel = UniversalFuelFeature()
 
     // Prevent duplicate fuel additions within 100ms
@@ -49,7 +51,6 @@ class CampfireSystem(private val plugin: Plugin) : Listener {
         plugin.server.pluginManager.registerEvents(this, plugin)
         registry.addListener(burnout)
         registry.addListener(universalFuel)
-        registry.addListener(mold)
     }
 
     private val resumedWorlds = java.util.concurrent.ConcurrentHashMap.newKeySet<String>()
@@ -92,6 +93,7 @@ class CampfireSystem(private val plugin: Plugin) : Listener {
     @EventHandler(priority = EventPriority.HIGH)
     fun onInteract(event: PlayerInteractEvent) {
         if (event.hand != EquipmentSlot.HAND) return
+        if (event.action != org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK) return
         val block = event.clickedBlock ?: return
         if (block.type != Material.CAMPFIRE && block.type != Material.SOUL_CAMPFIRE) return
 
@@ -99,14 +101,38 @@ class CampfireSystem(private val plugin: Plugin) : Listener {
         val player = event.player
         val item = player.inventory.itemInMainHand
 
-        // Universal fuel add when lit (any item with burn time component)
         if (data.isLit) {
-            // Check for duplicate fuel additions within 100ms
             val key = "${player.uniqueId}:${block.location}"
             val now = System.currentTimeMillis()
             val lastAddition = recentFuelAdditions[key] ?: 0L
             if (now - lastAddition < 100L) {
-                return // Ignore duplicate event
+                return
+            }
+
+            if (Molds.isMold(item) && Molds.getMoldType(item) == MoldType.Clay) {
+                val campfire = block.state as? Campfire ?: return
+
+                for (i in 0 until 4) {
+                    if (campfire.getItem(i) == null) {
+                        val shape = Molds.getMoldShape(item)
+                        val canonicalItem = Molds.getMold(shape, MoldType.Clay).buildItemStack()
+                        canonicalItem.amount = 1
+                        
+                        campfire.setItem(i, canonicalItem)
+                        campfire.setCookTime(i, 0)
+                        campfire.setCookTimeTotal(i, 60 * 20) // 60 seconds
+                        campfire.update()
+                        
+                        if (player.gameMode != org.bukkit.GameMode.CREATIVE) {
+                            item.subtract(1)
+                        }
+                        recentFuelAdditions[key] = now
+                        
+                        event.isCancelled = true
+                        return
+                    }
+                }
+                return
             }
 
             val end = universalFuel.tryAddFuel(registry, block.location, item)
@@ -160,19 +186,28 @@ class CampfireSystem(private val plugin: Plugin) : Listener {
         
     }
 
-    // Periodic task to process fuel queues
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    fun onCampfireCook(event: org.bukkit.event.block.BlockCookEvent) {
+        val source = event.source
+        if (Molds.isMold(source) && Molds.getMoldType(source) == MoldType.Clay) {
+            val shape = Molds.getMoldShape(source)
+            val result = Molds.getMold(shape, MoldType.Fired).buildItemStack()
+            event.result = result
+        }
+    }
+
     init {
-        // Process fuel queues every 2 seconds to consume fuel items as time passes
-        plugin.server.scheduler.runTaskTimer(plugin, { _ ->
+
+        org.shotrush.atom.core.api.scheduler.SchedulerAPI.runGlobalTaskTimer({
             registry.getAllStates().forEach { state ->
                 if (state.lit) {
                     universalFuel.processFuelQueue(state.location, registry)
                 }
             }
-            // Clean up old fuel addition timestamps (older than 1 second)
+
             val now = System.currentTimeMillis()
             recentFuelAdditions.entries.removeIf { now - it.value > 1000L }
-        }, 100L, 100L) // Start after 2 seconds, repeat every 2 seconds
+        }, 100L, 100L)
     }
 
     private fun startStrikeTask(
