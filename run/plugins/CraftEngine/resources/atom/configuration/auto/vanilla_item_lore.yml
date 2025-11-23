@@ -164,21 +164,6 @@ items:
       lore:
         - ""
         - <!i><white><image:atom:badge_natural> <image:atom:badge_age_foraging>
-  minecraft:wheat:
-    client-bound-data:
-      lore:
-        - ""
-        - <!i><white><image:atom:badge_natural> <image:atom:badge_age_foraging>
-  minecraft:carrot:
-    client-bound-data:
-      lore:
-        - ""
-        - <!i><white><image:atom:badge_natural> <image:atom:badge_age_foraging>
-  minecraft:potato:
-    client-bound-data:
-      lore:
-        - ""
-        - <!i><white><image:atom:badge_natural> <image:atom:badge_age_foraging>
   minecraft:raw_coal:
     client-bound-data:
       lore:
@@ -243,7 +228,7 @@ items:
     client-bound-data:
       lore:
         - ""
-        - <!i><white><image:atom:badge_material> <image:atom:badge_age_copper>
+        - <!i><white><image:atom:badge_material> <image:atom:badge_age_iron>
   minecraft:copper_nugget:
     client-bound-data:
       lore:
@@ -253,8 +238,38 @@ items:
     client-bound-data:
       lore:
         - ""
-        - <!i><white><image:atom:badge_material> <image:atom:badge_age_copper>
+        - <!i><white><image:atom:badge_material> <image:atom:badge_age_iron>
   minecraft:apple:
+    client-bound-data:
+      lore:
+        - ""
+        - <!i><white><image:atom:badge_food> <image:atom:badge_natural> <image:atom:badge_age_foraging>
+  minecraft:wheat:
+    client-bound-data:
+      lore:
+        - ""
+        - <!i><white><image:atom:badge_natural> <image:atom:badge_age_foraging>
+  minecraft:potato:
+    client-bound-data:
+      lore:
+        - ""
+        - <!i><white><image:atom:badge_food> <image:atom:badge_natural> <image:atom:badge_age_foraging>
+  minecraft:baked_potato:
+    client-bound-data:
+      lore:
+        - ""
+        - <!i><white><image:atom:badge_food> <image:atom:badge_natural> <image:atom:badge_age_foraging>
+  minecraft:carrot:
+    client-bound-data:
+      lore:
+        - ""
+        - <!i><white><image:atom:badge_food> <image:atom:badge_natural> <image:atom:badge_age_foraging>
+  minecraft:sweet_berries:
+    client-bound-data:
+      lore:
+        - ""
+        - <!i><white><image:atom:badge_food> <image:atom:badge_natural> <image:atom:badge_age_foraging>
+  minecraft:glow_berries:
     client-bound-data:
       lore:
         - ""
@@ -264,6 +279,17 @@ items:
       lore:
         - ""
         - <!i><white><image:atom:badge_food> <image:atom:badge_age_foraging>
+  minecraft:beetroot:
+    client-bound-data:
+      lore:
+        - ""
+        - <!i><white><image:atom:badge_food> <image:atom:badge_natural> <image:atom:badge_age_foraging>
+  minecraft:dried_kelp:
+    client-bound-data:
+      lore:
+        - ""
+        - <!i><white><image:atom:badge_material> <image:atom:badge_food> <image:atom:badge_natural>
+        - <!i><white><image:atom:badge_age_foraging>
   minecraft:bucket:
     client-bound-data:
       lore:

@@ -17,6 +17,15 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BookMeta
 import org.bukkit.plugin.Plugin
 import org.shotrush.atom.core.api.annotation.RegisterSystem
+import plutoproject.adventurekt.component
+import plutoproject.adventurekt.text.and
+import plutoproject.adventurekt.text.newline
+import plutoproject.adventurekt.text.style.bold
+import plutoproject.adventurekt.text.style.textBlack
+import plutoproject.adventurekt.text.style.textDarkGray
+import plutoproject.adventurekt.text.style.textDarkRed
+import plutoproject.adventurekt.text.text
+import plutoproject.adventurekt.text.with
 
 @RegisterSystem(
     id = "guide_book_system",
@@ -28,7 +37,7 @@ class GuideBookSystem(private val plugin: Plugin) : Listener {
 
     companion object {
         private const val GUIDE_TITLE = "Atom Survival Guide"
-        private const val GUIDE_AUTHOR = "The Atom"
+        private const val GUIDE_AUTHOR = "Atom Dev Team"
         
         private fun createGuideBook(): ItemStack {
             val book = ItemStack(Material.WRITTEN_BOOK)
@@ -36,18 +45,19 @@ class GuideBookSystem(private val plugin: Plugin) : Listener {
             
             meta.title(Component.text(GUIDE_TITLE, NamedTextColor.GOLD))
             meta.author(Component.text(GUIDE_AUTHOR, NamedTextColor.YELLOW))
+            meta.generation = BookMeta.Generation.ORIGINAL
 
-            val p1 = Component.text()
-                .append(Component.text("Welcome to Atom", NamedTextColor.DARK_RED, TextDecoration.BOLD))
-                .append(Component.newline())
-                .append(Component.newline())
-                .append(Component.text("This world operates differently.", NamedTextColor.BLACK))
-                .append(Component.newline())
-                .append(Component.text("Survival requires understanding temperature, crafting, and metallurgy.", NamedTextColor.BLACK))
-                .append(Component.newline())
-                .append(Component.newline())
-                .append(Component.text("Read this guide carefully to survive.", NamedTextColor.DARK_GRAY))
-                .build()
+            val p1 = component {
+                text("Welcome to Atom") with textDarkRed and bold
+                newline()
+                newline()
+                text("This world operates differently.") with textBlack
+                newline()
+                text("Survival requires understanding temperature, crafting, and metallurgy.") with textBlack
+                newline()
+                newline()
+                text("Read this guide carefully to survive.") with textDarkGray
+            }
 
             // Page 2: Physicality
             val p2 = Component.text()

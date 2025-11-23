@@ -65,10 +65,10 @@ class ClayCauldronBlockEntity(
         }
         get() = if (field.isEmpty) ItemStack.empty() else field
 
-    val TICKS_TO_MELT = 20 * 10
-    val FLUID_PER_RAW = 1000
+    val TICKS_TO_MELT = 200
+    val FLUID_PER_RAW = 200
     val FLUID_PER_TICK = FLUID_PER_RAW / TICKS_TO_MELT
-    val FLUID_PER_INGOT = FLUID_PER_RAW * 9
+    val FLUID_PER_INGOT = FLUID_PER_RAW * 5
     val MAX_FLUID = FLUID_PER_INGOT * 4
 
     var fluidStored: Int = 0

@@ -73,9 +73,6 @@ const VANILLA_LORE: LoreDef[] = [
     {id: "poppy", badges: ["natural"], age: AGES.foraging},
     {id: "dandelion", badges: ["natural"], age: AGES.foraging},
     {id: "seeds", badges: ["natural"], age: AGES.foraging},
-    {id: "wheat", badges: ["natural"], age: AGES.foraging},
-    {id: "carrot", badges: ["natural"], age: AGES.foraging},
-    {id: "potato", badges: ["natural"], age: AGES.foraging},
 
     // Ores
     {id: "raw_coal", badges: ["natural"], age: AGES.foraging},
@@ -92,13 +89,24 @@ const VANILLA_LORE: LoreDef[] = [
     {id: "stick", badges: ["material"], age: AGES.foraging},
     {id: "iron_ingot", badges: ["material"], age: AGES.iron},
     {id: "copper_ingot", badges: ["material"], age: AGES.copper},
-    {id: "iron_nugget", badges: ["material"], age: AGES.copper},
+    {id: "iron_nugget", badges: ["material"], age: AGES.iron},
     {id: "copper_nugget", badges: ["material"], age: AGES.copper},
-    {id: "iron_block", badges: ["material"], age: AGES.copper},
+    {id: "iron_block", badges: ["material"], age: AGES.iron},
 
     // Food
+    {id: "egg", badges: ["natural"], age: AGES.foraging},
+    {id: "brown_egg", badges: ["natural"], age: AGES.foraging},
+    {id: "blue_egg", badges: ["natural"], age: AGES.foraging},
     {id: "apple", badges: ["food", "natural"], age: AGES.foraging},
+    {id: "wheat", badges: ["natural"], age: AGES.foraging},
+    {id: "potato", badges: ["food", "natural"], age: AGES.foraging},
+    {id: "baked_potato", badges: ["food", "natural"], age: AGES.foraging},
+    {id: "carrot", badges: ["food", "natural"], age: AGES.foraging},
+    {id: "sweet_berries", badges: ["food", "natural"], age: AGES.foraging},
+    {id: "glow_berries", badges: ["food", "natural"], age: AGES.foraging},
     {id: "bread", badges: ["food"], age: AGES.foraging},
+    {id: "beetroot", badges: ["food", "natural"], age: AGES.foraging},
+    {id: "dried_kelp", badges: ["material", "food", "natural"], age: AGES.foraging},
 
     // Utility
     {id: "bucket", badges: ["utility"], age: AGES.iron},

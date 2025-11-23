@@ -18,9 +18,6 @@ items:
         - <!i><gray><l10n:item.tool.common.lore>
         - ""
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_foraging>
-    settings:
-      tags:
-        - atom:tool_pickaxe
   atom:stone_shovel_head:
     material: paper
     model:
@@ -40,9 +37,6 @@ items:
         - <!i><gray><l10n:item.tool.common.lore>
         - ""
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_foraging>
-    settings:
-      tags:
-        - atom:tool_shovel
   atom:stone_hoe_head:
     material: paper
     model:
@@ -62,9 +56,6 @@ items:
         - <!i><gray><l10n:item.tool.common.lore>
         - ""
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_foraging>
-    settings:
-      tags:
-        - atom:tool_hoe
   atom:stone_sword_head:
     material: paper
     model:
@@ -84,9 +75,6 @@ items:
         - <!i><gray><l10n:item.tool.common.lore>
         - ""
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_foraging>
-    settings:
-      tags:
-        - atom:tool_sword
   atom:stone_axe_head:
     material: paper
     model:
@@ -106,9 +94,6 @@ items:
         - <!i><gray><l10n:item.tool.common.lore>
         - ""
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_foraging>
-    settings:
-      tags:
-        - atom:tool_axe
   atom:stone_hammer_head:
     material: paper
     model:
@@ -135,7 +120,7 @@ items:
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_foraging>
     settings:
       tags:
-        - atom:tool_hammer
+        - minecraft:hammers
     data:
       item-name: <!i><white><l10n:item.tool.stone.hammer.name>
       max-damage: 10
@@ -165,7 +150,7 @@ items:
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_foraging>
     settings:
       tags:
-        - atom:tool_knife
+        - minecraft:knives
     data:
       item-name: <!i><white><l10n:item.tool.stone.knife.name>
       max-damage: 10
@@ -198,7 +183,7 @@ items:
         type: hurt_and_break
         damage: 1
       tags:
-        - atom:tool_saw
+        - minecraft:saws
     data:
       item-name: <!i><white><l10n:item.tool.stone.saw.name>
       max-damage: 10
@@ -221,9 +206,6 @@ items:
         - <!i><gray><l10n:item.tool.common.lore>
         - ""
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_iron>
-    settings:
-      tags:
-        - atom:tool_pickaxe
   atom:iron_shovel_head:
     material: paper
     model:
@@ -243,9 +225,6 @@ items:
         - <!i><gray><l10n:item.tool.common.lore>
         - ""
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_iron>
-    settings:
-      tags:
-        - atom:tool_shovel
   atom:iron_hoe_head:
     material: paper
     model:
@@ -265,9 +244,6 @@ items:
         - <!i><gray><l10n:item.tool.common.lore>
         - ""
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_iron>
-    settings:
-      tags:
-        - atom:tool_hoe
   atom:iron_sword_head:
     material: paper
     model:
@@ -287,9 +263,6 @@ items:
         - <!i><gray><l10n:item.tool.common.lore>
         - ""
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_iron>
-    settings:
-      tags:
-        - atom:tool_sword
   atom:iron_axe_head:
     material: paper
     model:
@@ -309,9 +282,6 @@ items:
         - <!i><gray><l10n:item.tool.common.lore>
         - ""
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_iron>
-    settings:
-      tags:
-        - atom:tool_axe
   atom:iron_hammer_head:
     material: paper
     model:
@@ -338,7 +308,7 @@ items:
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_iron>
     settings:
       tags:
-        - atom:tool_hammer
+        - minecraft:hammers
     data:
       item-name: <!i><white><l10n:item.tool.iron.hammer.name>
       max-damage: 10
@@ -368,7 +338,7 @@ items:
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_iron>
     settings:
       tags:
-        - atom:tool_knife
+        - minecraft:knives
     data:
       item-name: <!i><white><l10n:item.tool.iron.knife.name>
       max-damage: 10
@@ -401,7 +371,7 @@ items:
         type: hurt_and_break
         damage: 1
       tags:
-        - atom:tool_saw
+        - minecraft:saws
     data:
       item-name: <!i><white><l10n:item.tool.iron.saw.name>
       max-damage: 10
@@ -431,7 +401,7 @@ items:
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_copper>
     settings:
       tags:
-        - atom:tool_pickaxe
+        - minecraft:pickaxes
     data:
       item-name: <!i><white><l10n:item.tool.copper.pickaxe.name>
       max-damage: 10
@@ -461,7 +431,7 @@ items:
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_copper>
     settings:
       tags:
-        - atom:tool_shovel
+        - minecraft:shovels
     data:
       item-name: <!i><white><l10n:item.tool.copper.shovel.name>
       max-damage: 10
@@ -491,7 +461,7 @@ items:
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_copper>
     settings:
       tags:
-        - atom:tool_hoe
+        - minecraft:hoes
     data:
       item-name: <!i><white><l10n:item.tool.copper.hoe.name>
       max-damage: 10
@@ -521,7 +491,7 @@ items:
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_copper>
     settings:
       tags:
-        - atom:tool_sword
+        - minecraft:swords
     data:
       item-name: <!i><white><l10n:item.tool.copper.sword.name>
       max-damage: 10
@@ -551,7 +521,7 @@ items:
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_copper>
     settings:
       tags:
-        - atom:tool_axe
+        - minecraft:axes
     data:
       item-name: <!i><white><l10n:item.tool.copper.axe.name>
       max-damage: 10
@@ -581,7 +551,7 @@ items:
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_copper>
     settings:
       tags:
-        - atom:tool_hammer
+        - minecraft:hammers
     data:
       item-name: <!i><white><l10n:item.tool.copper.hammer.name>
       max-damage: 10
@@ -611,7 +581,7 @@ items:
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_copper>
     settings:
       tags:
-        - atom:tool_knife
+        - minecraft:knives
     data:
       item-name: <!i><white><l10n:item.tool.copper.knife.name>
       max-damage: 10
@@ -644,7 +614,7 @@ items:
         type: hurt_and_break
         damage: 1
       tags:
-        - atom:tool_saw
+        - minecraft:saws
     data:
       item-name: <!i><white><l10n:item.tool.copper.saw.name>
       max-damage: 10
@@ -674,7 +644,7 @@ items:
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_bronze>
     settings:
       tags:
-        - atom:tool_pickaxe
+        - minecraft:pickaxes
     data:
       item-name: <!i><white><l10n:item.tool.bronze.pickaxe.name>
       max-damage: 10
@@ -704,7 +674,7 @@ items:
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_bronze>
     settings:
       tags:
-        - atom:tool_shovel
+        - minecraft:shovels
     data:
       item-name: <!i><white><l10n:item.tool.bronze.shovel.name>
       max-damage: 10
@@ -734,7 +704,7 @@ items:
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_bronze>
     settings:
       tags:
-        - atom:tool_hoe
+        - minecraft:hoes
     data:
       item-name: <!i><white><l10n:item.tool.bronze.hoe.name>
       max-damage: 10
@@ -764,7 +734,7 @@ items:
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_bronze>
     settings:
       tags:
-        - atom:tool_sword
+        - minecraft:swords
     data:
       item-name: <!i><white><l10n:item.tool.bronze.sword.name>
       max-damage: 10
@@ -794,7 +764,7 @@ items:
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_bronze>
     settings:
       tags:
-        - atom:tool_axe
+        - minecraft:axes
     data:
       item-name: <!i><white><l10n:item.tool.bronze.axe.name>
       max-damage: 10
@@ -824,7 +794,7 @@ items:
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_bronze>
     settings:
       tags:
-        - atom:tool_hammer
+        - minecraft:hammers
     data:
       item-name: <!i><white><l10n:item.tool.bronze.hammer.name>
       max-damage: 10
@@ -854,7 +824,7 @@ items:
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_bronze>
     settings:
       tags:
-        - atom:tool_knife
+        - minecraft:knives
     data:
       item-name: <!i><white><l10n:item.tool.bronze.knife.name>
       max-damage: 10
@@ -887,7 +857,7 @@ items:
         type: hurt_and_break
         damage: 1
       tags:
-        - atom:tool_saw
+        - minecraft:saws
     data:
       item-name: <!i><white><l10n:item.tool.bronze.saw.name>
       max-damage: 10
@@ -917,7 +887,7 @@ items:
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_iron>
     settings:
       tags:
-        - atom:tool_pickaxe
+        - minecraft:pickaxes
     data:
       item-name: <!i><white><l10n:item.tool.steel.pickaxe.name>
       max-damage: 10
@@ -947,7 +917,7 @@ items:
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_iron>
     settings:
       tags:
-        - atom:tool_shovel
+        - minecraft:shovels
     data:
       item-name: <!i><white><l10n:item.tool.steel.shovel.name>
       max-damage: 10
@@ -977,7 +947,7 @@ items:
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_iron>
     settings:
       tags:
-        - atom:tool_hoe
+        - minecraft:hoes
     data:
       item-name: <!i><white><l10n:item.tool.steel.hoe.name>
       max-damage: 10
@@ -1007,7 +977,7 @@ items:
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_iron>
     settings:
       tags:
-        - atom:tool_sword
+        - minecraft:swords
     data:
       item-name: <!i><white><l10n:item.tool.steel.sword.name>
       max-damage: 10
@@ -1037,7 +1007,7 @@ items:
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_iron>
     settings:
       tags:
-        - atom:tool_axe
+        - minecraft:axes
     data:
       item-name: <!i><white><l10n:item.tool.steel.axe.name>
       max-damage: 10
@@ -1067,7 +1037,7 @@ items:
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_iron>
     settings:
       tags:
-        - atom:tool_hammer
+        - minecraft:hammers
     data:
       item-name: <!i><white><l10n:item.tool.steel.hammer.name>
       max-damage: 10
@@ -1097,7 +1067,7 @@ items:
         - <!i><white><image:atom:badge_tool> <image:atom:badge_age_iron>
     settings:
       tags:
-        - atom:tool_knife
+        - minecraft:knives
     data:
       item-name: <!i><white><l10n:item.tool.steel.knife.name>
       max-damage: 10
@@ -1130,7 +1100,7 @@ items:
         type: hurt_and_break
         damage: 1
       tags:
-        - atom:tool_saw
+        - minecraft:saws
     data:
       item-name: <!i><white><l10n:item.tool.steel.saw.name>
       max-damage: 10

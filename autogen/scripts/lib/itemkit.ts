@@ -63,13 +63,21 @@ export type BadgeKey =
 export function loreBadges(labels: { badges?: BadgeKey[]; age?: string }) {
     const parts: string[] = [];
     if (labels.badges && labels.badges.length > 0) {
-        parts.push(...labels.badges.map((b) => badge(b)));
+        const rows: string[] = [];
+        for (let i = 0; i < labels.badges.length; i += 3) {
+            rows.push(labels.badges.slice(i, i + 3).map((b) => badge(b)).join(" "));
+        }
+        parts.push(...rows);
     }
     if (labels.age) {
-        parts.push(ageBadge(labels.age));
+        if (parts.length > 0 && parts[parts.length - 1].split(" ").length < 3) {
+            parts[parts.length - 1] += " " + ageBadge(labels.age);
+        } else {
+            parts.push(ageBadge(labels.age));
+        }
     }
     // Put a blank line above the badge row for visual separation, like your wood code
-    return ["", `<!i><white>${parts.join(" ")}`];
+    return ["", ...parts.map(row => `<!i><white>${row}`)];
 }
 
 // ------------- Model types -------------

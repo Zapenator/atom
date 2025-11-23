@@ -25,6 +25,17 @@ const ALL_TOOLS = [
 ] as const;
 type ToolType = (typeof ALL_TOOLS)[number];
 
+const TOOL_TO_TAG = {
+    pickaxe: "minecraft:pickaxes",
+    shovel: "minecraft:shovels",
+    hoe: "minecraft:hoes",
+    sword: "minecraft:swords",
+    axe: "minecraft:axes",
+    hammer: "minecraft:hammers",
+    knife: "minecraft:knives",
+    saw: "minecraft:saws",
+};
+
 const CLASSIC_MATERIALS: Material[] = ["iron", "stone"];
 const CLASSIC_TOOLS: ToolType[] = [
     "pickaxe",
@@ -196,7 +207,7 @@ function buildFullTool(material: Material, type: ToolType) {
             additionalData: {
                 "max-damage": 10,
             },
-            tags: ["atom:tool_" + type],
+            tags: [TOOL_TO_TAG[type]],
         },
     );
 }
@@ -211,9 +222,9 @@ function buildLoreOnlyTool(material: Material, type: ToolType) {
     return {
         [key]: {
             "client-bound-data": { lore },
-            settings: {
-                tags: ["atom:tool_" + type],
-            }
+            // settings: {
+            //     tags: ["atom:tool_" + type],
+            // }
         },
     };
 }
