@@ -124,7 +124,7 @@ class Atom : SuspendingJavaPlugin() {
                 for (slot in 0..8) {
                     val item = player.inventory.getItem(slot)
                     if (item != null && item.type != Material.AIR) {
-                        ItemHeatSystem.instance.saveHeatForSlot(player, slot, item)
+                        ItemHeatSystem.instance!!.saveHeatForSlot(player, slot, item)
                     }
                 }
             }

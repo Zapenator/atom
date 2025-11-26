@@ -4,10 +4,6 @@ import com.github.shynixn.mccoroutine.folia.launch
 import com.github.shynixn.mccoroutine.folia.entityDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.Job
-import net.momirealms.craftengine.bukkit.entity.data.ItemDisplayEntityData
-import net.momirealms.craftengine.core.entity.Billboard
-import net.momirealms.craftengine.core.entity.ItemDisplayContext
-import net.momirealms.craftengine.core.util.Key
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Sound
@@ -27,8 +23,6 @@ import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
-import org.bukkit.util.RayTraceResult
-import org.bukkit.util.Vector
 import org.bukkit.util.Transformation
 import org.joml.AxisAngle4f
 import org.joml.Vector3f
@@ -39,7 +33,6 @@ import org.shotrush.atom.content.systems.ItemHeatSystem
 import java.util.*
 import kotlin.math.cos
 import kotlin.math.sin
-import kotlin.random.Random
 
 /**
  * Advanced ground item handler using ItemDisplay entities
@@ -242,7 +235,7 @@ class GroundItemDisplayHandler(private val plugin: Plugin) : Listener {
         location.world.playSound(location, Sound.ENTITY_ITEM_PICKUP, 0.5f, 0.8f)
         
         // Start heat tracking for the new display
-        org.shotrush.atom.content.systems.ItemHeatSystem.startItemDisplayHeatTracking(display)
+        ItemHeatSystem.startItemDisplayHeatTracking(display)
     }
 
     private fun findFreePosition(location: Location): Location {

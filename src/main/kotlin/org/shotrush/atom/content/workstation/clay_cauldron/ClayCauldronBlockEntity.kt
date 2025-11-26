@@ -24,6 +24,7 @@ import org.shotrush.atom.putItemStack
 
 import org.bukkit.Particle
 import org.bukkit.Sound
+import org.shotrush.atom.content.systems.ItemHeatSystem
 import org.shotrush.atom.core.util.ActionBarManager
 import kotlin.math.ceil
 
@@ -207,7 +208,7 @@ class ClayCauldronBlockEntity(
         val filledMold = Molds.getFilledMold(shape, type, fluid!!)
         
         // Set initial heat to be very hot
-        org.shotrush.atom.content.systems.ItemHeatSystem.setItemHeat(filledMold, 300.0)
+        ItemHeatSystem.setItemHeat(filledMold, 300.0)
         
         player.inventory.addItem(filledMold)
 
