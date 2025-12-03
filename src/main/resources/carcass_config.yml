@@ -246,7 +246,7 @@ animals:
         display_material: PORKCHOP
       hide_1:
         display_name: "Hide"
-        tool: axe
+        tool: knife
         item: "atom:leather_raw_pig"
         min_amount: 1
         max_amount: 1
@@ -278,7 +278,7 @@ animals:
         display_material: PORKCHOP
       hide_2:
         display_name: "Hide"
-        tool: axe
+        tool: knife
         item: "atom:leather_raw_pig"
         min_amount: 1
         max_amount: 1
