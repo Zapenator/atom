@@ -17,3 +17,15 @@ items:
       template: default:model/simplified_generated
       arguments:
         path: minecraft:item/flint_knife
+recipes:
+  atom:flint_knife:
+    type: shaped
+    pattern:
+      - A
+      - B
+    ingredients:
+      A: atom:sharpened_rock
+      B: minecraft:stick
+    result:
+      id: atom:flint_knife
+      count: 1
